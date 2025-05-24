@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 // import { useContext } from 'react';
 // import { LanguageContext } from '../../components/App.tsx';
 
-import { settingsButton } from '@telegram-apps/sdk';
+import { settingsButton } from '@telegram-apps/sdk-react';
 import { TabbarMenu } from '../../components/TabbarMenu/TabbarMenu.tsx';
 
 

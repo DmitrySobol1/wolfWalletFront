@@ -13,7 +13,7 @@ import { LanguageContext } from '../../components/App.tsx';
 import { TotalBalanceContext } from '../../components/App.tsx';
 import { ValuteContext } from '../../components/App.tsx';
 
-import { settingsButton } from '@telegram-apps/sdk';
+import { settingsButton } from '@telegram-apps/sdk-react';
 import { TabbarMenu } from '../../components/TabbarMenu/TabbarMenu.tsx';
 
 // import { Link } from '@/components/Link/Link.tsx';
