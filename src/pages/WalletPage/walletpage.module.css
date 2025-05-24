@@ -1,0 +1,15 @@
+.divWithButton {
+    display: flex;
+    gap:20px;
+    /* align-items: center; */
+    justify-content: center;
+}
+
+.valuteText {
+    color:#40a7e3
+}
+
+.balanceText {
+    font-weight: bold;
+    font-size: 25px;
+}
