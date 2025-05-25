@@ -77,3 +77,6 @@ export const EnterPage: FC = () => {
     </Page>
   );
 };
+
+
+
