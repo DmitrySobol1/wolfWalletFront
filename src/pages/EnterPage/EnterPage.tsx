@@ -14,11 +14,12 @@ export const EnterPage: FC = () => {
 
   // const { setBalance } = useContext(TotalBalanceContext);
 
-  // FIXME:
-  const tlgid = 12345;
+ 
 
   // для рендера
   useEffect(() => {
+     // FIXME:
+  const tlgid = 12345;
     axios
       .post('/enter', {
         tlgid: tlgid,
