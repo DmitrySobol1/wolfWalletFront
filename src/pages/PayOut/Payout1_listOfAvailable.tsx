@@ -25,19 +25,20 @@ export const Payout1_listOfAvailable: FC = () => {
 
   //FIXME:
 
-  //   const [balances, setBalances] = useState([]);
-  interface CurrencyDetails {
-    amount: number;
-    pendingAmount: number;
-    balanceTime: string;
-    currency?: string;
-  }
+  
+  // interface CurrencyDetails {
+  //   amount: number;
+  //   pendingAmount: number;
+  //   balanceTime: string;
+  //   currency?: string;
+  // }
 
-  const [balances, setBalances] = useState<CurrencyDetails[]>([]);
+  const [balances, setBalances] = useState([]);
 
   // доступный баланс и монеты для вывода
   //FIXME: заменить на нужный ТЛГ id
   const tlgid = 412697670;
+ 
   useEffect(() => {
     const fetchCoins = async () => {
       try {
@@ -47,20 +48,9 @@ export const Payout1_listOfAvailable: FC = () => {
           },
         });
 
-        type Currencies = Record<string, CurrencyDetails>; // Определяем общий тип объекта
-
-        const data: Currencies = response.data.result.balances;
-
-        const resultArray = Object.entries(data).map(([currency, details]) => ({
-          currency,
-          amount: details.amount,
-          pendingAmount: details.pendingAmount,
-          balanceTime: details.balanceTime,
-        }));
-
-        // coins = response.data
-        setBalances(resultArray);
-        console.log(resultArray);
+    
+        setBalances(response.data.arrayOfUserBalanceWithUsdPrice);
+      
       } catch (error) {
         console.error('Ошибка при выполнении запроса:', error);
       } finally {

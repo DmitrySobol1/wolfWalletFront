@@ -4,8 +4,9 @@ import {
   List,
   Button,
   Tappable,
-  SegmentedControl,
   Divider,
+  TabsList
+  
 } from '@telegram-apps/telegram-ui';
 import type { FC } from 'react';
 import axios from '../../axios';
@@ -27,6 +28,8 @@ import { Page } from '@/components/Page.tsx';
 
 import styles from './walletpage.module.css';
 import { TEXTS } from './texts.ts';
+
+import { Loader } from '../../components/Loader/Loader.tsx';
 
 export const WalletPage: FC = () => {
   const navigate = useNavigate();
@@ -55,45 +58,34 @@ export const WalletPage: FC = () => {
     settingsButton.onClick(listener);
   }
 
+  //FIXME:
+  const tlgid = 412697670;
+
   // для вывода баланса, языка, валюты
-  // useEffect(() => {
-  //   //FIXME:
-  //   const tlgid = 412697670;
-
-  //   // TODO: можно пост на гет испправить, т.к. получаем инфо
-
-  //   const fetchUserInfo = async () => {
-  //     try {
-  //       const response = await axios.post('/get_user_balance', {
-  //         tlgid: tlgid,
-  //       });
-
-  //       setLanguage(response.data.language);
-  //       setBalance(response.data.balance);
-  //       setValute(response.data.valute);
-  //       setSymbol(response.data.symbol);
-
-  //       setIsLoading(false)
-  //     } catch (error) {
-  //       console.error('Ошибка при выполнении запроса:', error);
-  //     } finally {
-  //       // setShowLoader(false);
-  //       // setWolfButtonActive(true);
-  //     }
-  //   };
-
-  //   fetchUserInfo();
-  // }, []);
-
-  // для настройки фронта
   useEffect(() => {
-    //FIXME:
-    // const tlgid = 412697670;
-    setLanguage('ru');
-    setBalance(777);
-    setValute('eu');
-    setSymbol('р');
-    setIsLoading(false);
+    // TODO: можно пост на гет испправить, т.к. получаем инфо
+
+    const fetchUserInfo = async () => {
+      try {
+        const response = await axios.post('/get_user_balance', {
+          tlgid: tlgid,
+        });
+
+        setLanguage(response.data.language);
+        setBalance(response.data.balance);
+        setValute(response.data.valute);
+        setSymbol(response.data.symbol);
+
+        setIsLoading(false);
+      } catch (error) {
+        console.error('Ошибка при выполнении запроса:', error);
+      } finally {
+        // setShowLoader(false);
+        // setWolfButtonActive(true);
+      }
+    };
+
+    fetchUserInfo();
   }, []);
 
   function payInBtnHandler() {
@@ -124,23 +116,11 @@ export const WalletPage: FC = () => {
     setSelectedTab(id);
   }
 
-  type CurrencyDetails = {
-  currency: string;
-  currency2?: string;     // вместо string | undefined
-  amount: number;
-  price_usd: number;
-  priceInChoosedValute: number;
-  pendingAmount?: number; // сделайте поле опциональным
-  balance?: number;       // сделайте поле опциональным
-};
-
-  const [balances,setBalances] = useState<CurrencyDetails[]>([]);
-
   // вывод активов
-  //FIXME: заменить на нужный ТЛГ id
-  const tlgid = 412697670;
+  const [balances, setBalances] = useState([]);
+
   useEffect(() => {
-    const fetchCoins = async () => {
+    const fetchBalances = async () => {
       try {
         const response = await axios.get('/get_balance_for_pay_out', {
           params: {
@@ -148,25 +128,7 @@ export const WalletPage: FC = () => {
           },
         });
 
-        // type Currencies = Record<string, CurrencyDetails>; // Определяем общий тип объекта
-
-        console.log('aaa=', response);
-
-  //       const data: Currencies = response.data.arrayOfUserBalanceWithUsdPrice;
-
-  //       const resultArray = Object.entries(data).map(([currency, details]) => ({
-  //         currency,
-  //         currency2: details.currency,
-  //         amount: details.amount,
-  //         price_usd: details.price_usd,
-  //         priceInChoosedValute: details.price_usd * response.data.fiatKoefficient,
-  //           pendingAmount: 0,      
-  // balance: 0,  
-  //       }));
-
-  //       // coins = response.data
         setBalances(response.data.arrayOfUserBalanceWithUsdPrice);
-  //       console.log('result=', resultArray);
       } catch (error) {
         console.error('Ошибка при выполнении запроса:', error);
       } finally {
@@ -175,12 +137,66 @@ export const WalletPage: FC = () => {
       }
     };
 
-    fetchCoins();
+    fetchBalances();
+  }, []);
+
+  // вывод "мои пополнения"
+  const [myPayIns, setMyPayIns] = useState([]);
+
+  useEffect(() => {
+    const fetchGetMyPayIns = async () => {
+      try {
+        const response = await axios.get('/get_my_payin', {
+          params: {
+            tlgid: tlgid,
+          },
+        });
+
+        console.log('payins=', response.data);
+        if (response.data.status === 'ok') {
+          setMyPayIns(response.data.data);
+        }
+      } catch (error) {
+        console.error('Ошибка при выполнении запроса:', error);
+      } finally {
+        // setShowLoader(false);
+        // setWolfButtonActive(true);
+      }
+    };
+
+    fetchGetMyPayIns();
+  }, []);
+  
+  // вывод "мои выводы"
+  const [myPayOuts, setMyPayOuts] = useState([]);
+
+  useEffect(() => {
+    const fetchGetMyPayOuts = async () => {
+      try {
+        const response = await axios.get('/get_my_payout', {
+          params: {
+            tlgid: tlgid,
+          },
+        });
+
+        console.log('payout=', response.data);
+        if (response.data.status === 'ok') {
+          setMyPayOuts(response.data.data);
+        } 
+      } catch (error) {
+        console.error('Ошибка при выполнении запроса:', error);
+      } finally {
+        // setShowLoader(false);
+        // setWolfButtonActive(true);
+      }
+    };
+
+    fetchGetMyPayOuts();
   }, []);
 
   return (
     <Page back={false}>
-      {isLoading && <>Загрузка</>}
+      {isLoading && <Loader />}
 
       {!isLoading && (
         <>
@@ -225,43 +241,70 @@ export const WalletPage: FC = () => {
             </Section>
 
             <Section>
-              <SegmentedControl>
+              <TabsList>
                 {options.map((option) => (
-                  <SegmentedControl.Item
+                  <TabsList.Item
                     key={option.id}
                     selected={selectedTab === option.id}
                     onClick={() => segmentBtnHandler(option.id)}
                   >
                     {option.label}
-                  </SegmentedControl.Item>
+                  </TabsList.Item>
                 ))}
-              </SegmentedControl>
-            
-          
+              </TabsList>
 
-          {selectedTab === 'tab1' && (
-            <>
-              
-              {balances.map((coin: any) => (
+              {selectedTab === 'tab1' && (
                 <>
-                  <Cell
-                    key={coin.currency}
-                    subtitle={`${coin.amount}  ${coin.currency}`}
-                    after={`${coin.priceAllCoinInUserFiat} ${coin.symbol}`}
-                  >
-                    {coin.currency}
-                  </Cell>
-                  <Divider />
+                  {balances.map((coin: any) => (
+                    <>
+                      <Cell
+                        key={coin.currency}
+                        subtitle={`${coin.amount}  ${coin.currency}`}
+                        after={`${coin.priceAllCoinInUserFiat} ${coin.symbol}`}
+                      >
+                        {coin.currency}
+                      </Cell>
+                      <Divider />
+                    </>
+                  ))}
                 </>
-              ))}
-            </>
-          )}
+              )}
 
-          {selectedTab === 'tab2' && <>страница 2</>}
+              {selectedTab === 'tab2' && (
+                <>
+                  {myPayIns.map((item: any) => (
+                    <>
+                      <Cell
+                        key={item.currency}
+                        subtitle={item.formattedDate}
+                        after={`+${item.amount_received} ${item.price_currency}`}
+                      >
+                        Пополнение
+                      </Cell>
+                      <Divider />
+                    </>
+                  ))}
+                </>
+              )}
 
-          {selectedTab === 'tab3' && <>страница 3</>}
-
-          </Section>
+              {selectedTab === 'tab3' && (
+                <>
+                  {myPayOuts.map((item: any) => (
+                    <>
+                      <Cell
+                        key={item.currency}
+                        subtitle={item.formattedDate}
+                        after={`-${item.qty} ${item.coin}`}
+                      >
+                        Вывод
+                      </Cell>
+                      <Divider />
+                    </>
+                  ))}
+                </>
+              )}
+              
+            </Section>
           </List>
           <TabbarMenu />
         </>

@@ -16,7 +16,8 @@ export const SettingsButtonMenu: FC = () => {
   const [isShowLanguageSelect, setShowLanguageSelect] = useState(false);
   const [isShowValuteSelect, setShowValuteSelect] = useState(false);
   
-
+//FIXME:
+    const tlgid = 412697670;
 
   const { language,setLanguage } = useContext(LanguageContext);
   const { valute,setValute } = useContext(ValuteContext);
@@ -39,8 +40,7 @@ export const SettingsButtonMenu: FC = () => {
     setSelectedLanguage(event.target.value)
     console.log('set language=', event.target.value);
 
-    //FIXME:
-    const tlgid = 12345;
+    
     axios.post('/change_language', {
       tlgid: tlgid,
       language: event.target.value,
@@ -53,8 +53,7 @@ export const SettingsButtonMenu: FC = () => {
     setSelectedValute(event.target.value)
     console.log('set valute=', event.target.value);
 
-    //FIXME:
-    const tlgid = 12345;
+   
     axios.post('/change_valute', {
       tlgid: tlgid,
       valute: event.target.value,
