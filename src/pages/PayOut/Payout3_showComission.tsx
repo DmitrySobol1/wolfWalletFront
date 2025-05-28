@@ -29,7 +29,7 @@ export const Payout3_showComission: FC = () => {
   const [showError,setShowError] = useState(false);
 
   //  FIXME:
-  const tlgid = 12345;
+  const tlgid = 412697670;
 
   //   const { language } = useContext(LanguageContext);
   //   const { balance } = useContext(TotalBalanceContext);

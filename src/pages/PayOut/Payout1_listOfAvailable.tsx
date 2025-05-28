@@ -39,7 +39,7 @@ export const Payout1_listOfAvailable: FC = () => {
 
 // доступный баланс и монеты для вывода
 //FIXME: заменить на нужный ТЛГ id
-const tlgid = 12345;
+const tlgid = 412697670;
   useEffect(() => {
     const fetchCoins = async () => {
       try {

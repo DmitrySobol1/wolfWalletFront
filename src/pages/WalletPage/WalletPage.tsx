@@ -56,7 +56,7 @@ export const WalletPage: FC = () => {
   // для вывода баланса, языка, валюты
   useEffect(() => {
     //FIXME:
-    const tlgid = 12345;
+    const tlgid = 412697670;
 
     // TODO: можно пост на гет испправить, т.к. получаем инфо
 
