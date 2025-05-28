@@ -22,7 +22,7 @@ export const EnterPage: FC = () => {
   // для рендера
   useEffect(() => {
      // FIXME:
-  const tlgid = 12345;
+  const tlgid = 412697670;
     axios
       .post('/enter', {
         tlgid: tlgid,
