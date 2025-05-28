@@ -1,7 +1,7 @@
-import { Section, List,Cell,Divider} from '@telegram-apps/telegram-ui';
+import { Section, List, Cell, Divider } from '@telegram-apps/telegram-ui';
 import type { FC } from 'react';
 import { useNavigate } from 'react-router-dom';
-import {  useEffect,useState } from 'react';
+import { useEffect, useState } from 'react';
 // import { LanguageContext } from '../../components/App.tsx';
 // import { TotalBalanceContext } from '../../components/App.tsx';
 
@@ -19,55 +19,48 @@ import { Icon16Chevron } from '@telegram-apps/telegram-ui/dist/icons/16/chevron'
 // import { TEXTS } from './texts.ts';
 
 export const Payout1_listOfAvailable: FC = () => {
-    const navigate = useNavigate();
+  const navigate = useNavigate();
   //   const { language } = useContext(LanguageContext);
   //   const { balance } = useContext(TotalBalanceContext);
 
   //FIXME:
 
-  
-
-//   const [balances, setBalances] = useState([]);
- interface CurrencyDetails {
-            amount: number;
-            pendingAmount: number;
-            balanceTime: string;
-            currency?:string;
-        }
+  //   const [balances, setBalances] = useState([]);
+  interface CurrencyDetails {
+    amount: number;
+    pendingAmount: number;
+    balanceTime: string;
+    currency?: string;
+  }
 
   const [balances, setBalances] = useState<CurrencyDetails[]>([]);
 
-// доступный баланс и монеты для вывода
-//FIXME: заменить на нужный ТЛГ id
-const tlgid = 412697670;
+  // доступный баланс и монеты для вывода
+  //FIXME: заменить на нужный ТЛГ id
+  const tlgid = 412697670;
   useEffect(() => {
     const fetchCoins = async () => {
       try {
-        const response = await axios.get('/get_balance_for_pay_out',{
-          params : {
-            tlgid : tlgid
-          }
+        const response = await axios.get('/get_balance_for_pay_out', {
+          params: {
+            tlgid: tlgid,
+          },
         });
 
-        
-        
-       
-        
-        type Currencies = Record<string, CurrencyDetails>; // Определяем общий тип объекта    
-        
-        const data:Currencies = response.data.result.balances
+        type Currencies = Record<string, CurrencyDetails>; // Определяем общий тип объекта
+
+        const data: Currencies = response.data.result.balances;
 
         const resultArray = Object.entries(data).map(([currency, details]) => ({
-    currency,
-    amount: details.amount,
-    pendingAmount: details.pendingAmount,
-    balanceTime: details.balanceTime
-}));
-
+          currency,
+          amount: details.amount,
+          pendingAmount: details.pendingAmount,
+          balanceTime: details.balanceTime,
+        }));
 
         // coins = response.data
         setBalances(resultArray);
-        console.log(resultArray)
+        console.log(resultArray);
       } catch (error) {
         console.error('Ошибка при выполнении запроса:', error);
       } finally {
@@ -79,20 +72,15 @@ const tlgid = 412697670;
     fetchCoins();
   }, []);
 
-
- function coinBtnHandler(coin:string,amount:number){
-    console.log('choosed coin=',coin)
+  function coinBtnHandler(coin: string, amount: number) {
+    console.log('choosed coin=', coin);
     navigate('/payout_2writeadress-page', {
-      state: { 
+      state: {
         coin,
-        amount
-      }
+        amount,
+      },
     });
   }
-
-
-  
-
 
   //FIXME:
   // @ts-ignore
@@ -120,10 +108,15 @@ const tlgid = 412697670;
               lang={language} баланс={balance}{' '}
             </Cell> */}
 
-          {balances.map((coin:any) => (
+          {balances.map((coin: any) => (
             <>
-              <Cell key={coin.currency} subtitle={`${coin.amount} ${coin.currency}`}  after={<Icon16Chevron />} onClick={()=>coinBtnHandler(coin.currency,coin.amount)}>
-                {coin.currency} 
+              <Cell
+                key={coin.currency}
+                subtitle={`${coin.amount} ${coin.currency}`}
+                after={<Icon16Chevron />}
+                onClick={() => coinBtnHandler(coin.currency, coin.amount)}
+              >
+                {coin.currency}
               </Cell>
               <Divider />
             </>
