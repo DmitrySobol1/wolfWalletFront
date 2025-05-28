@@ -34,7 +34,7 @@ export const PayInAdress: FC = () => {
   const [payAdress,setPayAdress] = useState('')  
 
   //FIXME: заменить на реальный ТЛГ
-  const tlgid:number = 7
+  const tlgid:number = 412697670
 
   useEffect(() => {
     const fetchPayInAdress = async () => {

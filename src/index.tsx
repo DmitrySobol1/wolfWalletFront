@@ -30,9 +30,9 @@ try {
   })
     .then(() => {
       root.render(
-        <StrictMode>
+        // <StrictMode>
           <Root/>
-        </StrictMode>,
+        // </StrictMode>,
       );
     });
 } catch (e) {
