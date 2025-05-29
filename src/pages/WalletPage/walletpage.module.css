@@ -1,15 +1,67 @@
-.divWithButton {
-    display: flex;
-    gap:20px;
-    /* align-items: center; */
-    justify-content: center;
+.balancePartWrapper {
+  padding: 20px 0px 0px 0px;
 }
 
-.valuteText {
-    color:#40a7e3
+.textBalanceWrapper {
+  display: flex;
+  justify-content: center;
+  /* padding: 20px 0px 0px 0px; */
 }
 
 .balanceText {
-    font-weight: bold;
-    font-size: 25px;
+  font-weight: bold;
+  font-size: 25px;
+  margin-bottom: 10px;
+}
+
+.textUnderBalance {
+    color:#999999;
+}
+
+.valuteText {
+  color: #40a7e3;
+  text-transform: uppercase;
+
+}
+
+.symbol {
+    color:#999999;
+}
+
+.imgBtn {
+  width: 30px;
+}
+
+.wrapperAllButtons {
+    display: flex;
+    justify-content: center;
+    gap: 25px;
+}
+
+.wrapperOneButton {
+  text-align: center;
+}
+
+.textForButton {
+    color: #40a7e3;
+    font-size: 0.8em;
+    font-weight: 600;
+}
+
+.cell {
+      flex-direction: column;
+}
+
+.payinText {
+     color: #51a972;
+     text-transform: uppercase;
+}
+
+.payoutText {
+     color: salmon;
+     
+}
+
+.activiText {
+    text-transform: uppercase;
 }

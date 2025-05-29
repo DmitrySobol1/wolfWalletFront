@@ -5,8 +5,7 @@ import {
   Button,
   Tappable,
   Divider,
-  TabsList
-  
+  TabsList,
 } from '@telegram-apps/telegram-ui';
 import type { FC } from 'react';
 import axios from '../../axios';
@@ -28,6 +27,9 @@ import { Page } from '@/components/Page.tsx';
 
 import styles from './walletpage.module.css';
 import { TEXTS } from './texts.ts';
+
+import payin from '../../img/payin.png';
+import payout from '../../img/payout.png';
 
 import { Loader } from '../../components/Loader/Loader.tsx';
 
@@ -75,6 +77,12 @@ export const WalletPage: FC = () => {
         setBalance(response.data.balance);
         setValute(response.data.valute);
         setSymbol(response.data.symbol);
+
+        // для настройки фронта
+        // setLanguage('ru');
+        // setBalance(100);
+        // setValute('rub');
+        // setSymbol('р');
 
         setIsLoading(false);
       } catch (error) {
@@ -166,7 +174,7 @@ export const WalletPage: FC = () => {
 
     fetchGetMyPayIns();
   }, []);
-  
+
   // вывод "мои выводы"
   const [myPayOuts, setMyPayOuts] = useState([]);
 
@@ -182,7 +190,7 @@ export const WalletPage: FC = () => {
         console.log('payout=', response.data);
         if (response.data.status === 'ok') {
           setMyPayOuts(response.data.data);
-        } 
+        }
       } catch (error) {
         console.error('Ошибка при выполнении запроса:', error);
       } finally {
@@ -201,27 +209,28 @@ export const WalletPage: FC = () => {
       {!isLoading && (
         <>
           <List>
-            <Section header={title}>
-              <Cell></Cell>
+            <Section>
+              <Cell className={styles.cell}>
+                <div className={styles.balancePartWrapper}>
+                  <div className={styles.textBalanceWrapper}>
+                    <div className={styles.balanceText}>
+                      <span className={styles.symbol}>{symbol}</span> {balance}
+                    </div>
+                  </div>
 
-              <Cell>
-                <div className={styles.balanceText}>
-                  {symbol} {balance}
+                  <div className={styles.textBalanceWrapper}>
+                    <div className={styles.textUnderBalance}>
+                      Общий баланс в{' '}
+                      <Tappable
+                        Component="span"
+                        className={styles.valuteText}
+                        onClick={openSettings}
+                      >
+                        {valute}
+                      </Tappable>
+                    </div>
+                  </div>
                 </div>
-                <div>
-                  общий баланс в{' '}
-                  <Tappable
-                    Component="span"
-                    className={styles.valuteText}
-                    onClick={openSettings}
-                  >
-                    {valute}
-                  </Tappable>
-                </div>
-              </Cell>
-
-              <Cell>
-                баланс={balance}, язык={language}, валюта={valute}
               </Cell>
 
               {/* <Link to="/init-data">
@@ -230,14 +239,31 @@ export const WalletPage: FC = () => {
             </Cell>
           </Link> */}
 
-              <div className={styles.divWithButton}>
-                <Button mode="filled" size="m" onClick={payInBtnHandler}>
-                  Пополнить
-                </Button>
-                <Button mode="filled" size="m" onClick={payOutBtnHandler}>
-                  Вывести
-                </Button>
-              </div>
+              <Cell className={styles.cell}>
+                <div className={styles.wrapperAllButtons}>
+                  <Tappable
+                    Component="span"
+                    // className={styles.valuteText}
+                    onClick={payInBtnHandler}
+                  >
+                    <div className={styles.wrapperOneButton}>
+                      <img src={payin} className={styles.imgBtn} />
+                      <div className={styles.textForButton}>Пополнить</div>
+                    </div>
+                  </Tappable>
+
+                  <Tappable
+                    Component="span"
+                    // className={styles.valuteText}
+                    onClick={payOutBtnHandler}
+                  >
+                    <div className={styles.wrapperOneButton}>
+                      <img src={payout} className={styles.imgBtn} />
+                      <div className={styles.textForButton}>Вывести</div>
+                    </div>
+                  </Tappable>
+                </div>
+              </Cell>
             </Section>
 
             <Section>
@@ -260,7 +286,8 @@ export const WalletPage: FC = () => {
                       <Cell
                         key={coin.currency}
                         subtitle={`${coin.amount}  ${coin.currency}`}
-                        after={`${coin.priceAllCoinInUserFiat} ${coin.symbol}`}
+                        after={<Cell>{coin.priceAllCoinInUserFiat} {coin.symbol}</Cell>}
+                        className={styles.activiText}
                       >
                         {coin.currency}
                       </Cell>
@@ -277,7 +304,8 @@ export const WalletPage: FC = () => {
                       <Cell
                         key={item.currency}
                         subtitle={item.formattedDate}
-                        after={`+${item.amount_received} ${item.price_currency}`}
+                        // after={<Cell>+ ${item.amount_received} ${item.price_currency}`</Cell>}
+                        after={<Cell className={styles.payinText}>+{item.amount_received} {item.price_currency}</Cell>}
                       >
                         Пополнение
                       </Cell>
@@ -294,7 +322,7 @@ export const WalletPage: FC = () => {
                       <Cell
                         key={item.currency}
                         subtitle={item.formattedDate}
-                        after={`-${item.qty} ${item.coin}`}
+                        after={<Cell className={styles.payoutText}>-{item.qty} {item.coin}</Cell>}
                       >
                         Вывод
                       </Cell>
@@ -303,7 +331,6 @@ export const WalletPage: FC = () => {
                   ))}
                 </>
               )}
-              
             </Section>
           </List>
           <TabbarMenu />
