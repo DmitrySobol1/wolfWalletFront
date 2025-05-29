@@ -43,8 +43,9 @@ export const WalletPage: FC = () => {
 
   //FIXME:
   // @ts-ignore
-  const { title, text } = TEXTS[language];
+  const { under_balance, pay_in, pay_out, my_actives, payin_history,  payout_history, one_payin, one_payout  } = TEXTS[language];
 
+ 
   if (settingsButton.mount.isAvailable()) {
     settingsButton.mount();
     settingsButton.isMounted(); // true
@@ -114,9 +115,9 @@ export const WalletPage: FC = () => {
 
   const [selectedTab, setSelectedTab] = useState('tab1');
   const options = [
-    { id: 'tab1', label: 'Активы' },
-    { id: 'tab2', label: 'Пополения' },
-    { id: 'tab3', label: 'Выводы' },
+    { id: 'tab1', label: my_actives },
+    { id: 'tab2', label: payin_history },
+    { id: 'tab3', label: payout_history },
   ];
 
   function segmentBtnHandler(id: string) {
@@ -219,7 +220,7 @@ export const WalletPage: FC = () => {
 
                   <div className={styles.textBalanceWrapper}>
                     <div className={styles.textUnderBalance}>
-                      Общий баланс в{' '}
+                      {under_balance}{' '}
                       <Tappable
                         Component="span"
                         className={styles.valuteText}
@@ -247,7 +248,7 @@ export const WalletPage: FC = () => {
                   >
                     <div className={styles.wrapperOneButton}>
                       <img src={payin} className={styles.imgBtn} />
-                      <div className={styles.textForButton}>Пополнить</div>
+                      <div className={styles.textForButton}>{pay_in}</div>
                     </div>
                   </Tappable>
 
@@ -258,7 +259,7 @@ export const WalletPage: FC = () => {
                   >
                     <div className={styles.wrapperOneButton}>
                       <img src={payout} className={styles.imgBtn} />
-                      <div className={styles.textForButton}>Вывести</div>
+                      <div className={styles.textForButton}>{pay_out}</div>
                     </div>
                   </Tappable>
                 </div>
@@ -303,10 +304,10 @@ export const WalletPage: FC = () => {
                       <Cell
                         key={item.currency}
                         subtitle={item.formattedDate}
-                        // after={<Cell>+ ${item.amount_received} ${item.price_currency}`</Cell>}
+                        
                         after={<Cell className={styles.payinText}>+{item.amount_received} {item.price_currency}</Cell>}
                       >
-                        Пополнение
+                        {one_payin}
                       </Cell>
                       <Divider />
                     </>
@@ -323,7 +324,7 @@ export const WalletPage: FC = () => {
                         subtitle={item.formattedDate}
                         after={<Cell className={styles.payoutText}>-{item.qty} {item.coin}</Cell>}
                       >
-                        Вывод
+                        {one_payout}
                       </Cell>
                       <Divider />
                     </>

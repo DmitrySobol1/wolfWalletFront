@@ -1,8 +1,8 @@
 import { Section, List, Cell, Divider } from '@telegram-apps/telegram-ui';
 import type { FC } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useEffect, useState } from 'react';
-// import { LanguageContext } from '../../components/App.tsx';
+import { useEffect, useState,useContext } from 'react';
+import { LanguageContext } from '../../components/App.tsx';
 // import { TotalBalanceContext } from '../../components/App.tsx';
 
 // import { settingsButton } from '@telegram-apps/sdk';
@@ -16,14 +16,16 @@ import { Icon16Chevron } from '@telegram-apps/telegram-ui/dist/icons/16/chevron'
 // import { Icon28Archive } from '@telegram-apps/telegram-ui/dist/icons/28/archive';
 // import { Icon28Heart } from '@telegram-apps/telegram-ui/dist/icons/28/heart';
 
-// import { TEXTS } from './texts.ts';
+import { TEXTS } from './texts.ts';
 
 export const PayIn: FC = () => {
     const navigate = useNavigate();
-  //   const { language } = useContext(LanguageContext);
+    const { language } = useContext(LanguageContext);
   //   const { balance } = useContext(TotalBalanceContext);
 
-
+  //FIXME:
+  // @ts-ignore
+const {title} = TEXTS[language];
 
 
 
@@ -85,14 +87,14 @@ export const PayIn: FC = () => {
   return (
     <Page>
       <List>
-        <Section header="Пополнение криптовалюты">
+        <Section header={title}>
           {/* <Cell subtitle={text}>
               lang={language} баланс={balance}{' '}
             </Cell> */}
 
           {coins.map((coin) => (
             <>
-              <Cell key={coin} subtitle={coin} after={<Icon16Chevron />} onClick={()=>coinBtnHandler(coin)}>
+              <Cell key={coin} after={<Icon16Chevron />} onClick={()=>coinBtnHandler(coin)}>
                 {coin}
               </Cell>
               <Divider />

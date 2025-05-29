@@ -1,15 +1,34 @@
 export const TEXTS = {
   ru: {
-    title: 'Заголовок 1',
-    text: 'текст под заголовком 1 на русском',
+    under_balance: 'Общий баланс в',
+    pay_in: 'Пополнить',
+    pay_out: 'Вывести',
+    my_actives: 'Активы',
+    payin_history: 'Пополнения',
+    payout_history: 'Выводы',
+    one_payin: 'Пополнение',
+    one_payout: 'Вывод',
   },
   en: {
-    title: 'Title 1',
-    text: 'text under title one on english',
+    under_balance: 'Total balance in',
+    pay_in: 'Deposit',
+    pay_out: 'Withdraw',
+    my_actives: 'Assets',
+    payin_history: 'Deposits',
+    payout_history: 'Withdrawals',
+    one_payin: 'Deposit',
+    one_payout: 'Withdraw',
+    
   },
   de: {
-    title: 'Tutel 1',
-    text: 'texten 1 on deuth',
+    under_balance: 'Gesamtsaldo in',
+    pay_in: 'Einzahlung',
+    pay_out: 'Zurückziehen',
+    my_actives: 'Vermögenswerte',
+    payin_history: 'Einlagen',
+    payout_history: 'Abhebungen',
+    one_payin: 'Kaution',
+    one_payout: 'Zurückziehen',
   },
 };
 
