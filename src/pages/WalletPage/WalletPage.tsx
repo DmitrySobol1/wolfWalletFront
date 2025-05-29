@@ -2,7 +2,6 @@ import {
   Section,
   Cell,
   List,
-  Button,
   Tappable,
   Divider,
   TabsList,
