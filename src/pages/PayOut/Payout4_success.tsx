@@ -137,7 +137,7 @@ export const Payout4_success: FC = () => {
           </Cell>
 
           <Cell multiline>
-            <Subheadline level="1" weight="2">
+            <Subheadline level="1" weight="3">
               {withdrawText}
             </Subheadline>
           </Cell>

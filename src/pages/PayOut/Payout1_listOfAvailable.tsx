@@ -28,7 +28,7 @@ export const Payout1_listOfAvailable: FC = () => {
 
  //FIXME:
    // @ts-ignore
-   const {title} = TEXTS[language];
+   const {title} = TEXTS[language]; 
 
   
   // interface CurrencyDetails {

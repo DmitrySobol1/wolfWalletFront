@@ -9,6 +9,8 @@ import { ValuteContext } from '../../components/App';
 
 import { Page } from '@/components/Page.tsx';
 
+import { TEXTS } from './texts.ts';
+
 import { Icon32ProfileColoredSquare } from '@telegram-apps/telegram-ui/dist/icons/32/profile_colored_square';
 import { Icon16Chevron } from '@telegram-apps/telegram-ui/dist/icons/16/chevron';
 
@@ -24,6 +26,13 @@ export const SettingsButtonMenu: FC = () => {
 
   const [selectedValute,setSelectedValute] = useState(valute)
   const [selectedLanguage,setSelectedLanguage] = useState(language)
+
+  //FIXME:
+     // @ts-ignore
+     const {title,languageT,valuteT,languageTsubtitle,valuteTsubtitle} = TEXTS[language];
+
+  
+  
 
   function showLanguageSelect() {
     setShowValuteSelect(false);
@@ -63,18 +72,18 @@ export const SettingsButtonMenu: FC = () => {
   return (
     <Page>
       <List>
-        <Section header="Настройки">
+        <Section header={title}>
           <div onClick={showLanguageSelect}>
             <Cell
               before={<Icon32ProfileColoredSquare />}
               after={<Icon16Chevron />}
             >
-              Язык
+              {languageT}
             </Cell>
           </div>
 
           {isShowLanguageSelect && (
-            <Select header="Выберите язык" onChange={selectLanguageHandler} value={selectedLanguage}>
+            <Select header={languageTsubtitle} onChange={selectLanguageHandler} value={selectedLanguage}>
               <option value="ru">Русский</option>
               <option value="en" >English</option>
               <option value="de">Deutch</option>
@@ -86,12 +95,12 @@ export const SettingsButtonMenu: FC = () => {
               before={<Icon32ProfileColoredSquare />}
               after={<Icon16Chevron />}
             >
-              Валюта приложения
+              {valuteT}
             </Cell>
           </div>
 
           {isShowValuteSelect && (
-            <Select header="Выберите валюту" onChange={selectValuteHandler} value={selectedValute}>
+            <Select header={valuteTsubtitle} onChange={selectValuteHandler} value={selectedValute}>
               <option value="rub">Рубль</option>
               <option value="eur">Euro</option>
               <option value="usd">US Dollar</option>
