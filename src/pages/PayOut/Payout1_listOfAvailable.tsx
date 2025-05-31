@@ -1,13 +1,15 @@
-import { Section, List, Cell, Divider } from '@telegram-apps/telegram-ui';
+import { Section, List, Cell, Divider,Spinner } from '@telegram-apps/telegram-ui';
 import type { FC } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useEffect, useState } from 'react';
-// import { LanguageContext } from '../../components/App.tsx';
+import { useEffect, useState,useContext} from 'react';
+import { LanguageContext } from '../../components/App.tsx';
 // import { TotalBalanceContext } from '../../components/App.tsx';
 
 // import { settingsButton } from '@telegram-apps/sdk';
 
 import axios from '../../axios';
+
+import styles from './payout.module.css'
 
 import { Page } from '@/components/Page.tsx';
 import { Icon16Chevron } from '@telegram-apps/telegram-ui/dist/icons/16/chevron';
@@ -16,14 +18,17 @@ import { Icon16Chevron } from '@telegram-apps/telegram-ui/dist/icons/16/chevron'
 // import { Icon28Archive } from '@telegram-apps/telegram-ui/dist/icons/28/archive';
 // import { Icon28Heart } from '@telegram-apps/telegram-ui/dist/icons/28/heart';
 
-// import { TEXTS } from './texts.ts';
+import { TEXTS } from './texts.ts';
 
 export const Payout1_listOfAvailable: FC = () => {
   const navigate = useNavigate();
-  //   const { language } = useContext(LanguageContext);
+    const { language } = useContext(LanguageContext);
+    const [isLoading, setIsLoading] = useState(true);
   //   const { balance } = useContext(TotalBalanceContext);
 
-  //FIXME:
+ //FIXME:
+   // @ts-ignore
+   const {title} = TEXTS[language];
 
   
   // interface CurrencyDetails {
@@ -50,7 +55,7 @@ export const Payout1_listOfAvailable: FC = () => {
 
     
         setBalances(response.data.arrayOfUserBalanceWithUsdPrice);
-      
+        setIsLoading(false)
       } catch (error) {
         console.error('Ошибка при выполнении запроса:', error);
       } finally {
@@ -92,8 +97,26 @@ export const Payout1_listOfAvailable: FC = () => {
 
   return (
     <Page>
+
+    {isLoading && (
+            <div
+              style={{
+                textAlign: 'center',
+                justifyContent: 'center',
+                padding: '100px',
+              }}
+            >
+              <Spinner size="m" />
+            </div>
+          )}
+
+
+          {!isLoading &&
+          
+
+
       <List>
-        <Section header="Вывод криптовалюты">
+        <Section header={title}>
           {/* <Cell subtitle={text}>
               lang={language} баланс={balance}{' '}
             </Cell> */}
@@ -106,13 +129,14 @@ export const Payout1_listOfAvailable: FC = () => {
                 after={<Icon16Chevron />}
                 onClick={() => coinBtnHandler(coin.currency, coin.amount)}
               >
-                {coin.currency}
+                <div className={styles.text}>{coin.currency}</div>
               </Cell>
               <Divider />
             </>
           ))}
         </Section>
       </List>
+      }
     </Page>
   );
 };

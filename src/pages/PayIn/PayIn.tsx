@@ -1,7 +1,13 @@
-import { Section, List, Cell, Divider } from '@telegram-apps/telegram-ui';
+import {
+  Section,
+  List,
+  Cell,
+  Divider,
+  Spinner,
+} from '@telegram-apps/telegram-ui';
 import type { FC } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useEffect, useState,useContext } from 'react';
+import { useEffect, useState, useContext } from 'react';
 import { LanguageContext } from '../../components/App.tsx';
 // import { TotalBalanceContext } from '../../components/App.tsx';
 
@@ -19,19 +25,17 @@ import { Icon16Chevron } from '@telegram-apps/telegram-ui/dist/icons/16/chevron'
 import { TEXTS } from './texts.ts';
 
 export const PayIn: FC = () => {
-    const navigate = useNavigate();
-    const { language } = useContext(LanguageContext);
+  const navigate = useNavigate();
+  const { language } = useContext(LanguageContext);
+  const [isLoading, setIsLoading] = useState(true);
   //   const { balance } = useContext(TotalBalanceContext);
 
   //FIXME:
   // @ts-ignore
-const {title} = TEXTS[language];
-
-
+  const { title } = TEXTS[language];
 
   const [coins, setCoins] = useState([]);
 
-  
   // доступные монеты (Get available checked currencies)
   useEffect(() => {
     const fetchCoins = async () => {
@@ -40,6 +44,7 @@ const {title} = TEXTS[language];
 
         // coins = response.data
         setCoins(response.data.selectedCurrencies);
+        setIsLoading(false);
         // console.log(coins)
       } catch (error) {
         console.error('Ошибка при выполнении запроса:', error);
@@ -52,19 +57,14 @@ const {title} = TEXTS[language];
     fetchCoins();
   }, []);
 
-
-  function coinBtnHandler(coin:string){
+  function coinBtnHandler(coin: string) {
     // console.log('choosed coin=',coin)
     navigate('/payin_adress-page', {
-      state: { 
-        coin: coin
-      }
+      state: {
+        coin: coin,
+      },
     });
   }
-
-
-  
-
 
   //FIXME:
   // @ts-ignore
@@ -86,22 +86,40 @@ const {title} = TEXTS[language];
 
   return (
     <Page>
-      <List>
-        <Section header={title}>
-          {/* <Cell subtitle={text}>
+      {isLoading && (
+        <div
+          style={{
+            textAlign: 'center',
+            justifyContent: 'center',
+            padding: '100px',
+          }}
+        >
+          <Spinner size="m" />
+        </div>
+      )}
+
+      {!isLoading && (
+        <List>
+          <Section header={title}>
+            {/* <Cell subtitle={text}>
               lang={language} баланс={balance}{' '}
             </Cell> */}
 
-          {coins.map((coin) => (
-            <>
-              <Cell key={coin} after={<Icon16Chevron />} onClick={()=>coinBtnHandler(coin)}>
-                {coin}
-              </Cell>
-              <Divider />
-            </>
-          ))}
-        </Section>
-      </List>
+            {coins.map((coin) => (
+              <>
+                <Cell
+                  key={coin}
+                  after={<Icon16Chevron />}
+                  onClick={() => coinBtnHandler(coin)}
+                >
+                  {coin}
+                </Cell>
+                <Divider />
+              </>
+            ))}
+          </Section>
+        </List>
+      )}
     </Page>
   );
 };

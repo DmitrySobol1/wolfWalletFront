@@ -5,6 +5,7 @@ import {
   Tappable,
   Divider,
   TabsList,
+  Spinner,
 } from '@telegram-apps/telegram-ui';
 import type { FC } from 'react';
 import axios from '../../axios';
@@ -30,7 +31,6 @@ import { TEXTS } from './texts.ts';
 import payin from '../../img/payin.png';
 import payout from '../../img/payout.png';
 
-import { Loader } from '../../components/Loader/Loader.tsx';
 
 export const WalletPage: FC = () => {
   const navigate = useNavigate();
@@ -42,10 +42,10 @@ export const WalletPage: FC = () => {
   const [isLoading, setIsLoading] = useState(true);
 
   //FIXME:
-  // @ts-ignore
-  const { under_balance, pay_in, pay_out, my_actives, payin_history,  payout_history, one_payin, one_payout  } = TEXTS[language];
+  //  @ts-ignore
+  const {under_balance, pay_in, pay_out, my_actives,payin_history,payout_history,one_payin,one_payout} = TEXTS[language];
+  
 
- 
   if (settingsButton.mount.isAvailable()) {
     settingsButton.mount();
     settingsButton.isMounted(); // true
@@ -204,7 +204,18 @@ export const WalletPage: FC = () => {
 
   return (
     <Page back={false}>
-      {isLoading && <Loader />}
+      
+      {isLoading && (
+        <div
+          style={{
+            textAlign: 'center',
+            justifyContent: 'center',
+            padding: '100px'
+          }}
+        >
+          <Spinner size="m" />
+        </div>
+      )}
 
       {!isLoading && (
         <>
@@ -286,7 +297,11 @@ export const WalletPage: FC = () => {
                       <Cell
                         key={coin.currency}
                         subtitle={`${coin.amount}  ${coin.currency}`}
-                        after={<Cell>{coin.priceAllCoinInUserFiat} {coin.symbol}</Cell>}
+                        after={
+                          <Cell>
+                            {coin.priceAllCoinInUserFiat} {coin.symbol}
+                          </Cell>
+                        }
                         className={styles.activiText}
                       >
                         {coin.currency}
@@ -304,8 +319,11 @@ export const WalletPage: FC = () => {
                       <Cell
                         key={item.currency}
                         subtitle={item.formattedDate}
-                        
-                        after={<Cell className={styles.payinText}>+{item.amount_received} {item.price_currency}</Cell>}
+                        after={
+                          <Cell className={styles.payinText}>
+                            +{item.amount_received} {item.price_currency}
+                          </Cell>
+                        }
                       >
                         {one_payin}
                       </Cell>
@@ -322,7 +340,11 @@ export const WalletPage: FC = () => {
                       <Cell
                         key={item.currency}
                         subtitle={item.formattedDate}
-                        after={<Cell className={styles.payoutText}>-{item.qty} {item.coin}</Cell>}
+                        after={
+                          <Cell className={styles.payoutText}>
+                            -{item.qty} {item.coin}
+                          </Cell>
+                        }
                       >
                         {one_payout}
                       </Cell>

@@ -1,9 +1,16 @@
-import { Section, List, Cell, ButtonCell,Snackbar,Button } from '@telegram-apps/telegram-ui';
+import {
+  Section,
+  List,
+  Cell,
+  ButtonCell,
+  Tooltip,
+  Spinner,
+} from '@telegram-apps/telegram-ui';
 import type { FC } from 'react';
 import { useLocation } from 'react-router-dom';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef, useContext } from 'react';
 
-// import { LanguageContext } from '../../components/App.tsx';
+import { LanguageContext } from '../../components/App.tsx';
 // import { TotalBalanceContext } from '../../components/App.tsx';
 
 // import { settingsButton } from '@telegram-apps/sdk';
@@ -18,11 +25,12 @@ import { Icon28Stats } from '@telegram-apps/telegram-ui/dist/icons/28/stats';
 import { Icon28Archive } from '@telegram-apps/telegram-ui/dist/icons/28/archive';
 // import { Icon28Heart } from '@telegram-apps/telegram-ui/dist/icons/28/heart';
 
-// import { TEXTS } from './texts.ts';
+import { TEXTS } from './texts.ts';
 
 export const PayInAdress: FC = () => {
   //   const navigate = useNavigate();
-  //   const { language } = useContext(LanguageContext);
+  const { language } = useContext(LanguageContext);
+  const [isLoading, setIsLoading] = useState(true);
   //   const { balance } = useContext(TotalBalanceContext);
 
   //FIXME:
@@ -33,6 +41,11 @@ export const PayInAdress: FC = () => {
 
   const [minAmount, setMinAmount] = useState('');
   const [payAdress, setPayAdress] = useState('');
+  const [showTextCopied, setShowTextCopied] = useState(false);
+
+  //FIXME:
+  // @ts-ignore
+  const { minsum, adress, copyit, copiedtet } = TEXTS[language];
 
   //FIXME: заменить на реальный ТЛГ
   const tlgid: number = 412697670;
@@ -50,6 +63,7 @@ export const PayInAdress: FC = () => {
         console.log(response);
         setMinAmount(response.data.minAmount);
         setPayAdress(response.data.payAdress);
+        setIsLoading(false);
       } catch (error) {
         console.error('Ошибка при выполнении запроса:', error);
       } finally {
@@ -61,21 +75,20 @@ export const PayInAdress: FC = () => {
     fetchPayInAdress();
   }, []);
 
-
-  
-  
-
   const copyAdress = async () => {
-      //  const [copied, setCopied] = useState(false);
+    //  const [copied, setCopied] = useState(false);
     try {
       await navigator.clipboard.writeText(payAdress);
-      console.log('copied=',payAdress)
-      // setCopied(true);
-      // setTimeout(() => setCopied(false), 2000);
+      console.log('copied=', payAdress);
+      setShowTextCopied(true);
+
+      setTimeout(() => setShowTextCopied(false), 2000);
     } catch (err) {
       console.error('Ошибка: ', err);
     }
-  }
+  };
+
+  const buttonRef = useRef(null);
 
   //FIXME:
   // @ts-ignore
@@ -97,42 +110,57 @@ export const PayInAdress: FC = () => {
 
   return (
     <Page>
-      <List>
-        <Section>
-          <Cell Component="div"
-          before={<Icon28Stats />} subtitle={`${minAmount} ${coin}`}>
-            Минимальная сумма пополнения:
-          </Cell>
-          
-          
+      {isLoading && (
+        <div
+          style={{
+            textAlign: 'center',
+            justifyContent: 'center',
+            padding: '100px',
+          }}
+        >
+          <Spinner size="m" />
+        </div>
+      )}
+
+      {!isLoading && (
+        <List>
+          <Section>
             <Cell
-              before={<Icon28Devices />}
-              subtitle={payAdress}
+              Component="div"
+              before={<Icon28Stats />}
+              subtitle={`${minAmount} ${coin}`}
             >
-              Адрес:
+              {minsum}
+            </Cell>
+
+            <Cell before={<Icon28Devices />} subtitle={payAdress} multiline>
+              {adress}
             </Cell>
             <ButtonCell
               before={<Icon28Archive />}
               interactiveAnimation="background"
               onClick={copyAdress}
+              ref={buttonRef}
             >
-              скопировать адрес
+              {copyit}
             </ButtonCell>
-          
-          
-  <Button
-    onClick={()=><Snackbar description='info'onClose={() => {}}> info2</Snackbar>}
-    size="m"
-  >
-    Show snackbar
-  </Button>
 
+            {/* <Button
+       
+        onClick={handleClick}
+        style={{ width: 100 }}
+      >
+        Hide
+      </Button> */}
 
-
-          
-          
-        </Section>
-      </List>
+            {showTextCopied && (
+              <Tooltip mode="light" targetRef={buttonRef} withArrow={false}>
+                {copiedtet}
+              </Tooltip>
+            )}
+          </Section>
+        </List>
+      )}
     </Page>
   );
 };

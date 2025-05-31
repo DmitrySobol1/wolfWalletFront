@@ -5,11 +5,12 @@ import {
   Input,
   Tappable,
   Button,
+  Spinner,
 } from '@telegram-apps/telegram-ui';
 import type { FC } from 'react';
-import { useLocation,useNavigate } from 'react-router-dom';
-import { useState } from 'react';
-// import { LanguageContext } from '../../components/App.tsx';
+import { useLocation, useNavigate } from 'react-router-dom';
+import { useState, useContext } from 'react';
+import { LanguageContext } from '../../components/App.tsx';
 // import { TotalBalanceContext } from '../../components/App.tsx';
 
 // import { settingsButton } from '@telegram-apps/sdk';
@@ -19,12 +20,13 @@ import axios from '../../axios';
 import { Page } from '@/components/Page.tsx';
 // import { Icon16Chevron } from '@telegram-apps/telegram-ui/dist/icons/16/chevron';
 
-// import { Icon28Devices } from '@telegram-apps/telegram-ui/dist/icons/28/devices';
+import { Icon28CloseAmbient } from '@telegram-apps/telegram-ui/dist/icons/28/close_ambient';
 import { Icon24Close } from '@telegram-apps/telegram-ui/dist/icons/24/close';
 // import { Icon28Archive } from '@telegram-apps/telegram-ui/dist/icons/28/archive';
 // import { Icon28Heart } from '@telegram-apps/telegram-ui/dist/icons/28/heart';
 
-// import { TEXTS } from './texts.ts';
+import styles from './payout.module.css';
+import { TEXTS } from './texts.ts';
 
 export const Payout2_writeAdress: FC = () => {
   const navigate = useNavigate();
@@ -34,9 +36,15 @@ export const Payout2_writeAdress: FC = () => {
   const [adress, setAdress] = useState('');
   const [sum, setSum] = useState('');
   const [showError, setShowError] = useState(false);
+  const [errorText, setErrorText] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
 
-  //   const { language } = useContext(LanguageContext);
+  const { language } = useContext(LanguageContext);
   //   const { balance } = useContext(TotalBalanceContext);
+
+  //FIXME: если переносить на несколько строк, возникает ошибка!!!
+  // @ts-ignore
+  const {title2,balanceT,comissionT,adressT,adress_sub,sumT,sumT_sub,max,nextbtn,errorEmpty,errorNotValid,errorSumEpmty,errorSumTooBig,} = TEXTS[language];
 
   function adressHandler(e: any) {
     setAdress(e.target.value);
@@ -49,10 +57,17 @@ export const Payout2_writeAdress: FC = () => {
   }
 
   async function nextBtnHandler() {
+    setIsLoading(true)
     let checkAdress = false;
     let checkSum = false;
 
     try {
+      if (adress === '') {
+        setErrorText(errorEmpty);
+        setShowError(true);
+        return;
+      }
+
       const response = await axios.post('/validate_adress', {
         adress: adress,
         coin: coin,
@@ -60,35 +75,47 @@ export const Payout2_writeAdress: FC = () => {
 
       if (response.data === 'OK') {
         checkAdress = true;
+        console.log('adress OKK');
       }
     } catch (error) {
+      console.log('here');
+      setErrorText(errorNotValid);
+      setShowError(true);
       console.error('Ошибка при выполнении запроса:', error);
+      return;
     } finally {
-      // Логика после выполнения запроса
-      // setShowLoader(false);
-      // setWolfButtonActive(true);
+      setIsLoading(false)
     }
 
     // После окончания асинхронного запроса проверяем сумму
-    if (amount >= sum) {
+    if (sum === '' || sum === '0') {
+      setErrorText(errorSumEpmty);
+      setShowError(true);
+      return;
+    } else if (amount < sum) {
+      setErrorText(errorSumTooBig);
+      setShowError(true);
+      return;
+    } else if (amount >= sum) {
       checkSum = true;
     }
 
-    if (checkAdress===false || checkSum===false) {
+    // UQAw8-OzyeUWzkScZsHoFfjuzJD5xsSToteeqR3YPOU8f5uA
+
+    if (checkAdress === false || checkSum === false) {
       setShowError(true);
     }
-    
+
     if (checkAdress && checkSum) {
       navigate('/payout_3showcomission-page', {
-      state: { 
-        coin,
-        sum,
-        adress
-      }
-    });
+        state: {
+          coin,
+          sum,
+          adress,
+        },
+      });
     }
-    
-    
+
     // payout_3showcomission-page
   }
 
@@ -170,18 +197,40 @@ export const Payout2_writeAdress: FC = () => {
 
   return (
     <Page>
-      <List>
-        <Section header="Уважите адрес и сумму для вывода">
-          coin = {coin}
-          amount={amount}
-          {/* <Cell subtitle={text}>
-              lang={language} баланс={balance}{' '}
-            </Cell> */}
-          <Cell>
+      {isLoading && (
+        <div
+          style={{
+            textAlign: 'center',
+            justifyContent: 'center',
+            padding: '100px',
+          }}
+        >
+          <Spinner size="m" />
+        </div>
+      )}
+
+      {!isLoading && (
+        <List>
+          <Section>
+            <Cell
+              subtitle={
+                <span>
+                  {amount}{' '}
+                  <span className={styles.inputHeaderText}>{coin}</span>
+                </span>
+              }
+            >
+              {balanceT}
+            </Cell>
+
+            <Cell subtitle={'подтягивать из БД'}>{comissionT}</Cell>
+          </Section>
+
+          <Section header={title2}>
             <Input
               status="focused"
-              header="Адрес"
-              placeholder="Укажите адрес"
+              header={adressT}
+              placeholder={adress_sub}
               value={adress}
               onChange={(e) => adressHandler(e)}
               after={
@@ -198,8 +247,12 @@ export const Payout2_writeAdress: FC = () => {
             />
             <Input
               status="focused"
-              header={`Сумма ${coin}`}
-              placeholder={`Укажите сумму в ${coin}`}
+              header={
+                <span>
+                  {sumT} <span className={styles.inputHeaderText}>{coin}</span>
+                </span>
+              }
+              placeholder={`${sumT_sub} ${coin}`}
               value={sum}
               onChange={(e) => sumHandler(e)}
               after={
@@ -208,23 +261,29 @@ export const Payout2_writeAdress: FC = () => {
                   style={{
                     display: 'flex',
                     color: '#168acd',
+                    fontWeight: '600',
                   }}
                   onClick={() => setSum(amount)}
                 >
-                  Макс
+                  {max}
                 </Tappable>
               }
             />
-          </Cell>
-           {showError && <Cell>Ошибка! </Cell>}
-          <Cell>
-            <Button mode="filled" size="m" onClick={nextBtnHandler}>
-              Продолжить
-            </Button>
-          </Cell>
-         
-        </Section>
-      </List>
+
+            {showError && (
+              <Cell before={<Icon28CloseAmbient />}>
+                <span className={styles.errorText}>{errorText}</span>{' '}
+              </Cell>
+            )}
+
+            <Cell>
+              <Button mode="filled" size="m" onClick={nextBtnHandler}>
+                {nextbtn}
+              </Button>
+            </Cell>
+          </Section>
+        </List>
+      )}
     </Page>
   );
 };

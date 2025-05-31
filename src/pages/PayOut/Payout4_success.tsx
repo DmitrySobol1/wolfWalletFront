@@ -1,14 +1,16 @@
 import {
   Section,
   List,
-  Button
-  
- 
+  Button,
+  Cell,
+  Text,
+  Subheadline,
+  IconButton,
 } from '@telegram-apps/telegram-ui';
 import type { FC } from 'react';
-import { useLocation,useNavigate } from 'react-router-dom';
-// import { useEffect } from 'react';
-// import { LanguageContext } from '../../components/App.tsx';
+import { useLocation, useNavigate } from 'react-router-dom';
+import { useContext } from 'react';
+import { LanguageContext } from '../../components/App.tsx';
 // import { TotalBalanceContext } from '../../components/App.tsx';
 
 // import { settingsButton } from '@telegram-apps/sdk';
@@ -17,28 +19,31 @@ import { useLocation,useNavigate } from 'react-router-dom';
 
 import { Page } from '@/components/Page.tsx';
 // import { Icon16Chevron } from '@telegram-apps/telegram-ui/dist/icons/16/chevron';
+import { Icon20Select } from '@telegram-apps/telegram-ui/dist/icons/20/select';
 
 // import { Icon28Devices } from '@telegram-apps/telegram-ui/dist/icons/28/devices';
 // import { Icon24Close } from '@telegram-apps/telegram-ui/dist/icons/24/close';
 // import { Icon28Archive } from '@telegram-apps/telegram-ui/dist/icons/28/archive';
 // import { Icon28Heart } from '@telegram-apps/telegram-ui/dist/icons/28/heart';
 
-// import { TEXTS } from './texts.ts';
+import { TEXTS } from './texts.ts';
 
 export const Payout4_success: FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const { toSend, coin} = location.state || {};
+  const { toSend, coin } = location.state || {};
 
   // const [comission,setComission] = useState('')
-  
 
-  //   const { language } = useContext(LanguageContext);
+  const { language } = useContext(LanguageContext);
   //   const { balance } = useContext(TotalBalanceContext);
 
-  
-   function nextBtnHandler(){
-  navigate('/wallet-page')
+  //  FIXME:
+  // @ts-ignore
+  const { success, withdrawTitle, withdrawText, openWalletBtn } = TEXTS[language];
+
+  function nextBtnHandler() {
+    navigate('/wallet-page');
   }
 
   //   useEffect(() => {
@@ -50,7 +55,6 @@ export const Payout4_success: FC = () => {
   //         }
   //       });
 
-        
   //       // setCoins(response.data.selectedCurrencies);
   //       console.log('comission=',response.data.comission.qty)
   //       setComission(response.data.comission.qty)
@@ -68,38 +72,37 @@ export const Payout4_success: FC = () => {
   //   fetchComission();
   // }, []);
 
+  //   async function nextBtnHandler() {
+  //     let checkAdress = false;
+  //     let checkSum = false;
 
-//   async function nextBtnHandler() {
-//     let checkAdress = false;
-//     let checkSum = false;
+  //     try {
+  //       const response = await axios.post('/validate_adress', {
+  //         adress: adress,
+  //         coin: coin,
+  //       });
 
-//     try {
-//       const response = await axios.post('/validate_adress', {
-//         adress: adress,
-//         coin: coin,
-//       });
+  //       if (response.data === 'OK') {
+  //         checkAdress = true;
+  //       }
+  //     } catch (error) {
+  //       console.error('Ошибка при выполнении запроса:', error);
+  //     } finally {
+  //       // Логика после выполнения запроса
+  //       // setShowLoader(false);
+  //       // setWolfButtonActive(true);
+  //     }
 
-//       if (response.data === 'OK') {
-//         checkAdress = true;
-//       }
-//     } catch (error) {
-//       console.error('Ошибка при выполнении запроса:', error);
-//     } finally {
-//       // Логика после выполнения запроса
-//       // setShowLoader(false);
-//       // setWolfButtonActive(true);
-//     }
+  //     // После окончания асинхронного запроса проверяем сумму
+  //     if (amount >= sum) {
+  //       checkSum = true;
+  //     }
 
-//     // После окончания асинхронного запроса проверяем сумму
-//     if (amount >= sum) {
-//       checkSum = true;
-//     }
-
-//     if (checkAdress || checkSum) {
-//       setShowError(true);
-//     }
-//     console.log('adress=', checkAdress, 'sum=', checkSum);
-//   }
+  //     if (checkAdress || checkSum) {
+  //       setShowError(true);
+  //     }
+  //     console.log('adress=', checkAdress, 'sum=', checkSum);
+  //   }
 
   //FIXME:
 
@@ -113,26 +116,37 @@ export const Payout4_success: FC = () => {
 
   //   const [balances, setBalances] = useState<CurrencyDetails[]>([]);
 
-  
-
   return (
     <Page>
       <List>
-        <Section header="Подтвердите данные">
-          Ура, вывод!
-          {toSend} {coin}
-          в ближайшее время ждите
-          
-          <Button
-            mode="filled"
-            size="m"
-            onClick = {nextBtnHandler}
+        <Section header={success}>
+          <Cell
+            before={
+              <IconButton mode="bezeled" size="m">
+                <Icon20Select />
+              </IconButton>
+            }
+            multiline
+            after={
+              <Text weight="1" caps>
+                {toSend} {coin}
+              </Text>
+            }
           >
-            Открыть кошелек
-          </Button>
-         
-        
-         
+            <Text weight="1">{withdrawTitle}</Text>
+          </Cell>
+
+          <Cell multiline>
+            <Subheadline level="1" weight="2">
+              {withdrawText}
+            </Subheadline>
+          </Cell>
+
+          <Cell>
+            <Button mode="filled" size="m" onClick={nextBtnHandler}>
+              {openWalletBtn}
+            </Button>
+          </Cell>
         </Section>
       </List>
     </Page>
