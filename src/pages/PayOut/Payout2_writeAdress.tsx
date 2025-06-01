@@ -196,7 +196,7 @@ export const Payout2_writeAdress: FC = () => {
   //   }
 
   return (
-    <Page>
+    <Page back={true}>
       {isLoading && (
         <div
           style={{

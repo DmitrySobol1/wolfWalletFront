@@ -144,7 +144,7 @@ export const Payout3_showComission: FC = () => {
   //   const [balances, setBalances] = useState<CurrencyDetails[]>([]);
 
   return (
-    <Page>
+    <Page back={true}>
 
     {isLoading && (
             <div

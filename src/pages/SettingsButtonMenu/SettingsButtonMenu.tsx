@@ -7,6 +7,8 @@ import axios from '../../axios';
 import { LanguageContext } from '../../components/App';
 import { ValuteContext } from '../../components/App';
 
+import { TabbarMenu } from '../../components/TabbarMenu/TabbarMenu.tsx';
+
 import { Page } from '@/components/Page.tsx';
 
 import { TEXTS } from './texts.ts';
@@ -70,7 +72,7 @@ export const SettingsButtonMenu: FC = () => {
   }
 
   return (
-    <Page>
+    <Page back={true}>
       <List>
         <Section header={title}>
           <div onClick={showLanguageSelect}>
@@ -108,6 +110,8 @@ export const SettingsButtonMenu: FC = () => {
           )}
         </Section>
       </List>
+
+      <TabbarMenu />
     </Page>
   );
 };

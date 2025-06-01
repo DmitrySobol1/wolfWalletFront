@@ -96,7 +96,7 @@ export const Payout1_listOfAvailable: FC = () => {
   //   }
 
   return (
-    <Page>
+    <Page back={true}>
 
     {isLoading && (
             <div
