@@ -54,6 +54,14 @@ export const Payout2_writeAdress: FC = () => {
   const [totalComissionText,setTotalComissionText] = useState(commisionTextWhenLoad)
 
 
+useEffect(() => {
+  console.log('Updated sum:', sum); // Сработает после реального обновления
+}, [sum]); // Зависимость от sum
+
+
+
+  
+
   // получаем мин сумму и our comission
   useEffect(() => {
       const fetchMinSumAndComission = async () => {
@@ -89,7 +97,7 @@ export const Payout2_writeAdress: FC = () => {
       const fetchNetworkComission = async () => {
 
         const sumToBeChargedByNetworkFees = Number(sum) - Number(ourComission)
-        
+
         if (!isInputActive || !sum) return;
         try {
           const response = await axios.get('/get_withdrawal_fee', {
@@ -137,6 +145,12 @@ export const Payout2_writeAdress: FC = () => {
     setSum(e.target.value);
     setShowError(false);
   }
+
+  function maxBtnHandler() {
+  setIsInputActive(true)
+  setSum(amount);
+}
+
 
   async function nextBtnHandler() {
     setIsLoading(true)
@@ -218,7 +232,8 @@ export const Payout2_writeAdress: FC = () => {
     // payout_3showcomission-page
   }
 
- 
+  
+
 
   return (
     <Page back={true}>
@@ -294,6 +309,7 @@ export const Payout2_writeAdress: FC = () => {
               value={sum}
               onChange={(e) => sumHandler(e)}
               onFocus={() => setIsInputActive(true)}
+              onBlur={() => setIsInputActive(false)}
               after={
                 <Tappable
                   Component="div"
@@ -302,7 +318,7 @@ export const Payout2_writeAdress: FC = () => {
                     color: '#168acd',
                     fontWeight: '600',
                   }}
-                  onClick={() => setSum(amount)}
+                  onClick={maxBtnHandler}
                 >
                   {max}
                 </Tappable>
