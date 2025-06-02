@@ -47,11 +47,13 @@ export const Payout3_showComission: FC = () => {
 
   const qtyToSend = (Number(sum) - Number(ourComission)-Number(networkFees))
   const qtyForApiRqst=Number(qtyToSend) + Number(networkFees)
+ 
+  //вариант 1
   const calcalutedTotalComission = Number(networkFees)+Number(ourComission)
   
-  
+  // //вариант 2
   // useEffect(() => {
-  //   setToSend(Number(sum) - Number(totalComissionNum));
+  //   setCalcalutedTotalComission(Number(networkFees) + Number(ourComission));
   // }, []);
 
   async function cnfBtnHandler() {
