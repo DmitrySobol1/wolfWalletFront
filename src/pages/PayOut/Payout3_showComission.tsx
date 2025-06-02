@@ -27,13 +27,14 @@ import { TEXTS } from './texts.ts';
 export const Payout3_showComission: FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const { coin, sum, adress, totalComissionNum,ourComission,networkFees } = location.state || {};
+  const { coin, sum, adress, ourComission,networkFees } = location.state || {};
 
  
   // const [comission, setComission] = useState('');
   // const [toSend, setToSend] = useState(0);
   const [showError, setShowError] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  // const [calcalutedTotalComission,setCalcalutedTotalComission] = useState(0)
 
   //  FIXME:
   const tlgid = 412697670;
@@ -46,8 +47,8 @@ export const Payout3_showComission: FC = () => {
 
   const qtyToSend = (Number(sum) - Number(ourComission)-Number(networkFees))
   const qtyForApiRqst=Number(qtyToSend) + Number(networkFees)
+  const calcalutedTotalComission = Number(networkFees)+Number(ourComission)
   
-  // const qtyToSend = (Number(sum) - Number(totalComissionNum))
   
   // useEffect(() => {
   //   setToSend(Number(sum) - Number(totalComissionNum));
@@ -121,7 +122,7 @@ export const Payout3_showComission: FC = () => {
               <Cell
                 subtitle={
                   <span>
-                    {totalComissionNum}{' '}
+                    {calcalutedTotalComission}{' '}
                     <span className={styles.inputHeaderText}>{coin}</span>
                   </span>
                 }
