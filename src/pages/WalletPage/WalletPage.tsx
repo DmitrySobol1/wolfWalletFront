@@ -342,7 +342,7 @@ export const WalletPage: FC = () => {
                         subtitle={item.formattedDate}
                         after={
                           <Cell className={styles.payoutText}>
-                            -{item.qty} {item.coin}
+                            -{item.sum} {item.coin}
                           </Cell>
                         }
                       >
