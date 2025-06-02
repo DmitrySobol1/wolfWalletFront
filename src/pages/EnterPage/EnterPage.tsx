@@ -1,4 +1,4 @@
-import { Section, Cell, List,Button } from '@telegram-apps/telegram-ui';
+import { Section, List } from '@telegram-apps/telegram-ui';
 import type { FC } from 'react';
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
@@ -51,17 +51,17 @@ export const EnterPage: FC = () => {
       });
   }, []);
 
-  async function getHndl(){
-   const response = await axios
-      .get('/gettest')
-      console.log(response.data)
-  }
+  // async function getHndl(){
+  //  const response = await axios
+  //     .get('/gettest')
+  //     console.log(response.data)
+  // }
   
-  async function postHndl(){
-   const response = await axios
-      .post('/posttest')
-      console.log(response.data)
-  }
+  // async function postHndl(){
+  //  const response = await axios
+  //     .post('/posttest')
+  //     console.log(response.data)
+  // }
 
   return (
     <Page>
