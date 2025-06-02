@@ -14,9 +14,6 @@ import styles from './payout.module.css'
 import { Page } from '@/components/Page.tsx';
 import { Icon16Chevron } from '@telegram-apps/telegram-ui/dist/icons/16/chevron';
 
-// import { Icon28Devices } from '@telegram-apps/telegram-ui/dist/icons/28/devices';
-// import { Icon28Archive } from '@telegram-apps/telegram-ui/dist/icons/28/archive';
-// import { Icon28Heart } from '@telegram-apps/telegram-ui/dist/icons/28/heart';
 
 import { TEXTS } from './texts.ts';
 
@@ -31,13 +28,6 @@ export const Payout1_listOfAvailable: FC = () => {
    const {title} = TEXTS[language]; 
 
   
-  // interface CurrencyDetails {
-  //   amount: number;
-  //   pendingAmount: number;
-  //   balanceTime: string;
-  //   currency?: string;
-  // }
-
   const [balances, setBalances] = useState([]);
 
   // доступный баланс и монеты для вывода

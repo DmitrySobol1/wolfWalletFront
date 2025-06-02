@@ -66,12 +66,8 @@ export const EnterPage: FC = () => {
   return (
     <Page>
       <List>
-        <Section header="Enter Page" footer="Enter Page footer">
-          <Cell subtitle="User data, chat information, technical data">
-            enter page cell{' '}
-          </Cell>
-          <Button onClick={getHndl}>get btn</Button>
-          <Button onClick={postHndl}>post btn</Button>
+        <Section>
+          
         </Section>
       </List>
     </Page>

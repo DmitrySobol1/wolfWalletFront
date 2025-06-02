@@ -9,21 +9,20 @@ import {
 } from '@telegram-apps/telegram-ui';
 import type { FC } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { useState, useContext } from 'react';
+import { useState, useContext,useEffect } from 'react';
 import { LanguageContext } from '../../components/App.tsx';
 // import { TotalBalanceContext } from '../../components/App.tsx';
 
-// import { settingsButton } from '@telegram-apps/sdk';
+
 
 import axios from '../../axios';
 
 import { Page } from '@/components/Page.tsx';
-// import { Icon16Chevron } from '@telegram-apps/telegram-ui/dist/icons/16/chevron';
+
 
 import { Icon28CloseAmbient } from '@telegram-apps/telegram-ui/dist/icons/28/close_ambient';
 import { Icon24Close } from '@telegram-apps/telegram-ui/dist/icons/24/close';
-// import { Icon28Archive } from '@telegram-apps/telegram-ui/dist/icons/28/archive';
-// import { Icon28Heart } from '@telegram-apps/telegram-ui/dist/icons/28/heart';
+
 
 import styles from './payout.module.css';
 import { TEXTS } from './texts.ts';
@@ -37,14 +36,85 @@ export const Payout2_writeAdress: FC = () => {
   const [sum, setSum] = useState('');
   const [showError, setShowError] = useState(false);
   const [errorText, setErrorText] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
-
+  const [isLoading, setIsLoading] = useState(true);
+  const [minSumToWithdraw,setMinSumToWithdraw] = useState(0)
+  const [ourComission,setOurComission] = useState(0)
+  const [isInputActive, setIsInputActive] = useState(false);
+  
   const { language } = useContext(LanguageContext);
-  //   const { balance } = useContext(TotalBalanceContext);
-
+  
+  
   //FIXME: если переносить на несколько строк, возникает ошибка!!!
   // @ts-ignore
-  const {title2,balanceT,comissionT,adressT,adress_sub,sumT,sumT_sub,max,nextbtn,errorEmpty,errorNotValid,errorSumEpmty,errorSumTooBig,} = TEXTS[language];
+  const {title2,balanceT,comissionT,adressT,adress_sub,sumT,sumT_sub,max,nextbtn,errorEmpty,errorNotValid,errorSumEpmty,errorSumTooBig,errrorBalanceLow,errorSumLow,errorMinSumBig,minSumT,commisionTextWhenLoad} = TEXTS[language];
+  
+
+  const [totalComissionNum,setTotalComissionNum]=useState(0)
+  const [totalComissionText,setTotalComissionText] = useState(commisionTextWhenLoad)
+
+
+  useEffect(() => {
+      const fetchMinSumAndComission = async () => {
+        try {
+          const response = await axios.get('/get_info_for_payout', {
+            params: {
+              coin: coin,
+            },
+          });
+  
+          // FIXME: если с сервера придет статус = false, то показать компонент oops
+          if (response.data.status === true){
+            setMinSumToWithdraw(response.data.minSumToWithdraw)
+            setOurComission(response.data.ourComission)
+          }
+      
+          
+          console.log(response.data)
+        } catch (error) {
+          console.error('Ошибка при выполнении запроса:', error);
+        } finally {
+          setIsLoading(false)
+        }
+      };
+  
+      fetchMinSumAndComission();
+    }, []);
+
+
+
+
+    useEffect(() => {
+      const fetchNetworkComission = async () => {
+        if (!isInputActive || !sum) return;
+        try {
+          const response = await axios.get('/get_withdrawal_fee', {
+            params: {
+              coin: coin,
+              amount:amount
+            },
+          });
+          const countingComission = response.data.fee + ourComission
+          setTotalComissionNum(countingComission)
+
+          const coinUp = coin.toUpperCase()
+          const textToDisplay = `${countingComission} ${coinUp}`
+          setTotalComissionText(textToDisplay)
+
+          
+        } catch (error) {
+          console.error('Ошибка при выполнении запроса:', error);
+        } finally {
+          // setShowLoader(false);
+          // setWolfButtonActive(true);
+        }
+      };
+  
+      fetchNetworkComission();
+    }, [sum]);
+
+
+
+
 
   function adressHandler(e: any) {
     setAdress(e.target.value);
@@ -52,6 +122,11 @@ export const Payout2_writeAdress: FC = () => {
   }
 
   function sumHandler(e: any) {
+
+    if (e.target.value === ''){
+      setTotalComissionText(commisionTextWhenLoad)
+    }
+
     setSum(e.target.value);
     setShowError(false);
   }
@@ -78,7 +153,7 @@ export const Payout2_writeAdress: FC = () => {
         console.log('adress OKK');
       }
     } catch (error) {
-      console.log('here');
+      
       setErrorText(errorNotValid);
       setShowError(true);
       console.error('Ошибка при выполнении запроса:', error);
@@ -96,22 +171,38 @@ export const Payout2_writeAdress: FC = () => {
       setErrorText(errorSumTooBig);
       setShowError(true);
       return;
-    } else if (amount >= sum) {
+    } else if (totalComissionNum>=amount){
+      //text = ваш баланс должен быть больше комиссии
+      setErrorText(errrorBalanceLow);
+      setShowError(true);
+    } else if (totalComissionNum>=Number(sum)){
+      //text = сумма должна быть больше комисии, иначе вы получите 0
+      setErrorText(errorSumLow);
+      setShowError(true);
+
+    } else if (minSumToWithdraw>Number(sum)){
+      //text = введенная сумма меньше мин суммы для вывода
+      setErrorText(errorMinSumBig);
+      setShowError(true);
+    }
+    else if (amount >= sum) {
       checkSum = true;
     }
 
-    // UQAw8-OzyeUWzkScZsHoFfjuzJD5xsSToteeqR3YPOU8f5uA
+    
 
     if (checkAdress === false || checkSum === false) {
       setShowError(true);
     }
 
     if (checkAdress && checkSum) {
+      
       navigate('/payout_3showcomission-page', {
         state: {
           coin,
           sum,
           adress,
+          totalComissionNum
         },
       });
     }
@@ -119,81 +210,7 @@ export const Payout2_writeAdress: FC = () => {
     // payout_3showcomission-page
   }
 
-  //FIXME:
-
-  //   const [balances, setBalances] = useState([]);
-  //  interface CurrencyDetails {
-  //             amount: number;
-  //             pendingAmount: number;
-  //             balanceTime: string;
-  //             currency?:string;
-  //         }
-
-  //   const [balances, setBalances] = useState<CurrencyDetails[]>([]);
-
-  // доступный баланс и монеты для вывода
-  //FIXME: заменить на нужный ТЛГ id
-  // const tlgid = 6;
-
-  // useEffect(() => {
-  //     const fetchCoins = async () => {
-  //       try {
-  //         const response = await axios.get('/get_balance_for_pay_out',{
-  //           params : {
-  //             tlgid : tlgid
-  //           }
-  //         });
-
-  //         type Currencies = Record<string, CurrencyDetails>; // Определяем общий тип объекта
-  //         const data:Currencies = response.data.result.balances
-
-  //         const resultArray = Object.entries(data).map(([currency, details]) => ({
-  //     currency,
-  //     amount: details.amount,
-  //     pendingAmount: details.pendingAmount,
-  //     balanceTime: details.balanceTime
-  // }));
-
-  //         // coins = response.data
-  //         setBalances(resultArray);
-  //         console.log(resultArray)
-  //       } catch (error) {
-  //         console.error('Ошибка при выполнении запроса:', error);
-  //       } finally {
-  //         // setShowLoader(false);
-  //         // setWolfButtonActive(true);
-  //       }
-  //     };
-
-  //     fetchCoins();
-  //   }, []);
-
-  // function coinBtnHandler(coin:string){
-  //   console.log('choosed coin=',coin)
-  //   navigate('/payout_1writeadress-page', {
-  //     state: {
-  //       coin: coin
-  //     }
-  //   });
-  // }
-
-  //FIXME:
-  // @ts-ignore
-  //   const { title, text } = TEXTS[language];
-
-  //   if (settingsButton.mount.isAvailable()) {
-  //     settingsButton.mount();
-  //     settingsButton.isMounted(); // true
-  //     settingsButton.show();
-  //   }
-
-  //   if (settingsButton.onClick.isAvailable()) {
-  //     function listener() {
-  //       console.log('Clicked!');
-  //       navigate('/setting-button-menu');
-  //     }
-  //     settingsButton.onClick(listener);
-  //   }
+ 
 
   return (
     <Page back={true}>
@@ -223,7 +240,20 @@ export const Payout2_writeAdress: FC = () => {
               {balanceT}
             </Cell>
 
-            <Cell subtitle={'подтягивать из БД'}>{comissionT}</Cell>
+            <Cell
+              subtitle={
+                <span>
+                  {minSumToWithdraw}{' '}
+                  <span className={styles.inputHeaderText}>{coin}</span>
+                </span>
+              }
+            >
+              {minSumT}
+            </Cell>
+
+
+
+            <Cell subtitle={totalComissionText}>{comissionT}</Cell>
           </Section>
 
           <Section header={title2}>
@@ -255,6 +285,7 @@ export const Payout2_writeAdress: FC = () => {
               placeholder={`${sumT_sub} ${coin}`}
               value={sum}
               onChange={(e) => sumHandler(e)}
+              onFocus={() => setIsInputActive(true)}
               after={
                 <Tappable
                   Component="div"

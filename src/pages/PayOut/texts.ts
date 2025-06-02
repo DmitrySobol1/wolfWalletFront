@@ -14,6 +14,11 @@ export const TEXTS = {
     errorNotValid: 'Адрес не валидный',
     errorSumEpmty: 'Сумма пустая',
     errorSumTooBig: 'Сумма больше вашего баланса',
+
+    errrorBalanceLow: 'Ваш баланс должен быть больше комиссии',
+    errorSumLow: 'Сумма должна быть больше комисии, иначе вы получите 0',
+    errorMinSumBig: 'Введенная сумма меньше мин суммы для вывода',
+   
     title3: 'Подтвердите данные',
     totalSum: 'Общая сумма',
     sendText: 'Отправка',
@@ -22,7 +27,9 @@ export const TEXTS = {
     success: 'Успешно',
     withdrawTitle: 'Вывод',
     withdrawText: 'Монеты будут отправлены в ближайшее время',
-    openWalletBtn: 'Открыть кошелек'
+    openWalletBtn: 'Открыть кошелек',
+    minSumT: 'Минимальная сумма для вывода',
+    commisionTextWhenLoad: 'Будет рассчитана после ввода суммы'
   },
   en: {
     title: 'Withdraw cryptocurrency',
@@ -47,7 +54,9 @@ export const TEXTS = {
     success: 'Success',
     withdrawTitle: 'Withdrawed',
     withdrawText: 'Coins will be sent soon',
-    openWalletBtn: 'Open wallet'
+    openWalletBtn: 'Open wallet',
+    minSumT: 'Minimum amount to withdraw',
+    commisionTextWhenLoad: 'Will be calculated after the amount is entered'
   },
   de: {
     title: 'Kryptowährung abheben',
@@ -72,6 +81,8 @@ export const TEXTS = {
     success: 'Erfolg',
     withdrawTitle: 'Zurückgezogen',
     withdrawText: 'Die Münzen werden bald verschickt',
-    openWalletBtn: 'Brieftasche öffnen'
+    openWalletBtn: 'Brieftasche öffnen',
+    minSumT: 'Mindestbetrag für die Abhebung',
+    commisionTextWhenLoad: 'Wird berechnet, nachdem der Betrag eingegeben wurde'
   },
 };
