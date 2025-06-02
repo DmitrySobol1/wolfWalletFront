@@ -42,7 +42,7 @@ export const PayInAdress: FC = () => {
 
   //FIXME:
   // @ts-ignore
-  const { minsum, adress, copyit, copiedtet } = TEXTS[language];
+  const { minsum, adress, copyit, copiedtext } = TEXTS[language]; 
 
   //FIXME: заменить на реальный ТЛГ
   const tlgid: number = 412697670;
@@ -128,7 +128,7 @@ export const PayInAdress: FC = () => {
            
             {showTextCopied && (
               <Tooltip mode="light" targetRef={buttonRef} withArrow={false}>
-                {copiedtet}
+                {copiedtext}
               </Tooltip>
             )}
           </Section>

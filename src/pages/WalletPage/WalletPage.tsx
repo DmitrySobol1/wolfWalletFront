@@ -6,11 +6,12 @@ import {
   Divider,
   TabsList,
   Spinner,
+  Tooltip
 } from '@telegram-apps/telegram-ui';
 import type { FC } from 'react';
 import axios from '../../axios';
 import { useNavigate } from 'react-router-dom';
-import { useContext, useEffect, useState } from 'react';
+import { useContext, useEffect, useState,useRef} from 'react';
 import { LanguageContext } from '../../components/App.tsx';
 import { TotalBalanceContext } from '../../components/App.tsx';
 import { ValuteContext } from '../../components/App.tsx';
@@ -40,10 +41,13 @@ export const WalletPage: FC = () => {
 
   const [symbol, setSymbol] = useState('');
   const [isLoading, setIsLoading] = useState(true);
+  const [showTextBalanceZero,setShowTextBalanceZero] = useState(false)
+
+    const buttonRef = useRef(null);
 
   //FIXME:
   //  @ts-ignore
-  const {under_balance, pay_in, pay_out, my_actives,payin_history,payout_history,one_payin,one_payout} = TEXTS[language];
+  const {under_balance, pay_in, pay_out, my_actives,payin_history,payout_history,one_payin,one_payout,textBalanceZero} = TEXTS[language];
   
 
   if (settingsButton.mount.isAvailable()) {
@@ -80,7 +84,7 @@ export const WalletPage: FC = () => {
 
         // для настройки фронта
         // setLanguage('ru');
-        // setBalance(100);
+        // setBalance(0);
         // setValute('rub');
         // setSymbol('р');
 
@@ -107,6 +111,12 @@ export const WalletPage: FC = () => {
   function payOutBtnHandler() {
     if (balance === 0) {
       console.log('баланс = 0');
+
+      setShowTextBalanceZero(true);
+
+      setTimeout(() => setShowTextBalanceZero(false), 2000);
+
+      
     } else {
       console.log('баланс норм');
       navigate('/payout_1availablelist-page');
@@ -256,6 +266,7 @@ export const WalletPage: FC = () => {
                     Component="span"
                     // className={styles.valuteText}
                     onClick={payInBtnHandler}
+                    
                   >
                     <div className={styles.wrapperOneButton}>
                       <img src={payin} className={styles.imgBtn} />
@@ -267,6 +278,7 @@ export const WalletPage: FC = () => {
                     Component="span"
                     // className={styles.valuteText}
                     onClick={payOutBtnHandler}
+                    ref={buttonRef}
                   >
                     <div className={styles.wrapperOneButton}>
                       <img src={payout} className={styles.imgBtn} />
@@ -275,6 +287,13 @@ export const WalletPage: FC = () => {
                   </Tappable>
                 </div>
               </Cell>
+
+               {showTextBalanceZero && (
+              <Tooltip mode="light" targetRef={buttonRef} withArrow={false}>
+                {textBalanceZero}
+              </Tooltip>
+            )} 
+
             </Section>
 
             <Section>

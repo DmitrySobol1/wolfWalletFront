@@ -136,15 +136,43 @@ useEffect(() => {
     setShowError(false);
   }
 
-  function sumHandler(e: any) {
 
-    if (e.target.value === ''){
-      setTotalComissionText(commisionTextWhenLoad)
-    }
+  //TODO: оригинал
+  // function sumHandler(e: any) {
 
-    setSum(e.target.value);
-    setShowError(false);
+  //   if (e.target.value === ''){
+  //     setTotalComissionText(commisionTextWhenLoad)
+  //   }
+
+  //   setSum(e.target.value);
+  //   setShowError(false);
+  // }
+
+
+//заменить запятую на точку в inputе суммы
+
+const sumHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const inputValue = e.target.value;
+
+  const normalizedValue = inputValue
+    .replace(/,/g, '.')
+    .replace(/[^\d.]/g, '')
+    .replace(/^(\d*\.?\d*).*/, '$1'); // Удаляет всё после второй точки
+
+  setSum(normalizedValue);
+  
+  if (e.target.value === '') {
+    setTotalComissionText(commisionTextWhenLoad);
   }
+  
+  setShowError(false);
+};
+
+
+
+
+
+
 
   function maxBtnHandler() {
   setIsInputActive(true)
@@ -281,7 +309,7 @@ useEffect(() => {
 
           <Section header={title2}>
             <Input
-              status="focused"
+              // status="focused"
               header={adressT}
               placeholder={adress_sub}
               value={adress}
@@ -299,7 +327,10 @@ useEffect(() => {
               }
             />
             <Input
-              status="focused"
+              // status="focused"
+               type="text"
+                inputMode="decimal"
+              pattern="[0-9]*\.?[0-9]*"
               header={
                 <span>
                   {sumT} <span className={styles.inputHeaderText}>{coin}</span>
