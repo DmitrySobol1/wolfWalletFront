@@ -3,10 +3,10 @@ import type { FC } from 'react';
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-import {
-  initDataState as _initDataState,
-  useSignal,
-} from '@telegram-apps/sdk-react';
+// import {
+//   initDataState as _initDataState,
+//   useSignal,
+// } from '@telegram-apps/sdk-react';
 
 import axios from '../../axios';
 
@@ -16,14 +16,14 @@ import { Page } from '@/components/Page.tsx';
 export const EnterPage: FC = () => {
   const navigate = useNavigate();
 
-  const initDataState = useSignal(_initDataState);
-  const tlgid = initDataState?.user?.id
+  // const initDataState = useSignal(_initDataState);
+  // const tlgid = initDataState?.user?.id
   
   // для рендера
   useEffect(() => {
 
   // TODO: для тестов
-  // const tlgid = 412697670;
+  const tlgid = 412697670;
 
     axios
       .post('/enter', {
