@@ -16,8 +16,12 @@ import { LanguageContext } from '../../components/App.tsx';
 import { TotalBalanceContext } from '../../components/App.tsx';
 import { ValuteContext } from '../../components/App.tsx';
 
+import { useLocation } from 'react-router-dom';
+
 import { settingsButton } from '@telegram-apps/sdk-react';
 import { TabbarMenu } from '../../components/TabbarMenu/TabbarMenu.tsx';
+
+import {useTlgid} from '../../components/Tlgid'
 
 // import { Link } from '@/components/Link/Link.tsx';
 import { Page } from '@/components/Page.tsx';
@@ -44,6 +48,11 @@ export const WalletPage: FC = () => {
   const [showTextBalanceZero,setShowTextBalanceZero] = useState(false)
 
     const buttonRef = useRef(null);
+  
+    const location = useLocation();
+      const { nowpaymentid } = location.state || {};
+
+      
 
   //FIXME:
   //  @ts-ignore
@@ -54,7 +63,7 @@ export const WalletPage: FC = () => {
     settingsButton.mount();
     settingsButton.isMounted(); // true
     settingsButton.show();
-  }
+  } 
 
   if (settingsButton.onClick.isAvailable()) {
     function listener() {
@@ -65,7 +74,8 @@ export const WalletPage: FC = () => {
   }
 
   //FIXME:
-  const tlgid = 412697670;
+  // const tlgid = 412697670;
+  const tlgid = useTlgid();
 
   // для вывода баланса, языка, валюты
   useEffect(() => {
@@ -76,6 +86,8 @@ export const WalletPage: FC = () => {
         const response = await axios.post('/get_user_balance', {
           tlgid: tlgid,
         });
+
+        console.log('DATA=',response.data)
 
         setLanguage(response.data.language);
         setBalance(response.data.balance);
@@ -137,6 +149,9 @@ export const WalletPage: FC = () => {
   // вывод активов
   const [balances, setBalances] = useState([]);
 
+
+
+  if (nowpaymentid !=0){
   useEffect(() => {
     const fetchBalances = async () => {
       try {
@@ -157,10 +172,12 @@ export const WalletPage: FC = () => {
 
     fetchBalances();
   }, []);
+  }
 
   // вывод "мои пополнения"
   const [myPayIns, setMyPayIns] = useState([]);
 
+  if (nowpaymentid !=0){
   useEffect(() => {
     const fetchGetMyPayIns = async () => {
       try {
@@ -184,10 +201,12 @@ export const WalletPage: FC = () => {
 
     fetchGetMyPayIns();
   }, []);
+}
 
   // вывод "мои выводы"
   const [myPayOuts, setMyPayOuts] = useState([]);
 
+  if (nowpaymentid !=0){
   useEffect(() => {
     const fetchGetMyPayOuts = async () => {
       try {
@@ -211,6 +230,7 @@ export const WalletPage: FC = () => {
 
     fetchGetMyPayOuts();
   }, []);
+}
 
   return (
     <Page back={false}>

@@ -3,12 +3,9 @@ import type { FC } from 'react';
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-// import {
-//   initDataState as _initDataState,
-//   useSignal,
-// } from '@telegram-apps/sdk-react';
-
 import axios from '../../axios';
+
+import { useTlgid } from '../../components/Tlgid';
 
 // import { Link } from '@/components/Link/Link.tsx';
 import { Page } from '@/components/Page.tsx';
@@ -16,14 +13,15 @@ import { Page } from '@/components/Page.tsx';
 export const EnterPage: FC = () => {
   const navigate = useNavigate();
 
+  const tlgid = useTlgid();
+
   // const initDataState = useSignal(_initDataState);
   // const tlgid = initDataState?.user?.id
-  
+
   // для рендера
   useEffect(() => {
-
-  // TODO: для тестов
-  const tlgid = 412697670;
+    // TODO: для тестов
+    // const tlgid = 412697670;
 
     axios
       .post('/enter', {
@@ -32,12 +30,25 @@ export const EnterPage: FC = () => {
       .then((response) => {
         if (response.data.userData.result === 'showOnboarding') {
           console.log('showOnboarding');
-          navigate('/onboarding');
+
+          const nowpaymentid = response.data.userData.nowpaymentid;
+          
+          navigate('/onboarding', {
+            state: {
+              nowpaymentid: nowpaymentid,
+            },
+          });
+          // navigate('/onboarding');
         } else if (response.data.userData.result === 'showWalletPage') {
           console.log('showWalletPage');
-
-          
-          navigate('/wallet-page');
+          const nowpaymentid = response.data.userData.nowpaymentid;
+          // console.log('!!!!!!!nowpaymentid=',nowpaymentid)
+          navigate('/wallet-page', {
+            state: {
+              nowpaymentid: nowpaymentid,
+            },
+          });
+          // navigate('/wallet-page');
         }
       })
       .catch((error) => {
@@ -49,18 +60,11 @@ export const EnterPage: FC = () => {
       });
   }, []);
 
- 
-
   return (
     <Page>
       <List>
-        <Section>
-          
-        </Section>
+        <Section></Section>
       </List>
     </Page>
   );
 };
-
-
-

@@ -2,6 +2,8 @@ import { Section, Cell, List, Select } from '@telegram-apps/telegram-ui';
 import type { FC } from 'react';
 import { useContext, useState } from 'react';
 
+import { useTlgid } from '../../components/Tlgid';
+
 import axios from '../../axios';
 
 import { LanguageContext } from '../../components/App';
@@ -17,11 +19,13 @@ import { Icon32ProfileColoredSquare } from '@telegram-apps/telegram-ui/dist/icon
 import { Icon16Chevron } from '@telegram-apps/telegram-ui/dist/icons/16/chevron';
 
 export const SettingsButtonMenu: FC = () => {
+  
   const [isShowLanguageSelect, setShowLanguageSelect] = useState(false);
   const [isShowValuteSelect, setShowValuteSelect] = useState(false);
   
-//FIXME:
-    const tlgid = 412697670;
+
+
+    const tlgid = useTlgid();
 
   const { language,setLanguage } = useContext(LanguageContext);
   const { valute,setValute } = useContext(ValuteContext);
