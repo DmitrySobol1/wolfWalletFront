@@ -16,16 +16,15 @@ import { Page } from '@/components/Page.tsx';
 export const EnterPage: FC = () => {
   const navigate = useNavigate();
 
+  const initDataState = useSignal(_initDataState);
+  const tlgid = initDataState?.user?.id
   
   // для рендера
   useEffect(() => {
 
-  const initDataState = useSignal(_initDataState);
-  const tlgid = initDataState?.user?.id
-
   // TODO: для тестов
   // const tlgid = 412697670;
-  
+
     axios
       .post('/enter', {
         tlgid: tlgid,
