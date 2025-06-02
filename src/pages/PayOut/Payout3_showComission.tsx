@@ -45,7 +45,7 @@ export const Payout3_showComission: FC = () => {
   // @ts-ignore
   const { title3, totalSum, comissionT, sendText, to, cnfBtn } = TEXTS[language];
 
-  const qtyToSend = (Number(sum) - Number(ourComission)-Number(networkFees))
+  const qtyToSend = Number(((Number(sum) - Number(ourComission)-Number(networkFees))).toFixed(6))
   const qtyForApiRqst=Number(qtyToSend) + Number(networkFees)
  
   //вариант 1
