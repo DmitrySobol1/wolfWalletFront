@@ -27,10 +27,9 @@ import { TEXTS } from './texts.ts';
 export const Payout3_showComission: FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const { coin, sum, adress, totalComissionNum } = location.state || {};
+  const { coin, sum, adress, totalComissionNum,ourComission,networkFees } = location.state || {};
 
  
-
   // const [comission, setComission] = useState('');
   // const [toSend, setToSend] = useState(0);
   const [showError, setShowError] = useState(false);
@@ -45,7 +44,10 @@ export const Payout3_showComission: FC = () => {
   // @ts-ignore
   const { title3, totalSum, comissionT, sendText, to, cnfBtn } = TEXTS[language];
 
-  const qtyToSend = (Number(sum) - Number(totalComissionNum))
+  const qtyToSend = (Number(sum) - Number(ourComission)-Number(networkFees))
+  const qtyForApiRqst=Number(qtyToSend) + Number(networkFees)
+  
+  // const qtyToSend = (Number(sum) - Number(totalComissionNum))
   
   // useEffect(() => {
   //   setToSend(Number(sum) - Number(totalComissionNum));
@@ -59,8 +61,10 @@ export const Payout3_showComission: FC = () => {
         sum,
         tlgid,
         adress,
-        totalComissionNum,
-        qtyToSend
+        networkFees,
+        ourComission,
+        qtyToSend,
+        qtyForApiRqst
       });
 
       console.log(response);

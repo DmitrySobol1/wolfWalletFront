@@ -40,6 +40,7 @@ export const Payout2_writeAdress: FC = () => {
   const [minSumToWithdraw,setMinSumToWithdraw] = useState(0)
   const [ourComission,setOurComission] = useState(0)
   const [isInputActive, setIsInputActive] = useState(false);
+  const [networkFees,setNetworkFees] = useState(0)
   
   const { language } = useContext(LanguageContext);
   
@@ -53,6 +54,7 @@ export const Payout2_writeAdress: FC = () => {
   const [totalComissionText,setTotalComissionText] = useState(commisionTextWhenLoad)
 
 
+  // получаем мин сумму и our comission
   useEffect(() => {
       const fetchMinSumAndComission = async () => {
         try {
@@ -82,18 +84,23 @@ export const Payout2_writeAdress: FC = () => {
 
 
 
-
+//получаем network fees
     useEffect(() => {
       const fetchNetworkComission = async () => {
+
+        const sumToBeChargedByNetworkFees = Number(sum) - Number(ourComission)
+        
         if (!isInputActive || !sum) return;
         try {
           const response = await axios.get('/get_withdrawal_fee', {
             params: {
               coin: coin,
-              amount:amount
+              amount:sumToBeChargedByNetworkFees
             },
           });
-          const countingComission = response.data.fee + ourComission
+          
+          setNetworkFees(response.data.networkFees)
+          const countingComission = response.data.networkFees + ourComission
           setTotalComissionNum(countingComission)
 
           const coinUp = coin.toUpperCase()
@@ -202,7 +209,8 @@ export const Payout2_writeAdress: FC = () => {
           coin,
           sum,
           adress,
-          totalComissionNum
+          ourComission,
+          networkFees
         },
       });
     }

@@ -67,23 +67,7 @@ export const Payout1_listOfAvailable: FC = () => {
     });
   }
 
-  //FIXME:
-  // @ts-ignore
-  //   const { title, text } = TEXTS[language];
 
-  //   if (settingsButton.mount.isAvailable()) {
-  //     settingsButton.mount();
-  //     settingsButton.isMounted(); // true
-  //     settingsButton.show();
-  //   }
-
-  //   if (settingsButton.onClick.isAvailable()) {
-  //     function listener() {
-  //       console.log('Clicked!');
-  //       navigate('/setting-button-menu');
-  //     }
-  //     settingsButton.onClick(listener);
-  //   }
 
   return (
     <Page back={true}>
@@ -107,9 +91,7 @@ export const Payout1_listOfAvailable: FC = () => {
 
       <List>
         <Section header={title}>
-          {/* <Cell subtitle={text}>
-              lang={language} баланс={balance}{' '}
-            </Cell> */}
+          
 
           {balances.map((coin: any) => (
             <>
