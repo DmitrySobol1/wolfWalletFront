@@ -12,7 +12,10 @@ import { LanguageContext } from '../App.tsx';
 
 import { Icon28Devices } from '@telegram-apps/telegram-ui/dist/icons/28/devices';
 import { Icon28Archive } from '@telegram-apps/telegram-ui/dist/icons/28/archive';
-import { Icon28Heart } from '@telegram-apps/telegram-ui/dist/icons/28/heart';
+// import { Icon28Heart } from '@telegram-apps/telegram-ui/dist/icons/28/heart';
+import { Icon28Stats } from '@telegram-apps/telegram-ui/dist/icons/28/stats';
+
+
 
 import { TEXTS } from './texts.ts'
 
@@ -32,14 +35,14 @@ export const TabbarMenu: FC = () => {
     {
       id: 1,
       text: firstTab,
-      Icon: Icon28Heart,
+      Icon: Icon28Devices,
       path: '/wallet-page'
       
     },
     {
       id: 2,
       text: secondTab,
-      Icon: Icon28Devices,
+      Icon: Icon28Stats,
       path: '/exchange-page'
     },
     {
