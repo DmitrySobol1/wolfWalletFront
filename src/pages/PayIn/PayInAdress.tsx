@@ -16,6 +16,7 @@ import axios from '../../axios';
 
 import { Page } from '@/components/Page.tsx';
 
+import {useTlgid} from '../../components/Tlgid'
 
 import { Icon28Devices } from '@telegram-apps/telegram-ui/dist/icons/28/devices';
 import { Icon28Stats } from '@telegram-apps/telegram-ui/dist/icons/28/stats';
@@ -25,14 +26,11 @@ import { Icon28Archive } from '@telegram-apps/telegram-ui/dist/icons/28/archive'
 import { TEXTS } from './texts.ts';
 
 export const PayInAdress: FC = () => {
-  //   const navigate = useNavigate();
+
   const { language } = useContext(LanguageContext);
   const [isLoading, setIsLoading] = useState(true);
-  //   const { balance } = useContext(TotalBalanceContext);
+  
 
-  //FIXME:
-
-  //   const [coins, setCoins] = useState([]);
   const location = useLocation();
   const { coin } = location.state || {};
 
@@ -44,8 +42,8 @@ export const PayInAdress: FC = () => {
   // @ts-ignore
   const { minsum, adress, copyit, copiedtext } = TEXTS[language]; 
 
-  //FIXME: заменить на реальный ТЛГ
-  const tlgid: number = 412697670;
+  
+const tlgid = useTlgid();
 
   useEffect(() => {
     const fetchPayInAdress = async () => {
@@ -55,8 +53,7 @@ export const PayInAdress: FC = () => {
           coin: coin,
         });
 
-        // // coins = response.data
-        // setCoins(response.data.selectedCurrencies);
+        
         console.log(response);
         setMinAmount(response.data.minAmount);
         setPayAdress(response.data.payAdress);
@@ -72,7 +69,7 @@ export const PayInAdress: FC = () => {
   }, []);
 
   const copyAdress = async () => {
-    //  const [copied, setCopied] = useState(false);
+  
     try {
       await navigator.clipboard.writeText(payAdress);
       console.log('copied=', payAdress);

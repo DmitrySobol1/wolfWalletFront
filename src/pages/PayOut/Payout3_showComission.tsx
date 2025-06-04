@@ -10,6 +10,7 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import { useState, useContext } from 'react';
 import { LanguageContext } from '../../components/App.tsx';
 
+import {useTlgid} from '../../components/Tlgid'
 
 
 import axios from '../../axios';
@@ -30,14 +31,12 @@ export const Payout3_showComission: FC = () => {
   const { coin, sum, adress, ourComission,networkFees } = location.state || {};
 
  
-  // const [comission, setComission] = useState('');
-  // const [toSend, setToSend] = useState(0);
   const [showError, setShowError] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  // const [calcalutedTotalComission,setCalcalutedTotalComission] = useState(0)
+  
 
-  //  FIXME:
-  const tlgid = 412697670;
+  
+  const tlgid = useTlgid();
 
   const { language } = useContext(LanguageContext);
   

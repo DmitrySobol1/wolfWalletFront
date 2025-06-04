@@ -3,9 +3,10 @@ import type { FC } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useEffect, useState,useContext} from 'react';
 import { LanguageContext } from '../../components/App.tsx';
-// import { TotalBalanceContext } from '../../components/App.tsx';
 
 // import { settingsButton } from '@telegram-apps/sdk';
+
+import {useTlgid} from '../../components/Tlgid'
 
 import axios from '../../axios';
 
@@ -21,7 +22,7 @@ export const Payout1_listOfAvailable: FC = () => {
   const navigate = useNavigate();
     const { language } = useContext(LanguageContext);
     const [isLoading, setIsLoading] = useState(true);
-  //   const { balance } = useContext(TotalBalanceContext);
+  
 
  //FIXME:
    // @ts-ignore
@@ -30,10 +31,10 @@ export const Payout1_listOfAvailable: FC = () => {
   
   const [balances, setBalances] = useState([]);
 
+  
+  const tlgid = useTlgid();
+  
   // доступный баланс и монеты для вывода
-  //FIXME: заменить на нужный ТЛГ id
-  const tlgid = 412697670;
- 
   useEffect(() => {
     const fetchCoins = async () => {
       try {

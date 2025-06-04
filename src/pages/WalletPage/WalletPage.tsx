@@ -26,9 +26,6 @@ import {useTlgid} from '../../components/Tlgid'
 // import { Link } from '@/components/Link/Link.tsx';
 import { Page } from '@/components/Page.tsx';
 
-// import { Icon28Devices } from '@telegram-apps/telegram-ui/dist/icons/28/devices';
-// import { Icon28Archive } from '@telegram-apps/telegram-ui/dist/icons/28/archive';
-// import { Icon28Heart } from '@telegram-apps/telegram-ui/dist/icons/28/heart';
 
 import styles from './walletpage.module.css';
 import { TEXTS } from './texts.ts';
@@ -73,8 +70,7 @@ export const WalletPage: FC = () => {
     settingsButton.onClick(listener);
   }
 
-  //FIXME:
-  // const tlgid = 412697670;
+  
   const tlgid = useTlgid();
 
   // для вывода баланса, языка, валюты

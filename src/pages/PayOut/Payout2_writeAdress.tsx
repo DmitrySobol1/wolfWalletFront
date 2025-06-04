@@ -54,9 +54,9 @@ export const Payout2_writeAdress: FC = () => {
   const [totalComissionText,setTotalComissionText] = useState(commisionTextWhenLoad)
 
 
-useEffect(() => {
-  console.log('Updated sum:', sum); // Сработает после реального обновления
-}, [sum]); // Зависимость от sum
+// useEffect(() => {
+//   console.log('Updated sum:', sum); // Сработает после реального обновления
+// }, [sum]); // Зависимость от sum
 
 
 
@@ -136,17 +136,6 @@ useEffect(() => {
     setShowError(false);
   }
 
-
-  //TODO: оригинал
-  // function sumHandler(e: any) {
-
-  //   if (e.target.value === ''){
-  //     setTotalComissionText(commisionTextWhenLoad)
-  //   }
-
-  //   setSum(e.target.value);
-  //   setShowError(false);
-  // }
 
 
 //заменить запятую на точку в inputе суммы
