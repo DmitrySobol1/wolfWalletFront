@@ -56,7 +56,7 @@ export const TEXTS = {
     withdrawText: 'Coins will be sent soon',
     openWalletBtn: 'Open wallet',
     minSumT: 'Minimum amount to withdraw',
-    commisionTextWhenLoad: 'Will be calculated after the amount is entered'
+    commisionTextWhenLoad: 'Will be calculated after the sum is entered'
   },
   de: {
     title: 'Kryptowährung abheben',

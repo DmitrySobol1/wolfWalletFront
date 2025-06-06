@@ -32,6 +32,7 @@ import { TEXTS } from './texts.ts';
 
 import payin from '../../img/payin.png';
 import payout from '../../img/payout.png';
+import changebetweenusers from '../../img/changebetweenusers.png';
 
 
 export const WalletPage: FC = () => {
@@ -45,6 +46,7 @@ export const WalletPage: FC = () => {
   const [showTextBalanceZero,setShowTextBalanceZero] = useState(false)
 
     const buttonRef = useRef(null);
+    
   
     const location = useLocation();
       const { nowpaymentid } = location.state || {};
@@ -53,7 +55,7 @@ export const WalletPage: FC = () => {
 
   //FIXME:
   //  @ts-ignore
-  const {under_balance, pay_in, pay_out, my_actives,payin_history,payout_history,one_payin,one_payout,textBalanceZero} = TEXTS[language];
+  const {under_balance, pay_in, pay_out,transfer, my_actives,payin_history,payout_history,one_payin,one_payout,textBalanceZero} = TEXTS[language];
   
 
   if (settingsButton.mount.isAvailable()) {
@@ -128,6 +130,21 @@ export const WalletPage: FC = () => {
     } else {
       console.log('баланс норм');
       navigate('/payout_1availablelist-page');
+    }
+  }
+  
+  function transferBtnHandler() {
+    if (balance === 0) {
+      console.log('баланс = 0');
+
+      setShowTextBalanceZero(true);
+
+      setTimeout(() => setShowTextBalanceZero(false), 2000);
+
+            
+    } else {
+      console.log('баланс норм');
+      navigate('/transfer_1availablelist-page');
     }
   }
 
@@ -278,6 +295,8 @@ export const WalletPage: FC = () => {
 
               <Cell className={styles.cell}>
                 <div className={styles.wrapperAllButtons}>
+
+                  {/* пополнить */}
                   <Tappable
                     Component="span"
                     // className={styles.valuteText}
@@ -290,6 +309,7 @@ export const WalletPage: FC = () => {
                     </div>
                   </Tappable>
 
+                {/* вывести */}
                   <Tappable
                     Component="span"
                     // className={styles.valuteText}
@@ -301,6 +321,19 @@ export const WalletPage: FC = () => {
                       <div className={styles.textForButton}>{pay_out}</div>
                     </div>
                   </Tappable>
+                
+                  {/* трансфер  */}
+                  <Tappable
+                    Component="span"
+                    // className={styles.valuteText}
+                    onClick={transferBtnHandler}
+                    // ref={buttonRef}
+                  >
+                    <div className={styles.wrapperOneButton}>
+                      <img src={changebetweenusers} className={styles.imgBtn} />
+                      <div className={styles.textForButton}>{transfer}</div>
+                    </div>
+                  </Tappable>
                 </div>
               </Cell>
 
@@ -309,6 +342,7 @@ export const WalletPage: FC = () => {
                 {textBalanceZero}
               </Tooltip>
             )} 
+               
 
             </Section>
 

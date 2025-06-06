@@ -7,6 +7,10 @@ import { Payout1_listOfAvailable } from '@/pages/PayOut/Payout1_listOfAvailable'
 import { Payout2_writeAdress } from '@/pages/PayOut/Payout2_writeAdress';
 import { Payout3_showComission } from '@/pages/PayOut/Payout3_showComission';
 import { Payout4_success } from '@/pages/PayOut/Payout4_success';
+import { Transfer1_listOfAvailable } from '@/pages/TransferPage/Transfer1_listOfAvailable';
+import { Transfer2_writeSumAndUser } from '@/pages/TransferPage/Transfer2_writeSumAndUser';
+import { Transfer3_Confirm } from '@/pages/TransferPage/Transfer3_Confirm';
+import { Transfer4_success } from '@/pages/TransferPage/Transfer4_success';
 import { EnterPage } from '@/pages/EnterPage/EnterPage.tsx';
 import { ExchangePage } from '@/pages/ExchangePage/ExchangePage.tsx';
 import { InitDataPage } from '@/pages/InitDataPage.tsx';
@@ -35,6 +39,10 @@ export const routes: Route[] = [
   { path: '/payout_3showcomission-page', Component: Payout3_showComission },
   { path: '/payout_4success-page', Component: Payout4_success },
   { path: '/exchange-page', Component: ExchangePage },
+  { path: '/transfer_1availablelist-page', Component: Transfer1_listOfAvailable },
+  { path: '/transfer_2writetrtinfo-page', Component: Transfer2_writeSumAndUser},
+  { path: '/transfer_3confirm-page', Component: Transfer3_Confirm},
+  { path: '/transfer_4success-page', Component: Transfer4_success},
 
 
   { path: '/init-data', Component: InitDataPage, title: 'Init Data' },
