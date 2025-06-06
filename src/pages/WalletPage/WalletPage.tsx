@@ -55,7 +55,7 @@ export const WalletPage: FC = () => {
 
   //FIXME:
   //  @ts-ignore
-  const {under_balance, pay_in, pay_out,transfer, my_actives,payin_history,payout_history,one_payin,one_transfer,one_payout,textBalanceZero} = TEXTS[language];
+  const {under_balance, pay_in, pay_out,transfer, my_actives,payin_history,payout_history,one_payin,one_transfer,one_payout,textBalanceZero,noPay} = TEXTS[language];
   
 
   if (settingsButton.mount.isAvailable()) {
@@ -203,6 +203,11 @@ export const WalletPage: FC = () => {
         console.log('payins=', response.data);
         if (response.data.status === 'ok') {
           setMyPayIns(response.data.data);
+        } else if (response.data.status === 'no'){
+          const newItem = { type:'no' };
+          //FIXME:
+          //  @ts-ignore
+          setMyPayIns([newItem]);
         }
       } catch (error) {
         console.error('Ошибка при выполнении запроса:', error);
@@ -232,6 +237,11 @@ export const WalletPage: FC = () => {
         console.log('payout=', response.data);
         if (response.data.status === 'ok') {
           setMyPayOuts(response.data.data);
+        } else if (response.data.status === 'no'){
+          const newItem = { type:'no' };
+          //FIXME:
+          //  @ts-ignore
+          setMyPayOuts([newItem]);
         }
       } catch (error) {
         console.error('Ошибка при выполнении запроса:', error);
@@ -244,6 +254,15 @@ export const WalletPage: FC = () => {
     fetchGetMyPayOuts();
   }, []);
 }
+
+
+const typeMap = {
+  payin: one_payin,
+  payout: one_payout,
+  transfer: one_transfer,
+  no: noPay
+} as const;
+
 
   return (
     <Page back={false}>
@@ -390,11 +409,11 @@ export const WalletPage: FC = () => {
                         subtitle={item.formattedDate}
                         after={
                           <Cell className={styles.payinText}>
-                            +{item.qty} {item.coin}
+                            {item.type != 'no' && '+'} {item.qty} {item.coin}
                           </Cell>
                         }
                       >
-                        {item.type=='payin' ? one_payin : one_transfer}
+                        {typeMap[item.type as keyof typeof typeMap]}
                       </Cell>
                       <Divider />
                     </>
@@ -411,11 +430,12 @@ export const WalletPage: FC = () => {
                         subtitle={item.formattedDate}
                         after={
                           <Cell className={styles.payoutText}>
-                            -{item.sum} {item.coin}
+                            {item.type != 'no' && '-'} {item.qty} {item.coin}
                           </Cell>
                         }
                       >
-                        {one_payout}
+                        
+                        {typeMap[item.type as keyof typeof typeMap]}
                       </Cell>
                       <Divider />
                     </>

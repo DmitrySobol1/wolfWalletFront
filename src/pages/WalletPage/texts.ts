@@ -8,9 +8,11 @@ export const TEXTS = {
     payin_history: 'Пополнения',
     payout_history: 'Выводы',
     one_payin: 'Пополнение',
-    one_transfer: 'Перевод от пользователя',
+    one_transfer: 'Внутренний перевод',
     one_payout: 'Вывод',
-    textBalanceZero: 'Ваш баланс равен 0'
+    // one_transferTo: 'Перевод юзеру',
+    textBalanceZero: 'Ваш баланс равен 0',
+    noPay: 'не было операций'
   },
   en: {
     under_balance: 'Total balance in',
@@ -21,9 +23,11 @@ export const TEXTS = {
     payin_history: 'Deposits',
     payout_history: 'Withdrawals',
     one_payin: 'Deposit',
-    one_transfer: 'Transfer from user',
+    one_transfer: 'In app transfer',
     one_payout: 'Withdraw',
-    textBalanceZero: 'Your balance is 0'
+    // one_transferTo: 'Transfer to user',
+    textBalanceZero: 'Your balance is 0',
+    noPay: 'were not performed'
     
   },
   de: {
@@ -35,9 +39,11 @@ export const TEXTS = {
     payin_history: 'Einlagen',
     payout_history: 'Abhebungen',
     one_payin: 'Kaution',
-    one_transfer: 'Übertragung vom Benutzer',
+    one_transfer: 'In-App-Übertragung',
     one_payout: 'Zurückziehen',
-    textBalanceZero: 'Ihr Saldo ist 0'
+    // one_transferTo: 'Geldüberweisung an Benutzer',
+    textBalanceZero: 'Ihr Saldo ist 0',
+    noPay: 'wurden nicht durchgeführt'
   },
 };
 
