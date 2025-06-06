@@ -1,5 +1,6 @@
 export const TEXTS = {
   ru: {
+    title: 'Перевод другому пользователю',
     title2: 'Укажите пользователя и сумму перевода',
     balanceT: 'Баланс',
     comissionT: 'Комиссия за перевод',
@@ -38,6 +39,7 @@ export const TEXTS = {
 
   },
   en: {
+    title: 'Transfer to another user',
     title2: 'Set user and sum of transfer',
     balanceT: 'Balance',
     comissionT: 'Comission for transfer',
@@ -75,6 +77,7 @@ export const TEXTS = {
 
   },
   de: {
+    title: 'Übertragung auf einen anderen Benutzer',
     title2: 'Benutzer und Summe der Überweisung einstellen',
     balanceT: 'Bilanz',
     comissionT: 'Kommission für Überweisung',

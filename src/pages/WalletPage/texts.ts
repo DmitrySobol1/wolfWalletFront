@@ -3,7 +3,7 @@ export const TEXTS = {
     under_balance: 'Общий баланс в',
     pay_in: 'Пополнить',
     pay_out: 'Вывести',
-    transfer: 'Перевод',
+    transfer: 'Перевести',
     my_actives: 'Активы',
     payin_history: 'Пополнения',
     payout_history: 'Выводы',
