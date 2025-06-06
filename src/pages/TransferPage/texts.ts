@@ -15,9 +15,12 @@ export const TEXTS = {
 
     errorEmpty: 'Поле user id пустое',
     userNoExist: 'Пользователь не существует',
+    errorSelfAdress: 'Нельзя использовать свой ID',
+
 
     errorSumEpmty: 'Сумма пустая',
-    errorSumTooBig: 'Сумма+комиссия больше вашего баланса',
+    
+    errorBalanceLow: 'У вас не достаточно средств на балансе',
 
     errorUser: 'Ошибка с указанным id пользователя',
     errorSumLow: 'Сумма должна быть больше комисии, иначе вы получите 0',
@@ -54,9 +57,10 @@ export const TEXTS = {
 
     errorEmpty: 'User ID is epmty',
     userNoExist: 'User does not exist',
+    errorSelfAdress: 'Self ID using is not allowed',
 
     errorSumEpmty: 'Sum is empty',
-    errorSumTooBig: 'Sum+comission is bigger than your balance',
+    errorBalanceLow: 'Balance is too low',
 
     errorUser: 'Error with wtitten user',
 
@@ -92,9 +96,10 @@ export const TEXTS = {
 
     errorEmpty: 'Die Benutzer-ID lautet epmty',
     userNoExist: ' Benutzer existiert nicht',
+    errorSelfAdress: 'Die Verwendung von Self-IDs ist nicht erlaubt.',
 
     errorSumEpmty: 'Summe ist leer',
-    errorSumTooBig: 'summe+Kommission ist größer als Ihr Guthaben',
+    errorBalanceLow: 'Der Saldo ist zu niedrig',
 
     errorUser: 'Fehler bei wtitten user',
     errorSumLow:

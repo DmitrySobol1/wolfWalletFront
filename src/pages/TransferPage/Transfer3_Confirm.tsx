@@ -67,7 +67,7 @@ export const Transfer3_Confirm: FC = () => {
 
       if (response.data.status === 'OK') {
         
-        console.log('redirectin to success page')
+        
         navigate('/transfer_4success-page', {
           state: {
             qtyToSend,

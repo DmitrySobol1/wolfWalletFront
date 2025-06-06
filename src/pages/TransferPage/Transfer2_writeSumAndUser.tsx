@@ -15,6 +15,8 @@ import { LanguageContext } from '../../components/App.tsx';
 
 import axios from '../../axios.ts';
 
+import {useTlgid} from '../../components/Tlgid'
+
 import { Page } from '@/components/Page.tsx';
 
 import { Icon28CloseAmbient } from '@telegram-apps/telegram-ui/dist/icons/28/close_ambient';
@@ -28,6 +30,8 @@ export const Transfer2_writeSumAndUser: FC = () => {
   const location = useLocation();
   const { coin, amount } = location.state || {};
 
+   const tlgid = useTlgid();
+
   const [adress, setAdress] = useState('');
   const [sum, setSum] = useState('');
   const [showError, setShowError] = useState(false);
@@ -35,12 +39,13 @@ export const Transfer2_writeSumAndUser: FC = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [ourComission, setOurComission] = useState(0);
   const [totalComissionText, setTotalComissionText] = useState('');
+  const [selfNowpaymentid,setSelfNowpaymentid] = useState('')
 
   const { language } = useContext(LanguageContext);
 
   //FIXME: если переносить на несколько строк, возникает ошибка!!!
   // @ts-ignore
-  const {title2,balanceT,comissionT,adressT,adress_sub,sumT,sumT_sub,max,nextbtn,errorEmpty,userNoExist,errorSumEpmty,errorSumTooBig,errorUser,errorSumLow } = TEXTS[language];
+  const {title2,balanceT,comissionT,adressT,adress_sub,sumT,sumT_sub,max,nextbtn,errorEmpty,userNoExist,errorSumEpmty,errorBalanceLow,errorUser,errorSumLow,errorSelfAdress} = TEXTS[language];
 
 
 
@@ -52,11 +57,13 @@ export const Transfer2_writeSumAndUser: FC = () => {
         const response: any = await axios.get('/get_transfer_fee', {
           params: {
             coin: coin,
+            tlgid:tlgid
           },
         });
 
         if (response.data.status == 'ok') {
           console.log('TRT COMISSON=', response);
+          setSelfNowpaymentid(response.data.selfNowpaymentid)
           setOurComission(response.data.qty);
           const coinUp = coin.toUpperCase();
           const textToDisplay = `${response.data.qty} ${coinUp}`;
@@ -98,8 +105,8 @@ export const Transfer2_writeSumAndUser: FC = () => {
   function maxBtnHandler() {
     // setIsInputActive(true)
     setShowError(false);
-    const counting = String(Number(amount) - Number(ourComission));
-    setSum(counting);
+    // const counting = String(Number(amount) - Number(ourComission));
+    setSum(amount);
   }
 
   async function nextBtnHandler() {
@@ -107,12 +114,21 @@ export const Transfer2_writeSumAndUser: FC = () => {
     let checkAdress = false;
     let checkSum = false;
 
+    console.log('selfNowpaymentid=',selfNowpaymentid, 'adress=',adress)
+
     try {
       if (adress === '') {
         setErrorText(errorEmpty);
         setShowError(true);
         return;
       }
+      
+      if (adress == selfNowpaymentid) {
+        setErrorText(errorSelfAdress);
+        setShowError(true);
+        return;
+      }
+
 
       const response = await axios.post('/get_user', {
         adress: adress,
@@ -140,16 +156,16 @@ export const Transfer2_writeSumAndUser: FC = () => {
       setErrorText(errorSumEpmty);
       setShowError(true);
       return;
-    } else if (Number(amount) < Number(sum) + Number(ourComission)) {
-      setErrorText(errorSumTooBig);
-      setShowError(true);
-      return;
     } else if (ourComission >= Number(sum)) {
       //text = сумма должна быть больше комисии, иначе вы получите 0
       setErrorText(errorSumLow);
       setShowError(true);
       return;
-    } else {
+    } else if (Number(amount) < Number(sum)) {
+      setErrorText(errorBalanceLow);
+      setShowError(true);
+      return;
+    }  else {
       console.log(
         'amount=',
         amount,
