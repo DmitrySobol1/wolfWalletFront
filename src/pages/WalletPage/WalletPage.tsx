@@ -55,7 +55,7 @@ export const WalletPage: FC = () => {
 
   //FIXME:
   //  @ts-ignore
-  const {under_balance, pay_in, pay_out,transfer, my_actives,payin_history,payout_history,one_payin,one_payout,textBalanceZero} = TEXTS[language];
+  const {under_balance, pay_in, pay_out,transfer, my_actives,payin_history,payout_history,one_payin,one_transfer,one_payout,textBalanceZero} = TEXTS[language];
   
 
   if (settingsButton.mount.isAvailable()) {
@@ -390,11 +390,11 @@ export const WalletPage: FC = () => {
                         subtitle={item.formattedDate}
                         after={
                           <Cell className={styles.payinText}>
-                            +{item.amount_received} {item.price_currency}
+                            +{item.qty} {item.coin}
                           </Cell>
                         }
                       >
-                        {one_payin}
+                        {item.type=='payin' ? one_payin : one_transfer}
                       </Cell>
                       <Divider />
                     </>

@@ -8,6 +8,7 @@ export const TEXTS = {
     payin_history: 'Пополнения',
     payout_history: 'Выводы',
     one_payin: 'Пополнение',
+    one_transfer: 'Перевод от пользователя',
     one_payout: 'Вывод',
     textBalanceZero: 'Ваш баланс равен 0'
   },
@@ -20,6 +21,7 @@ export const TEXTS = {
     payin_history: 'Deposits',
     payout_history: 'Withdrawals',
     one_payin: 'Deposit',
+    one_transfer: 'Transfer from user',
     one_payout: 'Withdraw',
     textBalanceZero: 'Your balance is 0'
     
@@ -33,6 +35,7 @@ export const TEXTS = {
     payin_history: 'Einlagen',
     payout_history: 'Abhebungen',
     one_payin: 'Kaution',
+    one_transfer: 'Übertragung vom Benutzer',
     one_payout: 'Zurückziehen',
     textBalanceZero: 'Ihr Saldo ist 0'
   },
