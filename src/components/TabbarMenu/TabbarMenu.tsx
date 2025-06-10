@@ -43,7 +43,7 @@ export const TabbarMenu: FC = () => {
       id: 2,
       text: secondTab,
       Icon: Icon28Stats,
-      path: '/exchange-page'
+      path: '/exchange_1setsum-page'
     },
     {
       id: 3,

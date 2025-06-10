@@ -11,8 +11,12 @@ import { Transfer1_listOfAvailable } from '@/pages/TransferPage/Transfer1_listOf
 import { Transfer2_writeSumAndUser } from '@/pages/TransferPage/Transfer2_writeSumAndUser';
 import { Transfer3_Confirm } from '@/pages/TransferPage/Transfer3_Confirm';
 import { Transfer4_success } from '@/pages/TransferPage/Transfer4_success';
+import { Exchange1_SetSum } from '@/pages/Exchange/Exchange1_SetSum';
+import { Exchange2_ShowAvailableCoins } from '@/pages/Exchange/Exchange2_ShowAvailableCoins';
+import { Exchange3_Confirm } from '@/pages/Exchange/Exchange3_Confirm';
+import { Exchange4_Success} from '@/pages/Exchange/Exchange4_Success';
 import { EnterPage } from '@/pages/EnterPage/EnterPage.tsx';
-import { ExchangePage } from '@/pages/ExchangePage/ExchangePage.tsx';
+
 import { InitDataPage } from '@/pages/InitDataPage.tsx';
 import { LaunchParamsPage } from '@/pages/LaunchParamsPage.tsx';
 import { ThemeParamsPage } from '@/pages/ThemeParamsPage.tsx';
@@ -38,11 +42,14 @@ export const routes: Route[] = [
   { path: '/payout_2writeadress-page', Component: Payout2_writeAdress },
   { path: '/payout_3showcomission-page', Component: Payout3_showComission },
   { path: '/payout_4success-page', Component: Payout4_success },
-  { path: '/exchange-page', Component: ExchangePage },
   { path: '/transfer_1availablelist-page', Component: Transfer1_listOfAvailable },
   { path: '/transfer_2writetrtinfo-page', Component: Transfer2_writeSumAndUser},
   { path: '/transfer_3confirm-page', Component: Transfer3_Confirm},
   { path: '/transfer_4success-page', Component: Transfer4_success},
+  { path: '/exchange_1setsum-page', Component: Exchange1_SetSum},
+  { path: '/exchange_2showavailable-page', Component: Exchange2_ShowAvailableCoins},
+  { path: '/exchange_3confirm-page', Component: Exchange3_Confirm},
+  { path: '/exchange_4success-page', Component: Exchange4_Success},
 
 
   { path: '/init-data', Component: InitDataPage, title: 'Init Data' },
