@@ -2,7 +2,7 @@ export const TEXTS = {
   ru: {
     title: 'Обмен криптовалюты',
     header1: 'Вы платите',
-    wordMaximum: 'Максимум:',
+    wordMaximum: 'Максимум: ',
     swapText: 'поменять',
     youGetText: 'Вы получате',
     title2From: 'Валюта для обмена',
@@ -21,7 +21,7 @@ export const TEXTS = {
   en: {
     title: 'Exchange cryptocurrency',
     header1: 'You pay',
-    wordMaximum: 'Max:',
+    wordMaximum: 'Max: ',
     swapText: 'swap',
     youGetText: 'You get',
     title2From: 'Currency to be exchanged',
@@ -40,7 +40,7 @@ export const TEXTS = {
   de: {
     title: 'Finanzierung durch Kryptowährungen',
     header1: 'Sie zahlen', 
-    wordMaximum: 'Maximum',
+    wordMaximum: 'Maximum: ',
     swapText: 'tauschen',
     youGetText: 'Sie erhalten',
     title2From: 'Umzutauschende währung',

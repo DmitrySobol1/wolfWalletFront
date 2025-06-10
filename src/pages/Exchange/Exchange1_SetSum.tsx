@@ -7,6 +7,8 @@ import {
   Input,
   Tappable,
   Button,
+  
+  Avatar,
 } from '@telegram-apps/telegram-ui';
 import type { FC } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
@@ -40,7 +42,7 @@ export const Exchange1_SetSum: FC = () => {
 
   //FIXME:
   // @ts-ignore
-  const {wordMaximum,header1,swapText,youGetText,errorSumTooBig, errorMinSumBig,nextBtn,} = TEXTS[language];
+  const {wordMaximum,header1,youGetText,errorSumTooBig,errorMinSumBig,nextBtn,} = TEXTS[language];
 
   const [comissions, setComissions] = useState([]);
   const [coinFrom, setCoinFrom] = useState('TON');
@@ -242,7 +244,6 @@ export const Exchange1_SetSum: FC = () => {
     setAmount(maxAmount);
 
     // setShowMinAmount(false);
-    
 
     if (maxAmount == 0) {
       setConvertedAmount(0);
@@ -268,7 +269,11 @@ export const Exchange1_SetSum: FC = () => {
     const npCom = amountWithoutComission * nowpaymentComission;
     const ourCom = amountWithoutComission * ourComission;
 
-    const amountWithComission = (Number(amountWithoutComission) - Number(npCom) - Number(ourCom)).toFixed(6);
+    const amountWithComission = (
+      Number(amountWithoutComission) -
+      Number(npCom) -
+      Number(ourCom)
+    ).toFixed(6);
 
     // @ts-ignore FIXME:
     setConvertedAmount(amountWithComission);
@@ -332,14 +337,14 @@ export const Exchange1_SetSum: FC = () => {
       },
     });
   }
-  
+
   function nextBtnHandler() {
     navigate('/exchange_3confirm-page', {
       state: {
         amount,
         coinFrom,
         convertedAmount,
-        coinTo
+        coinTo,
       },
     });
   }
@@ -400,35 +405,36 @@ export const Exchange1_SetSum: FC = () => {
             )}
 
             {/* для отладки */}
-            <Cell>комиссия np = {nowpaymentComission}</Cell>
+            {/* <Cell>комиссия np = {nowpaymentComission}</Cell>
             <Cell>комиссия наша = {ourComission}</Cell>
-            <Cell>мин сумма = {minAmount}</Cell>
+            <Cell>мин сумма = {minAmount}</Cell> */}
 
-            <Cell>
+            <Cell after={<Avatar acronym="↑↓" size={40} onClick={vsBtnHandler} />}>
+              <div style = {{display:'flex'}}>
               <Tappable
                 Component="span"
                 style={{
-                  // display: 'flex',
+                  display: 'flex',
                   color: '#168acd',
                   fontWeight: '600',
                 }}
                 onClick={maxBtnHandler}
               >
-                {wordMaximum}
+                {wordMaximum }{' '}
               </Tappable>{' '}
               {maxAmount} {coinFrom}
-              <Tappable
-                Component="span"
+              {/* <Tappable
+                // Component="span"
                 onClick={vsBtnHandler}
                 style={{
                   // display: 'flex',
                   color: '#168acd',
                   fontWeight: '600',
-                  paddingLeft: '100px',
+                  paddingLeft: '50px',
+                  fontSize: '200',
                 }}
-              >
-                {swapText} ↑↓
-              </Tappable>
+              ></Tappable> */}
+              </div>
             </Cell>
 
             {/* <img src={vsaarrows} className={styles.vsImg} /> */}
