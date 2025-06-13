@@ -175,6 +175,7 @@ export const WalletPage: FC = () => {
         });
 
         setBalances(response.data.arrayOfUserBalanceWithUsdPrice);
+        console.log('BALANCES',response.data.arrayOfUserBalanceWithUsdPrice)
       } catch (error) {
         console.error('Ошибка при выполнении запроса:', error);
       } finally {

@@ -145,7 +145,7 @@ export const SettingsButtonMenu: FC = () => {
   const buttonRef = useRef(null);
 
   return (
-    <Page back={true}>
+    <Page back={false}>
       {isLoading && (
         <div
           style={{

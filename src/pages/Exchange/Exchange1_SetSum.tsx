@@ -17,8 +17,11 @@ import { LanguageContext } from '../../components/App.tsx';
 
 import { useTlgid } from '../../components/Tlgid';
 
+import { TabbarMenu } from '../../components/TabbarMenu/TabbarMenu.tsx';
+
 // import vsaarrows from '../../img/vs_arrows.png';
-// import { settingsButton } from '@telegram-apps/sdk';
+
+import { settingsButton } from '@telegram-apps/sdk';
 
 import axios from '../../axios.ts';
 
@@ -39,6 +42,38 @@ export const Exchange1_SetSum: FC = () => {
 
   const location = useLocation();
   const { choosedCoin, typeCoin, oppositeCoin } = location.state || {};
+
+
+  if (settingsButton.mount.isAvailable()) {
+      settingsButton.mount();
+      settingsButton.isMounted(); // true
+      settingsButton.show();
+    } 
+  
+    if (settingsButton.onClick.isAvailable()) {
+      function listener() {
+        console.log('Clicked!');
+        navigate('/setting-button-menu');
+      }
+      settingsButton.onClick(listener);
+    }  
+
+  // if (backButton.mount.isAvailable()) {
+  //     backButton.mount();
+  //     backButton.isMounted(); // true
+  //     backButton.show();
+  //   } 
+  
+    // if (backButton.onClick.isAvailable()) {
+    //   function listener() {
+    //     console.log('back Clicked!');
+    //     navigate('/wallet-page');
+    //   }
+    //   backButton.onClick(listener);
+    // }  
+
+
+
 
   //FIXME:
   // @ts-ignore
@@ -228,7 +263,7 @@ const [showMinSumValue ,setShowMinSumValue] = useState(false)
     const npCom = amountWithoutComission * nowpaymentComission;
     const ourCom = amountWithoutComission * ourComission;
 
-    const amountWithComission = amountWithoutComission - npCom - ourCom;
+    const amountWithComission = Number((amountWithoutComission - npCom - ourCom).toFixed(6));
 
     setConvertedAmount(amountWithComission);
     console.log(
@@ -288,6 +323,13 @@ const [showMinSumValue ,setShowMinSumValue] = useState(false)
 
   async function vsBtnHandler() {
 
+    try {
+
+      setIsLoading(true);
+
+   
+
+
     setShowNextBtn(false)
 
     const from = coinFrom;
@@ -337,6 +379,13 @@ const [showMinSumValue ,setShowMinSumValue] = useState(false)
     });
 
     setMaxAmount(responseBalances.data.balance);
+     
+
+     } catch (error) {
+        console.error('Ошибка при выполнении запроса:', error);
+      } finally {
+        setIsLoading(false);
+      }
   }
 
   function coinChooseBtnHandler(type: string, oppositeCoin: string) {
@@ -492,6 +541,7 @@ const [showMinSumValue ,setShowMinSumValue] = useState(false)
           </Section>
         </List>
       )}
+      <TabbarMenu />
     </Page>
   );
 };
