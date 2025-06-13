@@ -42,11 +42,11 @@ export const Exchange1_SetSum: FC = () => {
 
   //FIXME:
   // @ts-ignore
-  const {wordMaximum,header1,youGetText,errorSumTooBig,errorMinSumBig,nextBtn,} = TEXTS[language];
+  const {wordMaximum,header1,youGetText,errorSumTooBig,errorMinSumBig,nextBtn,minSumToExchangeText} = TEXTS[language];
 
   const [comissions, setComissions] = useState([]);
   const [coinFrom, setCoinFrom] = useState('TON');
-  const [coinTo, setCoinTo] = useState('ETH');
+  const [coinTo, setCoinTo] = useState('BTC');
   const [amount, setAmount] = useState(0);
   const [convertedAmount, setConvertedAmount] = useState(0);
   const [minAmount, setMinAmount] = useState(0);
@@ -58,6 +58,7 @@ export const Exchange1_SetSum: FC = () => {
   const [showError, setShowError] = useState(false);
   const [errorText, setErrorText] = useState('');
   const [showNextBtn, setShowNextBtn] = useState(false);
+const [showMinSumValue ,setShowMinSumValue] = useState(false)
 
   useEffect(() => {
     const fetchCoins = async () => {
@@ -176,6 +177,7 @@ export const Exchange1_SetSum: FC = () => {
 
     setShowError(false);
     setShowNextBtn(false);
+    setShowMinSumValue(false);
 
     const check = /^[\d.]*$/.test(inputValue);
     if (!check) {
@@ -193,6 +195,7 @@ export const Exchange1_SetSum: FC = () => {
     if (inputValue < minAmount) {
       setErrorText(errorMinSumBig);
       setShowError(true);
+      setShowMinSumValue(true);
       setConvertedAmount(0);
       return;
     }
@@ -242,6 +245,8 @@ export const Exchange1_SetSum: FC = () => {
   async function maxBtnHandler() {
     setShowNextBtn(false);
     setAmount(maxAmount);
+    setShowError(false);
+    setShowMinSumValue(false)
 
     // setShowMinAmount(false);
 
@@ -253,6 +258,7 @@ export const Exchange1_SetSum: FC = () => {
     if (maxAmount < minAmount) {
       setErrorText(errorMinSumBig);
       setShowError(true);
+      setShowMinSumValue(true);
       setConvertedAmount(0);
       return;
     }
@@ -281,6 +287,9 @@ export const Exchange1_SetSum: FC = () => {
   }
 
   async function vsBtnHandler() {
+
+    setShowNextBtn(false)
+
     const from = coinFrom;
     const to = coinTo;
 
@@ -290,6 +299,7 @@ export const Exchange1_SetSum: FC = () => {
     setAmount(0);
     setConvertedAmount(0);
     setShowError(false);
+    setShowMinSumValue(false)
 
     comissions.map((item) => {
       if (
@@ -345,6 +355,8 @@ export const Exchange1_SetSum: FC = () => {
         coinFrom,
         convertedAmount,
         coinTo,
+        nowpaymentComission,
+        ourComission
       },
     });
   }
@@ -405,12 +417,14 @@ export const Exchange1_SetSum: FC = () => {
             )}
 
             {/* для отладки */}
-            {/* <Cell>комиссия np = {nowpaymentComission}</Cell>
-            <Cell>комиссия наша = {ourComission}</Cell>
-            <Cell>мин сумма = {minAmount}</Cell> */}
+            {/* <Cell>комиссия np = {nowpaymentComission}</Cell> */}
+            {/* <Cell>комиссия наша = {ourComission}</Cell> */}
+            {showMinSumValue &&
+            <Cell>{minSumToExchangeText} = {minAmount} {coinFrom}</Cell>
+            }
 
             <Cell after={<Avatar acronym="↑↓" size={40} onClick={vsBtnHandler} />}>
-              <div style = {{display:'flex'}}>
+              <div style = {{display:'flex', gap:'5px'}}>
               <Tappable
                 Component="span"
                 style={{
@@ -420,9 +434,9 @@ export const Exchange1_SetSum: FC = () => {
                 }}
                 onClick={maxBtnHandler}
               >
-                {wordMaximum }{' '}
-              </Tappable>{' '}
-              {maxAmount} {coinFrom}
+                {wordMaximum}
+              </Tappable>
+             {maxAmount} {coinFrom}
               {/* <Tappable
                 // Component="span"
                 onClick={vsBtnHandler}

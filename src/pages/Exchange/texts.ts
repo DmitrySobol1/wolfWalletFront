@@ -16,6 +16,8 @@ export const TEXTS = {
     exchangeTitle: 'Обмен завершен',
     exchangeText: 'зачислим в ближайшее время на ваш баланс',
     openWalletBtn: 'Открыть кошелек',
+    minSumToExchangeText: 'мин. сумма для обмена'
+    
     
   },
   en: {
@@ -35,6 +37,7 @@ export const TEXTS = {
      exchangeTitle: 'Exchange done',
      exchangeText: 'will be credited to your balance shortly',
      openWalletBtn: 'Open wallet',
+     minSumToExchangeText: 'min amount to exchange'
     
   },
   de: {
@@ -54,6 +57,7 @@ export const TEXTS = {
      exchangeTitle: 'Austausch erfolgt',
      exchangeText: 'wird Ihrem Guthaben in Kürze gutgeschrieben',
      openWalletBtn: 'Brieftasche öffnen',
+     minSumToExchangeText: 'mindestbetrag für den Umtausch'
        
   },
 };
