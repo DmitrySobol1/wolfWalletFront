@@ -10,6 +10,7 @@ export const TEXTS = {
     one_payin: 'Пополнение',
     one_transfer: 'Внутренний перевод',
     one_payout: 'Вывод',
+    one_exchange: 'Обмен',
     // one_transferTo: 'Перевод юзеру',
     textBalanceZero: 'Ваш баланс равен 0',
     noPay: 'не было операций'
@@ -25,6 +26,7 @@ export const TEXTS = {
     one_payin: 'Deposit',
     one_transfer: 'In app transfer',
     one_payout: 'Withdraw',
+    one_exchange: 'Exchange',
     // one_transferTo: 'Transfer to user',
     textBalanceZero: 'Your balance is 0',
     noPay: 'were not performed'
@@ -41,6 +43,7 @@ export const TEXTS = {
     one_payin: 'Kaution',
     one_transfer: 'In-App-Übertragung',
     one_payout: 'Zurückziehen',
+    one_exchange: 'Austausch',
     // one_transferTo: 'Geldüberweisung an Benutzer',
     textBalanceZero: 'Ihr Saldo ist 0',
     noPay: 'wurden nicht durchgeführt'

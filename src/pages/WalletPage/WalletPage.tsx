@@ -6,12 +6,12 @@ import {
   Divider,
   TabsList,
   Spinner,
-  Tooltip
+  Tooltip,
 } from '@telegram-apps/telegram-ui';
 import type { FC } from 'react';
 import axios from '../../axios';
 import { useNavigate } from 'react-router-dom';
-import { useContext, useEffect, useState,useRef} from 'react';
+import { useContext, useEffect, useState, useRef } from 'react';
 import { LanguageContext } from '../../components/App.tsx';
 import { TotalBalanceContext } from '../../components/App.tsx';
 import { ValuteContext } from '../../components/App.tsx';
@@ -21,11 +21,10 @@ import { useLocation } from 'react-router-dom';
 import { settingsButton } from '@telegram-apps/sdk-react';
 import { TabbarMenu } from '../../components/TabbarMenu/TabbarMenu.tsx';
 
-import {useTlgid} from '../../components/Tlgid'
+import { useTlgid } from '../../components/Tlgid';
 
 // import { Link } from '@/components/Link/Link.tsx';
 import { Page } from '@/components/Page.tsx';
-
 
 import styles from './walletpage.module.css';
 import { TEXTS } from './texts.ts';
@@ -33,7 +32,6 @@ import { TEXTS } from './texts.ts';
 import payin from '../../img/payin.png';
 import payout from '../../img/payout.png';
 import changebetweenusers from '../../img/changebetweenusers.png';
-
 
 export const WalletPage: FC = () => {
   const navigate = useNavigate();
@@ -43,26 +41,37 @@ export const WalletPage: FC = () => {
 
   const [symbol, setSymbol] = useState('');
   const [isLoading, setIsLoading] = useState(true);
-  const [showTextBalanceZero,setShowTextBalanceZero] = useState(false)
+  const [showTextBalanceZero, setShowTextBalanceZero] = useState(false);
 
-    const buttonRef = useRef(null);
-    
-  
-    const location = useLocation();
-      const { nowpaymentid } = location.state || {};
+  const buttonRef = useRef(null);
 
-      
+  const location = useLocation();
+  const { nowpaymentid } = location.state || {};
 
   //FIXME:
   //  @ts-ignore
-  const {under_balance, pay_in, pay_out,transfer, my_actives,payin_history,payout_history,one_payin,one_transfer,one_payout,textBalanceZero,noPay} = TEXTS[language];
-  
+  const {
+    under_balance,
+    pay_in,
+    pay_out,
+    transfer,
+    my_actives,
+    payin_history,
+    payout_history,
+    one_payin,
+    one_transfer,
+    one_payout,
+    one_exchange,
+    textBalanceZero,
+    noPay,
+    //  @ts-ignore
+  } = TEXTS[language];
 
   if (settingsButton.mount.isAvailable()) {
     settingsButton.mount();
     settingsButton.isMounted(); // true
     settingsButton.show();
-  } 
+  }
 
   if (settingsButton.onClick.isAvailable()) {
     function listener() {
@@ -72,7 +81,6 @@ export const WalletPage: FC = () => {
     settingsButton.onClick(listener);
   }
 
-  
   const tlgid = useTlgid();
 
   // для вывода баланса, языка, валюты
@@ -85,7 +93,7 @@ export const WalletPage: FC = () => {
           tlgid: tlgid,
         });
 
-        console.log('DATA=',response.data)
+        console.log('DATA=', response.data);
 
         setLanguage(response.data.language);
         setBalance(response.data.balance);
@@ -125,14 +133,12 @@ export const WalletPage: FC = () => {
       setShowTextBalanceZero(true);
 
       setTimeout(() => setShowTextBalanceZero(false), 2000);
-
-      
     } else {
       console.log('баланс норм');
       navigate('/payout_1availablelist-page');
     }
   }
-  
+
   function transferBtnHandler() {
     if (balance === 0) {
       console.log('баланс = 0');
@@ -140,8 +146,6 @@ export const WalletPage: FC = () => {
       setShowTextBalanceZero(true);
 
       setTimeout(() => setShowTextBalanceZero(false), 2000);
-
-            
     } else {
       console.log('баланс норм');
       navigate('/transfer_1availablelist-page');
@@ -162,118 +166,114 @@ export const WalletPage: FC = () => {
   // вывод активов
   const [balances, setBalances] = useState([]);
 
+  if (nowpaymentid != 0) {
+    useEffect(() => {
+      const fetchBalances = async () => {
+        try {
+          const response = await axios.get('/get_balance_for_pay_out', {
+            params: {
+              tlgid: tlgid,
+            },
+          });
 
+          setBalances(response.data.arrayOfUserBalanceWithUsdPrice);
+          console.log('BALANCES', response.data.arrayOfUserBalanceWithUsdPrice);
+        } catch (error) {
+          console.error('Ошибка при выполнении запроса:', error);
+        } finally {
+          // setShowLoader(false);
+          // setWolfButtonActive(true);
+        }
+      };
 
-  if (nowpaymentid !=0){
-  useEffect(() => {
-    const fetchBalances = async () => {
-      try {
-        const response = await axios.get('/get_balance_for_pay_out', {
-          params: {
-            tlgid: tlgid,
-          },
-        });
-
-        setBalances(response.data.arrayOfUserBalanceWithUsdPrice);
-        console.log('BALANCES',response.data.arrayOfUserBalanceWithUsdPrice)
-      } catch (error) {
-        console.error('Ошибка при выполнении запроса:', error);
-      } finally {
-        // setShowLoader(false);
-        // setWolfButtonActive(true);
-      }
-    };
-
-    fetchBalances();
-  }, []);
+      fetchBalances();
+    }, []);
   }
 
   // вывод "мои пополнения"
   const [myPayIns, setMyPayIns] = useState([]);
 
-  if (nowpaymentid !=0){
-  useEffect(() => {
-    const fetchGetMyPayIns = async () => {
-      try {
-        const response = await axios.get('/get_my_payin', {
-          params: {
-            tlgid: tlgid,
-          },
-        });
+  if (nowpaymentid != 0) {
+    useEffect(() => {
+      const fetchGetMyPayIns = async () => {
+        try {
+          const response = await axios.get('/get_my_payin', {
+            params: {
+              tlgid: tlgid,
+            },
+          });
 
-        console.log('payins=', response.data);
-        if (response.data.status === 'ok') {
-          setMyPayIns(response.data.data);
-        } else if (response.data.status === 'no'){
-          const newItem = { type:'no' };
-          //FIXME:
-          //  @ts-ignore
-          setMyPayIns([newItem]);
+          console.log('payins=', response.data);
+          if (response.data.status === 'ok') {
+            setMyPayIns(response.data.data);
+          } else if (response.data.status === 'no') {
+            const newItem = { type: 'no' };
+            //FIXME:
+            //  @ts-ignore
+            setMyPayIns([newItem]);
+          }
+        } catch (error) {
+          console.error('Ошибка при выполнении запроса:', error);
+        } finally {
+          // setShowLoader(false);
+          // setWolfButtonActive(true);
         }
-      } catch (error) {
-        console.error('Ошибка при выполнении запроса:', error);
-      } finally {
-        // setShowLoader(false);
-        // setWolfButtonActive(true);
-      }
-    };
+      };
 
-    fetchGetMyPayIns();
-  }, []);
-}
+      fetchGetMyPayIns();
+    }, []);
+  }
 
   // вывод "мои выводы"
   const [myPayOuts, setMyPayOuts] = useState([]);
 
-  if (nowpaymentid !=0){
-  useEffect(() => {
-    const fetchGetMyPayOuts = async () => {
-      try {
-        const response = await axios.get('/get_my_payout', {
-          params: {
-            tlgid: tlgid,
-          },
-        });
+  if (nowpaymentid != 0) {
+    useEffect(() => {
+      const fetchGetMyPayOuts = async () => {
+        try {
+          const response = await axios.get('/get_my_payout', {
+            params: {
+              tlgid: tlgid,
+            },
+          });
 
-        console.log('payout=', response.data);
-        if (response.data.status === 'ok') {
-          setMyPayOuts(response.data.data);
-        } else if (response.data.status === 'no'){
-          const newItem = { type:'no' };
-          //FIXME:
-          //  @ts-ignore
-          setMyPayOuts([newItem]);
+          console.log('payout=', response.data);
+          if (response.data.status === 'ok') {
+            setMyPayOuts(response.data.data);
+          } else if (response.data.status === 'no') {
+            const newItem = { type: 'no' };
+            //FIXME:
+            //  @ts-ignore
+            setMyPayOuts([newItem]);
+          }
+        } catch (error) {
+          console.error('Ошибка при выполнении запроса:', error);
+        } finally {
+          // setShowLoader(false);
+          // setWolfButtonActive(true);
         }
-      } catch (error) {
-        console.error('Ошибка при выполнении запроса:', error);
-      } finally {
-        // setShowLoader(false);
-        // setWolfButtonActive(true);
-      }
-    };
+      };
 
-    fetchGetMyPayOuts();
-  }, []);
-}
+      fetchGetMyPayOuts();
+    }, []);
+  }
 
-
-const typeMap = {
-  payin: one_payin,
-  payout: one_payout,
-  transfer: one_transfer,
-  no: noPay
-} as const;
-
+  const typeMap = {
+    payin: one_payin,
+    payout: one_payout,
+    transfer: one_transfer,
+    no: noPay,
+    exchange: one_exchange,
+  } as const;
 
   return (
     <Page back={false}>
-      
       {isLoading && (
         <div
           style={{
             textAlign: 'center',
             justifyContent: 'center',
-            padding: '100px'
+            padding: '100px',
           }}
         >
           <Spinner size="m" />
@@ -315,13 +315,11 @@ const typeMap = {
 
               <Cell className={styles.cell}>
                 <div className={styles.wrapperAllButtons}>
-
                   {/* пополнить */}
                   <Tappable
                     Component="span"
                     // className={styles.valuteText}
                     onClick={payInBtnHandler}
-                    
                   >
                     <div className={styles.wrapperOneButton}>
                       <img src={payin} className={styles.imgBtn} />
@@ -329,7 +327,7 @@ const typeMap = {
                     </div>
                   </Tappable>
 
-                {/* вывести */}
+                  {/* вывести */}
                   <Tappable
                     Component="span"
                     // className={styles.valuteText}
@@ -341,7 +339,7 @@ const typeMap = {
                       <div className={styles.textForButton}>{pay_out}</div>
                     </div>
                   </Tappable>
-                
+
                   {/* трансфер  */}
                   <Tappable
                     Component="span"
@@ -357,13 +355,11 @@ const typeMap = {
                 </div>
               </Cell>
 
-               {showTextBalanceZero && (
-              <Tooltip mode="light" targetRef={buttonRef} withArrow={false}>
-                {textBalanceZero}
-              </Tooltip>
-            )} 
-               
-
+              {showTextBalanceZero && (
+                <Tooltip mode="light" targetRef={buttonRef} withArrow={false}>
+                  {textBalanceZero}
+                </Tooltip>
+              )}
             </Section>
 
             <Section>
@@ -435,7 +431,6 @@ const typeMap = {
                           </Cell>
                         }
                       >
-                        
                         {typeMap[item.type as keyof typeof typeMap]}
                       </Cell>
                       <Divider />

@@ -7,7 +7,6 @@ import {
   Input,
   Tappable,
   Button,
-  
   Avatar,
 } from '@telegram-apps/telegram-ui';
 import type { FC } from 'react';
@@ -43,41 +42,45 @@ export const Exchange1_SetSum: FC = () => {
   const location = useLocation();
   const { choosedCoin, typeCoin, oppositeCoin } = location.state || {};
 
-
   if (settingsButton.mount.isAvailable()) {
-      settingsButton.mount();
-      settingsButton.isMounted(); // true
-      settingsButton.show();
-    } 
-  
-    if (settingsButton.onClick.isAvailable()) {
-      function listener() {
-        console.log('Clicked!');
-        navigate('/setting-button-menu');
-      }
-      settingsButton.onClick(listener);
-    }  
+    settingsButton.mount();
+    settingsButton.isMounted(); // true
+    settingsButton.show();
+  }
+
+  if (settingsButton.onClick.isAvailable()) {
+    function listener() {
+      console.log('Clicked!');
+      navigate('/setting-button-menu');
+    }
+    settingsButton.onClick(listener);
+  }
 
   // if (backButton.mount.isAvailable()) {
   //     backButton.mount();
   //     backButton.isMounted(); // true
   //     backButton.show();
-  //   } 
-  
-    // if (backButton.onClick.isAvailable()) {
-    //   function listener() {
-    //     console.log('back Clicked!');
-    //     navigate('/wallet-page');
-    //   }
-    //   backButton.onClick(listener);
-    // }  
+  //   }
 
-
-
+  // if (backButton.onClick.isAvailable()) {
+  //   function listener() {
+  //     console.log('back Clicked!');
+  //     navigate('/wallet-page');
+  //   }
+  //   backButton.onClick(listener);
+  // }
 
   //FIXME:
   // @ts-ignore
-  const {wordMaximum,header1,youGetText,errorSumTooBig,errorMinSumBig,nextBtn,minSumToExchangeText} = TEXTS[language];
+  const {wordMaximum,
+    header1,
+    youGetText,
+    errorSumTooBig,
+    errorMinSumBig,
+    nextBtn,
+    minSumToExchangeText,
+     // @ts-ignore
+  } = TEXTS[language];
 
   const [comissions, setComissions] = useState([]);
   const [coinFrom, setCoinFrom] = useState('TON');
@@ -93,7 +96,7 @@ export const Exchange1_SetSum: FC = () => {
   const [showError, setShowError] = useState(false);
   const [errorText, setErrorText] = useState('');
   const [showNextBtn, setShowNextBtn] = useState(false);
-const [showMinSumValue ,setShowMinSumValue] = useState(false)
+  const [showMinSumValue, setShowMinSumValue] = useState(false);
 
   useEffect(() => {
     const fetchCoins = async () => {
@@ -134,21 +137,27 @@ const [showMinSumValue ,setShowMinSumValue] = useState(false)
         responseComissions.data.data.map((item) => {
           if (item.coin === 'nowpayment') {
             setNowpaymentComission(item.qty);
-            console.log('FETCH 1 | nowpayment comission=', item.qty);
+            console.log('FETCH 1 | nowpayment comission=', item.qty, '%');
           }
 
-          if (
-            item.coin === fromForCalculate.toLowerCase() ||
-            item.coin === fromForCalculate
-          ) {
+          if (item.coin === 'ourcomission') {
             setOurComission(item.qty);
-            console.log(
-              'FETCH 1 | ourCommission для',
-              fromForCalculate,
-              '=',
-              item.qty
-            );
+            console.log('FETCH 1 | ourCommission=', item.qty, '%');
           }
+
+          //TODO: если необходимо сделать комиссию разную для каждой монеты
+          // if (
+          //   item.coin === fromForCalculate.toLowerCase() ||
+          //   item.coin === fromForCalculate
+          // ) {
+          //   setOurComission(item.qty);
+          //   console.log(
+          //     'FETCH 1 | ourCommission для',
+          //     fromForCalculate,
+          //     '=',
+          //     item.qty,'%'
+          //   );
+          // }
         });
 
         const responseMinAmount = await axios.get('/get_minamount', {
@@ -198,7 +207,6 @@ const [showMinSumValue ,setShowMinSumValue] = useState(false)
   }, [isInputActive]);
 
   async function qtyHandler(e: React.ChangeEvent<HTMLInputElement>) {
-    // const inputValue = Number(e.target.value);
 
     const inputValue = e.target.value;
 
@@ -244,12 +252,7 @@ const [showMinSumValue ,setShowMinSumValue] = useState(false)
     }
 
     //TODO: добавить, что запрос на сервер не сразу отправлять, а задержкой, когда ввод окончен(как в видео про кросы)
-    //FIXME: сделать, чтобы только число можно вводить
-
-    // const normalizedValue = inputValue
-    // .replace(/,/g, '.')
-    // .replace(/[^\d.]/g, '')
-    // .replace(/^(\d*\.?\d*).*/, '$1'); // Удаляет всё после второй точки
+    
 
     const responseConversion = await axios.get('/get_conversion_rate', {
       params: {
@@ -260,10 +263,17 @@ const [showMinSumValue ,setShowMinSumValue] = useState(false)
     });
 
     const amountWithoutComission = responseConversion.data.convertedAmount;
-    const npCom = amountWithoutComission * nowpaymentComission;
-    const ourCom = amountWithoutComission * ourComission;
 
-    const amountWithComission = Number((amountWithoutComission - npCom - ourCom).toFixed(6));
+    //т.к. комиссия в БД - это число в %
+    const npCom = amountWithoutComission * (nowpaymentComission / 100);
+    const ourCom = amountWithoutComission * (ourComission / 100);
+
+    console.log('npCom=', npCom);
+    console.log('ourCom=', ourCom);
+
+    const amountWithComission = Number(
+      (amountWithoutComission - npCom - ourCom).toFixed(6)
+    );
 
     setConvertedAmount(amountWithComission);
     console.log(
@@ -281,7 +291,7 @@ const [showMinSumValue ,setShowMinSumValue] = useState(false)
     setShowNextBtn(false);
     setAmount(maxAmount);
     setShowError(false);
-    setShowMinSumValue(false)
+    setShowMinSumValue(false);
 
     // setShowMinAmount(false);
 
@@ -322,70 +332,63 @@ const [showMinSumValue ,setShowMinSumValue] = useState(false)
   }
 
   async function vsBtnHandler() {
-
     try {
-
       setIsLoading(true);
 
-   
+      setShowNextBtn(false);
 
+      const from = coinFrom;
+      const to = coinTo;
 
-    setShowNextBtn(false)
+      setCoinFrom(to);
+      setCoinTo(from);
 
-    const from = coinFrom;
-    const to = coinTo;
+      setAmount(0);
+      setConvertedAmount(0);
+      setShowError(false);
+      setShowMinSumValue(false);
 
-    setCoinFrom(to);
-    setCoinTo(from);
-
-    setAmount(0);
-    setConvertedAmount(0);
-    setShowError(false);
-    setShowMinSumValue(false)
-
-    comissions.map((item) => {
-      if (
-        //@ts-ignore FIXME:
-        item.coin === to.toLowerCase() ||
-        //@ts-ignore FIXME:
-        item.coin === to
-      ) {
-        //@ts-ignore FIXME:
-        setOurComission(item.qty);
-        console.log(
-          'FETCH VS | ourCommission для',
-          to,
-          '=',
+      comissions.map((item) => {
+        if (
           //@ts-ignore FIXME:
-          item.qty
-        );
-      }
-    });
+          item.coin === to.toLowerCase() ||
+          //@ts-ignore FIXME:
+          item.coin === to
+        ) {
+          //@ts-ignore FIXME:
+          setOurComission(item.qty);
+          console.log(
+            'FETCH VS | ourCommission для',
+            to,
+            '=',
+            //@ts-ignore FIXME:
+            item.qty
+          );
+        }
+      });
 
-    const responseMinAmount = await axios.get('/get_minamount', {
-      params: {
-        coinFrom: to,
-      },
-    });
+      const responseMinAmount = await axios.get('/get_minamount', {
+        params: {
+          coinFrom: to,
+        },
+      });
 
-    setMinAmount(responseMinAmount.data.minAmount);
+      setMinAmount(responseMinAmount.data.minAmount);
 
-    // баланс в выбранной валюте
-    const responseBalances = await axios.get('/get_balance_currentCoin', {
-      params: {
-        tlgid: tlgid,
-        coin: to.toLowerCase(),
-      },
-    });
+      // баланс в выбранной валюте
+      const responseBalances = await axios.get('/get_balance_currentCoin', {
+        params: {
+          tlgid: tlgid,
+          coin: to.toLowerCase(),
+        },
+      });
 
-    setMaxAmount(responseBalances.data.balance);
-     
-
-     } catch (error) {
-        console.error('Ошибка при выполнении запроса:', error);
-      } finally {
-        setIsLoading(false);
-      }
+      setMaxAmount(responseBalances.data.balance);
+    } catch (error) {
+      console.error('Ошибка при выполнении запроса:', error);
+    } finally {
+      setIsLoading(false);
+    }
   }
 
   function coinChooseBtnHandler(type: string, oppositeCoin: string) {
@@ -405,7 +408,7 @@ const [showMinSumValue ,setShowMinSumValue] = useState(false)
         convertedAmount,
         coinTo,
         nowpaymentComission,
-        ourComission
+        ourComission,
       },
     });
   }
@@ -468,25 +471,29 @@ const [showMinSumValue ,setShowMinSumValue] = useState(false)
             {/* для отладки */}
             {/* <Cell>комиссия np = {nowpaymentComission}</Cell> */}
             {/* <Cell>комиссия наша = {ourComission}</Cell> */}
-            {showMinSumValue &&
-            <Cell>{minSumToExchangeText} = {minAmount} {coinFrom}</Cell>
-            }
+            {showMinSumValue && (
+              <Cell>
+                {minSumToExchangeText} = {minAmount} {coinFrom}
+              </Cell>
+            )}
 
-            <Cell after={<Avatar acronym="↑↓" size={40} onClick={vsBtnHandler} />}>
-              <div style = {{display:'flex', gap:'5px'}}>
-              <Tappable
-                Component="span"
-                style={{
-                  display: 'flex',
-                  color: '#168acd',
-                  fontWeight: '600',
-                }}
-                onClick={maxBtnHandler}
-              >
-                {wordMaximum}
-              </Tappable>
-             {maxAmount} {coinFrom}
-              {/* <Tappable
+            <Cell
+              after={<Avatar acronym="↑↓" size={40} onClick={vsBtnHandler} />}
+            >
+              <div style={{ display: 'flex', gap: '5px' }}>
+                <Tappable
+                  Component="span"
+                  style={{
+                    display: 'flex',
+                    color: '#168acd',
+                    fontWeight: '600',
+                  }}
+                  onClick={maxBtnHandler}
+                >
+                  {wordMaximum}
+                </Tappable>
+                {maxAmount} {coinFrom}
+                {/* <Tappable
                 // Component="span"
                 onClick={vsBtnHandler}
                 style={{
