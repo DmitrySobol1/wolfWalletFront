@@ -16,6 +16,8 @@ import { Exchange2_ShowAvailableCoins } from '@/pages/Exchange/Exchange2_ShowAva
 import { Exchange3_Confirm } from '@/pages/Exchange/Exchange3_Confirm';
 import { Exchange4_Success} from '@/pages/Exchange/Exchange4_Success';
 import { EnterPage } from '@/pages/EnterPage/EnterPage.tsx';
+import { Stock } from '@/pages/Stock/Stock.tsx';
+import { Stock2_ShowPairs } from '@/pages/Stock/Stock2_ShowPairs';
 
 import { InitDataPage } from '@/pages/InitDataPage.tsx';
 import { LaunchParamsPage } from '@/pages/LaunchParamsPage.tsx';
@@ -50,6 +52,8 @@ export const routes: Route[] = [
   { path: '/exchange_2showavailable-page', Component: Exchange2_ShowAvailableCoins},
   { path: '/exchange_3confirm-page', Component: Exchange3_Confirm},
   { path: '/exchange_4success-page', Component: Exchange4_Success},
+  { path: '/stock-page', Component: Stock},
+  { path: '/stock_2showPairs-page', Component: Stock2_ShowPairs},
 
 
   { path: '/init-data', Component: InitDataPage, title: 'Init Data' },

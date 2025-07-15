@@ -49,7 +49,7 @@ export const TabbarMenu: FC = () => {
       id: 3,
       text: thirdTab,
       Icon: Icon28Archive,
-      path: '/onboarding'
+      path: '/stock-page'
     },
   ];
 

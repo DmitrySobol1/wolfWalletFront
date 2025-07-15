@@ -2,17 +2,17 @@ export const TEXTS = {
   ru: {
     firstTab: 'Кошелек',
     secondTab: 'Обмен',
-    thirdTab: 'Что-то',
+    thirdTab: 'Биржа',
     
   },
   en: {
     firstTab: 'Wallet',
     secondTab: 'Exchange',
-    thirdTab: 'Something',
+    thirdTab: 'Crypto stock',
   },
   de: {
      firstTab: 'Brieftasche',
     secondTab: 'Austausch',
-    thirdTab: 'Etwas',
+    thirdTab: 'Krypto-Aktie',
   },
 };
