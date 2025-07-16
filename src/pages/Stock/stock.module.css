@@ -34,6 +34,7 @@
 .buyBtn {
     background-color:#5bb98c;
     padding: 0 30px;
+    opacity: 60%;
 }
 
 .buyActionBtn {
@@ -46,6 +47,7 @@
 .sellBtn {
     background-color:#eb9091;
     padding: 0 30px;
+    opacity: 60%;
 }
 
 .sellActionBtn {
@@ -56,5 +58,6 @@
 }
 
 .activeBtn{
-    border: 2px solid black
+    border: 2px solid black;
+    opacity: 100%;
 }
