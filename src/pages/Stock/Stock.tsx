@@ -5,6 +5,10 @@ import {
   Spinner,
   Button,
   Slider,
+  Text,
+  Select,
+  Input,
+  Tappable,
 } from '@telegram-apps/telegram-ui';
 import type { FC } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
@@ -27,7 +31,7 @@ import { Icon20ChevronDown } from '@telegram-apps/telegram-ui/dist/icons/20/chev
 
 // import { TEXTS } from './texts.ts';
 
-// import styles from './stock.module.css';
+import styles from './stock.module.css';
 
 export const Stock: FC = () => {
   const tlgid = useTlgid();
@@ -38,7 +42,14 @@ export const Stock: FC = () => {
 
   const location = useLocation();
 
-  const { coin1New,coin1NewFull,coin1chainNew,coin2New,coin2NewFull,coin2chainNew } = location.state || {};
+  const {
+    coin1New,
+    coin1NewFull,
+    coin1chainNew,
+    coin2New,
+    coin2NewFull,
+    coin2chainNew,
+  } = location.state || {};
 
   // console.log('coin1',coin1short,coin1full,coin1chain)
   // console.log('coin2',coin2short,coin2full,coin2chain)
@@ -80,17 +91,21 @@ export const Stock: FC = () => {
   const [coin2qty, setCoin2qty] = useState(0);
   const [maxBuy, setMaxBuy] = useState(0);
   const [maxSell, setMaxSell] = useState(0);
-  const [sliderAmount,setSliderAmount]=useState(0)
-  const [type,setType]=useState('buy')
-  const [chain1,setChain1]=useState('')
-  const [chain2,setChain2]=useState('')
+  const [sliderAmount, setSliderAmount] = useState(0);
+  const [type, setType] = useState('buy');
+  const [chain1, setChain1] = useState('');
+  const [chain2, setChain2] = useState('');
 
   // получить первую торговую пару, или выбранную юзером и цену торговли пары
   useEffect(() => {
     const fetchPairAndPrice = async () => {
       try {
-        let selectedCoin1, selectedCoin2,selectedCoin1full,selectedCoin2full,selectedChain1,selectedChain2
-
+        let selectedCoin1,
+          selectedCoin2,
+          selectedCoin1full,
+          selectedCoin2full,
+          selectedChain1,
+          selectedChain2;
 
         //если юзер выбрал пару
         if (coin1New && coin2New) {
@@ -112,29 +127,26 @@ export const Stock: FC = () => {
           selectedChain1 = firstPair.coin1chain;
           selectedChain2 = firstPair.coin2chain;
         }
-        
-                
-          setCoin1(selectedCoin1);
-          setCoin2(selectedCoin2);
-          setCoin1full(selectedCoin1full);
-          setCoin2full(selectedCoin2full);
-          setChain1(selectedChain1)
-          setChain2(selectedChain2)
 
-          // console.log('selectedCoin1=', selectedCoin1);
-          // console.log('selectedCoin2=', selectedCoin2);
-          // console.log('selectedCoin1=', selectedCoin1full);
-          // console.log('selectedCoin2=', selectedCoin2full);
+        setCoin1(selectedCoin1);
+        setCoin2(selectedCoin2);
+        setCoin1full(selectedCoin1full);
+        setCoin2full(selectedCoin2full);
+        setChain1(selectedChain1);
+        setChain2(selectedChain2);
 
+        // console.log('selectedCoin1=', selectedCoin1);
+        // console.log('selectedCoin2=', selectedCoin2);
+        // console.log('selectedCoin1=', selectedCoin1full);
+        // console.log('selectedCoin2=', selectedCoin2full);
 
         // получаем цену по выбранной паре
         const priceResponse = await axios.get('/get_ticker', {
           params: { pair: `${selectedCoin1}-${selectedCoin2}` },
         });
-        console.log('priceResponse=',priceResponse.data)
+        console.log('priceResponse=', priceResponse.data);
         setPrice(priceResponse.data.data.price);
 
-        
         //получаем баланс в NP
         const amountResponse = await axios.get('/get_balance_for_pay_out', {
           params: {
@@ -142,8 +154,8 @@ export const Stock: FC = () => {
           },
         });
 
-        console.log("amountResponse", amountResponse.data)
-        
+        console.log('amountResponse', amountResponse.data);
+
         let Coin1qtyForCounting = 0;
         let Coin2qtyForCounting = 0;
 
@@ -167,8 +179,12 @@ export const Stock: FC = () => {
         );
         setMaxBuy(countingBuy);
 
-        const countingSell = Number((Number(priceResponse.data.data.price) * Number(Coin1qtyForCounting)).toFixed(6))
-        setMaxSell(countingSell); 
+        const countingSell = Number(
+          (
+            Number(priceResponse.data.data.price) * Number(Coin1qtyForCounting)
+          ).toFixed(6)
+        );
+        setMaxSell(countingSell);
 
         console.log(
           'BALANCES',
@@ -186,57 +202,66 @@ export const Stock: FC = () => {
     fetchPairAndPrice();
   }, []);
 
-
   function choosePair() {
-    navigate('/stock_2showPairs-page'
-    );
+    navigate('/stock_2showPairs-page');
   }
 
-  function changeSlider(value:number,type:string){
-    console.log('slider=',value)
+  function changeSlider(value: number, type: string) {
+    console.log('slider=', value);
 
-    if (type === 'buy'){
-    const counting=Number((coin2qty*(value/100)).toFixed(6))
-    setSliderAmount(counting)
+    if (type === 'buy') {
+      if (value == 100) {
+        setSliderAmount(coin2qty);
+        console.log('достиг 100% | слайдер=', coin2qty);
+      } else {
+        const counting = Number((coin2qty * (value / 100)).toFixed(6));
+        setSliderAmount(counting);
+        console.log('не достиг | слайдер=', counting);
       }
+    }
 
-      if (type === 'sell'){
-    const counting=Number((coin1qty*(value/100)).toFixed(6))
-    setSliderAmount(counting)
+    if (type === 'sell') {
+      if (value == 100) {
+        setSliderAmount(coin1qty);
+        console.log('достиг 100% | слайдер=', coin1qty);
+      } else {
+        const counting = Number((coin1qty * (value / 100)).toFixed(6));
+        setSliderAmount(counting);
+        console.log('не достиг | слайдер=', counting);
       }
+    }
   }
 
-
-  function actionBtnHandler(type:string){
-
-    let text=''
-    if (type === 'buy'){
-      text = `купить ${coin1fullName} на ${sliderAmount} ${coin2fullName}`
+  function actionBtnHandler(type: string) {
+    let text = '';
+    if (type === 'buy') {
+      text = `купить ${coin1fullName} на ${sliderAmount} ${coin2fullName}`;
     }
-    if (type === 'sell'){
-      text = `продать ${sliderAmount} ${coin1fullName} за ${coin2fullName}`
+    if (type === 'sell') {
+      text = `продать ${sliderAmount} ${coin1fullName} за ${coin2fullName}`;
     }
-
 
     //FIXME: check variables
-    const fetchOrder= async () => {
+    const fetchOrder = async () => {
+      const data = {
+        tlgid: tlgid,
+        type: type,
+        coin1short: coin1,
+        coin1full: coin1fullName,
+        coin1chain: chain1,
+        coin2short: coin2,
+        coin2full: coin2fullName,
+        coin2chain: chain2,
+        amount: sliderAmount,
+        helptext: text,
+      };
+
+      console.log('DATA=', data);
+
       try {
-        const response = await axios.post('/new_stockorder_market', {
-          tlgid: tlgid,
-          type : type,
-          coin1short: coin1,
-          coin1full: coin1fullName,
-          coin1chain:chain1,
-          coin2short: coin2,
-          coin2full: coin2fullName,
-          coin2chain:chain2,
-          amount: sliderAmount,
-          helptext: text
-        });
-        
+        const response = await axios.post('/new_stockorder_market', data);
+
         console.log(response.data);
-        
-        
       } catch (error) {
         console.error('Ошибка при выполнении запроса:', error);
       } finally {
@@ -245,10 +270,33 @@ export const Stock: FC = () => {
     };
 
     fetchOrder();
-
-
   }
 
+  function maxBtnHandler(typeValue: string) {
+    // setIsInputActive(true)
+    // setSum(amount);
+
+    if (typeValue == 'buy') {
+      // coin2qty
+      setSliderAmount(coin2qty);
+    }
+
+    if (typeValue == 'sell') {
+      setSliderAmount(coin1qty);
+    }
+  }
+
+  function buySellTypeChangerHandler(choosenValue: string) {
+    if (choosenValue == 'buy') {
+      setType('buy');
+      setSliderAmount(0);
+    }
+
+    if (choosenValue == 'sell') {
+      setType('sell');
+      setSliderAmount(0);
+    }
+  }
 
   return (
     <Page back={true}>
@@ -270,60 +318,156 @@ export const Stock: FC = () => {
           // header={title}
           >
             <Cell after=<Icon20ChevronDown /> onClick={() => choosePair()}>
-              {coin1fullName} / {coin2fullName}
-            </Cell>
-            <Button
-            onClick={()=>setType('buy')}
-            >Купить</Button>
-            <Button
-            onClick={()=>setType('sell')}
-            >Продать</Button>
-            <Cell>Маркет ордер - {type}</Cell>
-            <Cell>Рыночная цена: 1 {coin1}={price} {coin2fullName}</Cell>
-            
-            {type==='buy'&& 
-            <>
-            <Cell>Всего {coin2fullName}: {sliderAmount} </Cell>
-            <Slider 
-            step={1}
-            onChange={(value)=>changeSlider(value,type)}
-            />
-            <Cell>
-              Доступно: {coin2qty} {coin2fullName}
+              <Text weight="2">
+                {coin1fullName} / {coin2fullName}
+              </Text>
             </Cell>
             <Cell>
-              Макс. покупка: {maxBuy} {coin1fullName}
-            </Cell>
-            <Button
-            onClick={()=>actionBtnHandler('buy')}
-            >Купить {coin1fullName}</Button>    
-            
+              <div className={styles.wrapperButtons}>
+                <div>
+                  <Button
+                    onClick={() => buySellTypeChangerHandler('buy')}
+                    className={styles.buyBtn}
+                  >
+                    Купить
+                  </Button>
+                </div>
 
-            </>
-          }
+                <div>
+                  <Button
+                    onClick={() => buySellTypeChangerHandler('sell')}
+                    className={styles.sellBtn}
+                  >
+                    Продать
+                  </Button>
+                </div>
+              </div>
+            </Cell>
 
-          {type==='sell' &&
-           <>
-            <Cell>Всего {coin1fullName}: {sliderAmount} </Cell>
-            <Slider 
-            step={1}
-            onChange={(value)=>changeSlider(value,type)}
-            />
-            <Cell>
-              Доступно: {coin1qty} {coin1fullName}
+            {/* <Cell>Маркет ордер - {type}</Cell> */}
+
+            <Select>
+              <option>Маркет ордер</option>
+            </Select>
+
+            <Cell subhead="Рыночная цена:">
+              1 {coin1} = {price} {coin2fullName}
             </Cell>
-            <Cell>
-              Макс. продажа: {maxSell} {coin2fullName}
-            </Cell>
-            <Button
-            onClick={()=>actionBtnHandler('sell')}
-            >Продать {coin1fullName}</Button>
-           
-            
-            </>
-          
-          }
-          
+          </Section>
+
+          <Section>
+            {type === 'buy' && (
+              <>
+                {/* <Cell>
+                  Всего {coin2fullName}: {sliderAmount}{' '}
+                </Cell> */}
+
+                <Input
+                  status="focused"
+                  header={`Всего ${coin2fullName}:`}
+                  placeholder="I am focused input, are u focused on me?"
+                  value={sliderAmount}
+                  after={
+                    <Tappable
+                      Component="div"
+                      style={{
+                        display: 'flex',
+                        color: '#168acd',
+                        fontWeight: '600',
+                      }}
+                      onClick={() => maxBtnHandler(type)}
+                    >
+                      Макс
+                    </Tappable>
+                  }
+                />
+
+                <Slider
+                  step={1}
+                  onChange={(value) => changeSlider(value, type)}
+                />
+
+                <Cell subhead="Доступно:">
+                  {coin2qty} {coin2fullName}
+                </Cell>
+
+                <Cell subhead="Макс. покупка:">
+                  {maxBuy} {coin1fullName}
+                </Cell>
+
+                <div className={styles.wrapperActionBtn}>
+                  <Button
+                    onClick={() => actionBtnHandler('buy')}
+                    stretched
+                    className={styles.buyActionBtn}
+                  >
+                    Купить {coin1fullName}
+                  </Button>
+                </div>
+              </>
+            )}
+
+            {type === 'sell' && (
+              <>
+                {/* <Cell>
+                  Всего {coin1fullName}: {sliderAmount}{' '}
+                </Cell> */}
+
+                <Input
+                  status="focused"
+                  header={`Всего: ${coin1fullName}:`}
+                  placeholder="I am focused input, are u focused on me?"
+                  value={sliderAmount}
+                  after={
+                    <Tappable
+                      Component="div"
+                      style={{
+                        display: 'flex',
+                        color: '#168acd',
+                        fontWeight: '600',
+                      }}
+                      onClick={() => maxBtnHandler(type)}
+                    >
+                      Макс
+                    </Tappable>
+                  }
+                />
+
+                <Slider
+                  step={1}
+                  onChange={(value) => changeSlider(value, type)}
+                />
+                <Cell subhead="Доступно:">
+                  {coin1qty} {coin1fullName}
+                </Cell>
+                <Cell subhead="Макс. продажа:">
+                  {maxSell} {coin2fullName}
+                </Cell>
+
+                <div className={styles.wrapperActionBtn}>
+                  <Button
+                    onClick={() => actionBtnHandler('sell')}
+                    className={styles.sellActionBtn}
+                    stretched
+                  >
+                    Продать {coin1fullName}
+                  </Button>
+                </div>
+
+                {/* <div className={styles.wrapperActionBtn}>
+                  <Button
+                    onClick={() => actionBtnHandler('buy')}
+                    stretched
+                    className={styles.buyActionBtn}
+                  >
+                    Купить {coin1fullName}
+                  </Button>
+                </div>   */}
+
+
+
+              </>
+            )}
           </Section>
         </List>
       )}

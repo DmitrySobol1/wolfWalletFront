@@ -17,3 +17,40 @@
 .errorText {
   color: salmon;
 }
+
+.wrapperButtons {
+    display: flex;
+    gap:40px;
+}
+
+.wrapperActionBtn {
+    display: flex;    
+    width: 96%;
+    
+
+    
+}
+
+.buyBtn {
+    background-color:#5bb98c;
+    padding: 0 30px;
+}
+
+.buyActionBtn {
+    background-color:#5bb98c;
+    /* margin: 0 20px 0 20px; */
+    margin-left: 20px;
+    
+}
+
+.sellBtn {
+    background-color:#eb9091;
+    padding: 0 30px;
+}
+
+.sellActionBtn {
+    background-color:#eb9091;
+    /* margin: 0 20px 0 20px; */
+    margin-left: 20px;
+    
+}
