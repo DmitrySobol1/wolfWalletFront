@@ -206,6 +206,8 @@ export const Exchange1_SetSum: FC = () => {
     fetchCoins();
   }, [isInputActive]);
 
+
+  
   async function qtyHandler(e: React.ChangeEvent<HTMLInputElement>) {
 
     const inputValue = e.target.value;

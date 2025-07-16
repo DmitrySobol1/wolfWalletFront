@@ -28,6 +28,7 @@ import axios from '../../axios.ts';
 import { Page } from '@/components/Page.tsx';
 // import { Icon16Chevron } from '@telegram-apps/telegram-ui/dist/icons/16/chevron';
 import { Icon20ChevronDown } from '@telegram-apps/telegram-ui/dist/icons/20/chevron_down';
+import { Icon28CloseAmbient } from '@telegram-apps/telegram-ui/dist/icons/28/close_ambient';
 
 // import { TEXTS } from './texts.ts';
 
@@ -91,10 +92,16 @@ export const Stock: FC = () => {
   const [coin2qty, setCoin2qty] = useState(0);
   const [maxBuy, setMaxBuy] = useState(0);
   const [maxSell, setMaxSell] = useState(0);
-  const [sliderAmount, setSliderAmount] = useState(0);
+  // const [sliderAmount, setSliderAmount] = useState(0);
   const [type, setType] = useState('buy');
   const [chain1, setChain1] = useState('');
   const [chain2, setChain2] = useState('');
+
+  const [inputAmount, setInputAmount] = useState(0);
+  const [showError, setShowError] = useState(false);
+  const [errorText, setErrorText] = useState('');
+  const [showActionBtn,setShowActionBtn] = useState(true)
+  const [activeBtn,setActiveBtn]=useState(1)
 
   // получить первую торговую пару, или выбранную юзером и цену торговли пары
   useEffect(() => {
@@ -208,37 +215,66 @@ export const Stock: FC = () => {
 
   function changeSlider(value: number, type: string) {
     console.log('slider=', value);
+    setShowError(false);
 
     if (type === 'buy') {
       if (value == 100) {
-        setSliderAmount(coin2qty);
+        // setSliderAmount(coin2qty);
+        setInputAmount(coin2qty);
         console.log('достиг 100% | слайдер=', coin2qty);
-      } else {
+        setShowActionBtn(true)
+      } else if (value == 0){
+        setInputAmount(0);
+        setErrorText('выбран 0')
+        setShowError(true)  
+        setShowActionBtn(false)
+      }  
+      else {
         const counting = Number((coin2qty * (value / 100)).toFixed(6));
-        setSliderAmount(counting);
+        // setSliderAmount(counting);
+        setInputAmount(counting);
         console.log('не достиг | слайдер=', counting);
+        setShowActionBtn(true)
       }
     }
 
     if (type === 'sell') {
       if (value == 100) {
-        setSliderAmount(coin1qty);
+        // setSliderAmount(coin1qty);
+        setInputAmount(coin1qty);
         console.log('достиг 100% | слайдер=', coin1qty);
-      } else {
+        setShowActionBtn(true)
+      }  else if (value == 0){
+        setInputAmount(0);
+        setErrorText('выбран 0')
+        setShowError(true)  
+        setShowActionBtn(false)
+      }
+      else {
         const counting = Number((coin1qty * (value / 100)).toFixed(6));
-        setSliderAmount(counting);
+        // setSliderAmount(counting);
+        setInputAmount(counting);
+        setShowActionBtn(true)
         console.log('не достиг | слайдер=', counting);
       }
     }
   }
 
   function actionBtnHandler(type: string) {
+
+    if (inputAmount == 0){
+      setErrorText('выбрано 0')
+      setShowError(true);
+      return
+    }
+
+
     let text = '';
     if (type === 'buy') {
-      text = `купить ${coin1fullName} на ${sliderAmount} ${coin2fullName}`;
+      text = `купить ${coin1fullName} на ${inputAmount} ${coin2fullName}`;
     }
     if (type === 'sell') {
-      text = `продать ${sliderAmount} ${coin1fullName} за ${coin2fullName}`;
+      text = `продать ${inputAmount} ${coin1fullName} за ${coin2fullName}`;
     }
 
     //FIXME: check variables
@@ -252,7 +288,7 @@ export const Stock: FC = () => {
         coin2short: coin2,
         coin2full: coin2fullName,
         coin2chain: chain2,
-        amount: sliderAmount,
+        amount: inputAmount,
         helptext: text,
       };
 
@@ -277,25 +313,124 @@ export const Stock: FC = () => {
     // setSum(amount);
 
     if (typeValue == 'buy') {
-      // coin2qty
-      setSliderAmount(coin2qty);
+      setInputAmount(coin2qty);
+      setShowError(false)
+      setShowActionBtn(true)
     }
 
     if (typeValue == 'sell') {
-      setSliderAmount(coin1qty);
+      setInputAmount(coin1qty);
+      setShowError(false)
+      setShowActionBtn(true)
     }
   }
 
   function buySellTypeChangerHandler(choosenValue: string) {
     if (choosenValue == 'buy') {
       setType('buy');
-      setSliderAmount(0);
+      setInputAmount(0);
+      setActiveBtn(1)
     }
 
     if (choosenValue == 'sell') {
       setType('sell');
-      setSliderAmount(0);
+      setInputAmount(0);
+      setActiveBtn(2)
     }
+  }
+
+
+  async function qtyHandler(e: React.ChangeEvent<HTMLInputElement>) {
+    const inputValue = e.target.value;
+    const normalizedValue = inputValue
+      .replace(/,/g, '.')
+      .replace(/[^\d.]/g, '')
+      .replace(/^(\d*\.?\d*).*/, '$1'); // Удаляет всё после второй точки
+
+    //@ts-ignore FIXME:
+    // setAmount(normalizedValue);
+    setInputAmount(normalizedValue);
+
+    setShowError(false);
+    setShowActionBtn(true)
+    // setShowNextBtn(false);
+    // setShowMinSumValue(false);
+
+    const check = /^[\d.]*$/.test(inputValue);
+    if (!check) {
+      console.log('stop');
+      return;
+    }
+
+    //@ts-ignore FIXME:
+    // if (inputValue == 0) {
+    //   setConvertedAmount(0);
+    //   return;
+    // }
+
+    //@ts-ignore FIXME:
+    // if (inputValue < minAmount) {
+    //   setErrorText(errorMinSumBig);
+    //   setShowError(true);
+    //   setShowMinSumValue(true);
+    //   setConvertedAmount(0);
+    //   return;
+    // }
+
+    if (inputValue == 0){
+      setErrorText('ввели 0');
+      setShowError(true);
+      setShowActionBtn(false)
+      return;
+    }
+
+
+
+    //@ts-ignore FIXME:
+    if (
+      (Number(inputValue) > Number(coin1qty) && type == 'sell') ||
+      (Number(inputValue) > Number(coin2qty) && type == 'buy')
+    ) {
+      setErrorText('больше чем максимум');
+      setShowError(true);
+      setShowActionBtn(false)
+      // setConvertedAmount(0);
+      return;
+    }
+
+    //TODO: добавить, что запрос на сервер не сразу отправлять, а задержкой, когда ввод окончен(как в видео про кросы)
+
+    // const responseConversion = await axios.get('/get_conversion_rate', {
+    //   params: {
+    //     amount: inputValue,
+    //     coinFrom: coinFrom,
+    //     coinTo: coinTo,
+    //   },
+    // });
+
+    // const amountWithoutComission = responseConversion.data.convertedAmount;
+
+    //т.к. комиссия в БД - это число в %
+    // const npCom = amountWithoutComission * (nowpaymentComission / 100);
+    // const ourCom = amountWithoutComission * (ourComission / 100);
+
+    // console.log('npCom=', npCom);
+    // console.log('ourCom=', ourCom);
+
+    // const amountWithComission = Number(
+    //   (amountWithoutComission - npCom - ourCom).toFixed(6)
+    // );
+
+    // setConvertedAmount(amountWithComission);
+    // console.log(
+    //   'fullAmount=',
+    //   amountWithoutComission,
+    //   ' npCom=',
+    //   npCom,
+    //   ' ourCom = ',
+    //   ourCom
+    // );
+    // setShowNextBtn(true);
   }
 
   return (
@@ -324,10 +459,11 @@ export const Stock: FC = () => {
             </Cell>
             <Cell>
               <div className={styles.wrapperButtons}>
+                
                 <div>
                   <Button
                     onClick={() => buySellTypeChangerHandler('buy')}
-                    className={styles.buyBtn}
+                    className={`${styles.buyBtn} ${activeBtn === 1 ? styles.activeBtn : ''}`}
                   >
                     Купить
                   </Button>
@@ -336,7 +472,7 @@ export const Stock: FC = () => {
                 <div>
                   <Button
                     onClick={() => buySellTypeChangerHandler('sell')}
-                    className={styles.sellBtn}
+                    className={`${styles.sellBtn} ${activeBtn === 2 ? styles.activeBtn : ''}`}
                   >
                     Продать
                   </Button>
@@ -358,13 +494,29 @@ export const Stock: FC = () => {
           <Section style={{ marginBottom: 100 }}>
             {type === 'buy' && (
               <>
-              
+                {/* <Input
+                status="focused"
+                header={header1}
+                type="text"
+                inputMode="decimal"
+                pattern="[0-9]*\.?[0-9]*"
+                // placeholder='{`${sumT_sub} ${coin}`}'
+                value={amount}
+                onChange={(e) => qtyHandler(e)}
+                onFocus={() => setIsInputActive(true)}
+                onBlur={() => setIsInputActive(false)}
+              /> */}
 
                 <Input
                   status="focused"
                   header={`Всего ${coin2fullName}:`}
-                  placeholder="I am focused input, are u focused on me?"
-                  value={sliderAmount}
+                  type="text"
+                  inputMode="decimal"
+                  pattern="[0-9]*\.?[0-9]*"
+                  // placeholder="I am focused input, are u focused on me?"
+                  // value={sliderAmount}
+                  value={inputAmount}
+                  onChange={(e) => qtyHandler(e)}
                   after={
                     <Tappable
                       Component="div"
@@ -384,6 +536,12 @@ export const Stock: FC = () => {
                   step={1}
                   onChange={(value) => changeSlider(value, type)}
                 />
+
+                {showError && (
+                  <Cell before={<Icon28CloseAmbient />}>
+                    <span className={styles.errorText}>{errorText}</span>{' '}
+                  </Cell>
+                )}
 
                 <Cell subhead="Доступно:">
                   {coin2qty} {coin2fullName}
@@ -393,6 +551,8 @@ export const Stock: FC = () => {
                   {maxBuy} {coin1fullName}
                 </Cell>
 
+
+                {showActionBtn && 
                 <div className={styles.wrapperActionBtn}>
                   <Button
                     onClick={() => actionBtnHandler('buy')}
@@ -402,18 +562,21 @@ export const Stock: FC = () => {
                     Купить {coin1fullName}
                   </Button>
                 </div>
+                }
               </>
             )}
 
             {type === 'sell' && (
               <>
-                
-
                 <Input
                   status="focused"
                   header={`Всего ${coin1fullName}:`}
-                  placeholder="I am focused input, are u focused on me?"
-                  value={sliderAmount}
+                  type="text"
+                  inputMode="decimal"
+                  pattern="[0-9]*\.?[0-9]*"
+                  // placeholder="I am focused input, are u focused on me?"
+                  value={inputAmount}
+                  onChange={(e) => qtyHandler(e)}
                   after={
                     <Tappable
                       Component="div"
@@ -433,13 +596,25 @@ export const Stock: FC = () => {
                   step={1}
                   onChange={(value) => changeSlider(value, type)}
                 />
+
+                {showError && (
+                  <Cell before={<Icon28CloseAmbient />}>
+                    <span className={styles.errorText}>{errorText}</span>{' '}
+                  </Cell>
+                )}
+
                 <Cell subhead="Доступно:">
                   {coin1qty} {coin1fullName}
                 </Cell>
+
                 <Cell subhead="Макс. продажа:">
                   {maxSell} {coin2fullName}
                 </Cell>
 
+                
+                {showActionBtn &&
+
+                
                 <div className={styles.wrapperActionBtn}>
                   <Button
                     onClick={() => actionBtnHandler('sell')}
@@ -449,6 +624,7 @@ export const Stock: FC = () => {
                     Продать {coin1fullName}
                   </Button>
                 </div>
+                }
 
                 {/* <div className={styles.wrapperActionBtn}>
                   <Button
@@ -459,9 +635,6 @@ export const Stock: FC = () => {
                     Купить {coin1fullName}
                   </Button>
                 </div>   */}
-
-
-
               </>
             )}
           </Section>
