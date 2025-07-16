@@ -10,10 +10,13 @@ import { LanguageContext } from '../App.tsx';
 // import { Link } from '@/components/Link/Link.tsx';
 // import { Page } from '@/components/Page.tsx';
 
-import { Icon28Devices } from '@telegram-apps/telegram-ui/dist/icons/28/devices';
-import { Icon28Archive } from '@telegram-apps/telegram-ui/dist/icons/28/archive';
+// import { Icon28Devices } from '@telegram-apps/telegram-ui/dist/icons/28/devices';
+// import { Icon28Archive } from '@telegram-apps/telegram-ui/dist/icons/28/archive';
 // import { Icon28Heart } from '@telegram-apps/telegram-ui/dist/icons/28/heart';
-import { Icon28Stats } from '@telegram-apps/telegram-ui/dist/icons/28/stats';
+// import { Icon28Stats } from '@telegram-apps/telegram-ui/dist/icons/28/stats';
+import AccountBalanceWalletIcon from '@mui/icons-material/AccountBalanceWallet';
+import ChangeCircleIcon from '@mui/icons-material/ChangeCircle';
+import SignalCellularAltIcon from '@mui/icons-material/SignalCellularAlt';
 
 
 
@@ -35,20 +38,20 @@ export const TabbarMenu: FC = () => {
     {
       id: 1,
       text: firstTab,
-      Icon: Icon28Devices,
+      Icon: AccountBalanceWalletIcon,
       path: '/wallet-page'
       
     },
     {
       id: 2,
       text: secondTab,
-      Icon: Icon28Stats,
+      Icon: ChangeCircleIcon,
       path: '/exchange_1setsum-page'
     },
     {
       id: 3,
       text: thirdTab,
-      Icon: Icon28Archive,
+      Icon: SignalCellularAltIcon,
       path: '/stock-page'
     },
   ];
