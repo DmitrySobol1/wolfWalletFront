@@ -97,6 +97,7 @@ export const Stock2_ShowPairs: FC = () => {
           <Section 
         //   header={title2} 
           header= 'Выберите торговую пару'
+          style={{ marginBottom: 100 }}
 
           >
            

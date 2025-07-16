@@ -318,7 +318,7 @@ export const Stock: FC = () => {
           // header={title}
           >
             <Cell after=<Icon20ChevronDown /> onClick={() => choosePair()}>
-              <Text weight="2">
+              <Text weight="1">
                 {coin1fullName} / {coin2fullName}
               </Text>
             </Cell>
@@ -355,12 +355,10 @@ export const Stock: FC = () => {
             </Cell>
           </Section>
 
-          <Section>
+          <Section style={{ marginBottom: 100 }}>
             {type === 'buy' && (
               <>
-                {/* <Cell>
-                  Всего {coin2fullName}: {sliderAmount}{' '}
-                </Cell> */}
+              
 
                 <Input
                   status="focused"
@@ -409,13 +407,11 @@ export const Stock: FC = () => {
 
             {type === 'sell' && (
               <>
-                {/* <Cell>
-                  Всего {coin1fullName}: {sliderAmount}{' '}
-                </Cell> */}
+                
 
                 <Input
                   status="focused"
-                  header={`Всего: ${coin1fullName}:`}
+                  header={`Всего ${coin1fullName}:`}
                   placeholder="I am focused input, are u focused on me?"
                   value={sliderAmount}
                   after={

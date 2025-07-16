@@ -362,7 +362,7 @@ export const WalletPage: FC = () => {
               )}
             </Section>
 
-            <Section>
+            <Section style={{ marginBottom: 100 }}>
               <TabsList>
                 {options.map((option) => (
                   <TabsList.Item
