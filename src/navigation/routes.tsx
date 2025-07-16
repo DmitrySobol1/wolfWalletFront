@@ -18,6 +18,7 @@ import { Exchange4_Success} from '@/pages/Exchange/Exchange4_Success';
 import { EnterPage } from '@/pages/EnterPage/EnterPage.tsx';
 import { Stock } from '@/pages/Stock/Stock.tsx';
 import { Stock2_ShowPairs } from '@/pages/Stock/Stock2_ShowPairs';
+import { Stock3_success } from '@/pages/Stock/Stock3_Success';
 
 import { InitDataPage } from '@/pages/InitDataPage.tsx';
 import { LaunchParamsPage } from '@/pages/LaunchParamsPage.tsx';
@@ -54,6 +55,7 @@ export const routes: Route[] = [
   { path: '/exchange_4success-page', Component: Exchange4_Success},
   { path: '/stock-page', Component: Stock},
   { path: '/stock_2showPairs-page', Component: Stock2_ShowPairs},
+  { path: '/stock_3success-page', Component: Stock3_success},
 
 
   { path: '/init-data', Component: InitDataPage, title: 'Init Data' },

@@ -440,6 +440,7 @@ export const WalletPage: FC = () => {
               )}
             </Section>
           </List>
+         
           <TabbarMenu />
         </>
       )}

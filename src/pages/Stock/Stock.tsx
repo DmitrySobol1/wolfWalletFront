@@ -9,11 +9,13 @@ import {
   Select,
   Input,
   Tappable,
+  TabsList,
+  Divider,
 } from '@telegram-apps/telegram-ui';
 import type { FC } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { useEffect, useState } from 'react';
-// import { LanguageContext } from '../../components/App.tsx';
+import { useEffect, useState, useContext } from 'react';
+import { LanguageContext } from '../../components/App.tsx';
 
 import { useTlgid } from '../../components/Tlgid';
 
@@ -30,7 +32,7 @@ import { Page } from '@/components/Page.tsx';
 import { Icon20ChevronDown } from '@telegram-apps/telegram-ui/dist/icons/20/chevron_down';
 import { Icon28CloseAmbient } from '@telegram-apps/telegram-ui/dist/icons/28/close_ambient';
 
-// import { TEXTS } from './texts.ts';
+import { TEXTS } from './texts.ts';
 
 import styles from './stock.module.css';
 
@@ -38,7 +40,7 @@ export const Stock: FC = () => {
   const tlgid = useTlgid();
 
   const navigate = useNavigate();
-  // const { language } = useContext(LanguageContext);
+  const { language } = useContext(LanguageContext);
   const [isLoading, setIsLoading] = useState(true);
 
   const location = useLocation();
@@ -71,16 +73,7 @@ export const Stock: FC = () => {
 
   //FIXME:
   // @ts-ignore
-  // const {
-  //   wordMaximum,
-  //   header1,
-  //   youGetText,
-  //   errorSumTooBig,
-  //   errorMinSumBig,
-  //   nextBtn,
-  //   minSumToExchangeText,
-  //   // @ts-ignore
-  // } = TEXTS[language];
+  const {wordMaximum,header1,youGetText,errorSumTooBig,errorMinSumBig,nextBtn,minSumToExchangeText,openOrder,historyOrder, } = TEXTS[language];
 
   const [price, setPrice] = useState(0);
   // const [balances, setBalances] = useState([]);
@@ -100,8 +93,18 @@ export const Stock: FC = () => {
   const [inputAmount, setInputAmount] = useState(0);
   const [showError, setShowError] = useState(false);
   const [errorText, setErrorText] = useState('');
-  const [showActionBtn,setShowActionBtn] = useState(true)
-  const [activeBtn,setActiveBtn]=useState(1)
+  const [showActionBtn, setShowActionBtn] = useState(true);
+  const [activeBtn, setActiveBtn] = useState(1);
+
+  const [selectedTab, setSelectedTab] = useState('tab1');
+  const options = [
+    { id: 'tab1', label: openOrder },
+    { id: 'tab2', label: historyOrder },
+  ];
+
+  function segmentBtnHandler(id: string) {
+    setSelectedTab(id);
+  }
 
   // получить первую торговую пару, или выбранную юзером и цену торговли пары
   useEffect(() => {
@@ -209,10 +212,94 @@ export const Stock: FC = () => {
     fetchPairAndPrice();
   }, []);
 
+  
+  // получить открытые ордера
+  const [openOrdersArray, setOpenOrdersArray] = useState([]);
+
+  useEffect(() => {
+    const fetchOrders = async () => {
+      try {
+        const response = await axios.get('/get_myOpenOrders', {
+          params: {
+            tlgid: tlgid,
+          },
+        });
+
+        if (response.data.statusFn == 'ok' && response.data.count >= 1) {
+          setOpenOrdersArray(response.data.data);
+          console.log('OPEN ORDERS', response.data);
+        } else {
+          // ..отдать на фронт инфо, что нет данных
+        }
+      } catch (error) {
+        console.error('Ошибка при выполнении запроса:', error);
+      } finally {
+        // setShowLoader(false);
+        // setWolfButtonActive(true);
+      }
+    };
+
+    fetchOrders();
+  }, []);
+
+
+
+
+// получить закрытые ордера
+  const [doneOrdersArray, setDoneOrdersArray] = useState([]);
+
+  useEffect(() => {
+    const fetchOrders = async () => {
+      try {
+        const response = await axios.get('/get_myDoneOrders', {
+          params: {
+            tlgid: tlgid,
+          },
+        });
+
+        if (response.data.statusFn == 'ok' && response.data.count >= 1) {
+          setDoneOrdersArray(response.data.data);
+          console.log('DONE ORDERS', response.data);
+        } else {
+          // ..отдать на фронт инфо, что нет данных
+        }
+      } catch (error) {
+        console.error('Ошибка при выполнении запроса:', error);
+      } finally {
+        // setShowLoader(false);
+        // setWolfButtonActive(true);
+      }
+    };
+
+    fetchOrders();
+  }, []);
+
+
+
+
+
+
+  //function choosePair
   function choosePair() {
     navigate('/stock_2showPairs-page');
   }
 
+  //function buySellTypeChangerHandler
+  function buySellTypeChangerHandler(choosenValue: string) {
+    if (choosenValue == 'buy') {
+      setType('buy');
+      setInputAmount(0);
+      setActiveBtn(1);
+    }
+
+    if (choosenValue == 'sell') {
+      setType('sell');
+      setInputAmount(0);
+      setActiveBtn(2);
+    }
+  }
+
+  //function changeSlider
   function changeSlider(value: number, type: string) {
     console.log('slider=', value);
     setShowError(false);
@@ -222,19 +309,18 @@ export const Stock: FC = () => {
         // setSliderAmount(coin2qty);
         setInputAmount(coin2qty);
         console.log('достиг 100% | слайдер=', coin2qty);
-        setShowActionBtn(true)
-      } else if (value == 0){
+        setShowActionBtn(true);
+      } else if (value == 0) {
         setInputAmount(0);
-        setErrorText('выбран 0')
-        setShowError(true)  
-        setShowActionBtn(false)
-      }  
-      else {
+        setErrorText('выбран 0');
+        setShowError(true);
+        setShowActionBtn(false);
+      } else {
         const counting = Number((coin2qty * (value / 100)).toFixed(6));
         // setSliderAmount(counting);
         setInputAmount(counting);
         console.log('не достиг | слайдер=', counting);
-        setShowActionBtn(true)
+        setShowActionBtn(true);
       }
     }
 
@@ -243,103 +329,41 @@ export const Stock: FC = () => {
         // setSliderAmount(coin1qty);
         setInputAmount(coin1qty);
         console.log('достиг 100% | слайдер=', coin1qty);
-        setShowActionBtn(true)
-      }  else if (value == 0){
+        setShowActionBtn(true);
+      } else if (value == 0) {
         setInputAmount(0);
-        setErrorText('выбран 0')
-        setShowError(true)  
-        setShowActionBtn(false)
-      }
-      else {
+        setErrorText('выбран 0');
+        setShowError(true);
+        setShowActionBtn(false);
+      } else {
         const counting = Number((coin1qty * (value / 100)).toFixed(6));
         // setSliderAmount(counting);
         setInputAmount(counting);
-        setShowActionBtn(true)
+        setShowActionBtn(true);
         console.log('не достиг | слайдер=', counting);
       }
     }
   }
 
-  function actionBtnHandler(type: string) {
-
-    if (inputAmount == 0){
-      setErrorText('выбрано 0')
-      setShowError(true);
-      return
-    }
-
-
-    let text = '';
-    if (type === 'buy') {
-      text = `купить ${coin1fullName} на ${inputAmount} ${coin2fullName}`;
-    }
-    if (type === 'sell') {
-      text = `продать ${inputAmount} ${coin1fullName} за ${coin2fullName}`;
-    }
-
-    //FIXME: check variables
-    const fetchOrder = async () => {
-      const data = {
-        tlgid: tlgid,
-        type: type,
-        coin1short: coin1,
-        coin1full: coin1fullName,
-        coin1chain: chain1,
-        coin2short: coin2,
-        coin2full: coin2fullName,
-        coin2chain: chain2,
-        amount: inputAmount,
-        helptext: text,
-      };
-
-      console.log('DATA=', data);
-
-      try {
-        const response = await axios.post('/new_stockorder_market', data);
-
-        console.log(response.data);
-      } catch (error) {
-        console.error('Ошибка при выполнении запроса:', error);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    fetchOrder();
-  }
-
+  // function maxBtnHandler
   function maxBtnHandler(typeValue: string) {
     // setIsInputActive(true)
     // setSum(amount);
 
     if (typeValue == 'buy') {
       setInputAmount(coin2qty);
-      setShowError(false)
-      setShowActionBtn(true)
+      setShowError(false);
+      setShowActionBtn(true);
     }
 
     if (typeValue == 'sell') {
       setInputAmount(coin1qty);
-      setShowError(false)
-      setShowActionBtn(true)
+      setShowError(false);
+      setShowActionBtn(true);
     }
   }
 
-  function buySellTypeChangerHandler(choosenValue: string) {
-    if (choosenValue == 'buy') {
-      setType('buy');
-      setInputAmount(0);
-      setActiveBtn(1)
-    }
-
-    if (choosenValue == 'sell') {
-      setType('sell');
-      setInputAmount(0);
-      setActiveBtn(2)
-    }
-  }
-
-
+  //function qtyHandler
   async function qtyHandler(e: React.ChangeEvent<HTMLInputElement>) {
     const inputValue = e.target.value;
     const normalizedValue = inputValue
@@ -352,7 +376,7 @@ export const Stock: FC = () => {
     setInputAmount(normalizedValue);
 
     setShowError(false);
-    setShowActionBtn(true)
+    setShowActionBtn(true);
     // setShowNextBtn(false);
     // setShowMinSumValue(false);
 
@@ -377,14 +401,12 @@ export const Stock: FC = () => {
     //   return;
     // }
 
-    if (inputValue == 0){
+    if (inputValue == 0) {
       setErrorText('ввели 0');
       setShowError(true);
-      setShowActionBtn(false)
+      setShowActionBtn(false);
       return;
     }
-
-
 
     //@ts-ignore FIXME:
     if (
@@ -393,7 +415,7 @@ export const Stock: FC = () => {
     ) {
       setErrorText('больше чем максимум');
       setShowError(true);
-      setShowActionBtn(false)
+      setShowActionBtn(false);
       // setConvertedAmount(0);
       return;
     }
@@ -433,6 +455,67 @@ export const Stock: FC = () => {
     // setShowNextBtn(true);
   }
 
+  //function actionBtnHandler
+  function actionBtnHandler(type: string) {
+    if (inputAmount == 0) {
+      setErrorText('выбрано 0');
+      setShowError(true);
+      return;
+    }
+
+    let text = '';
+    if (type === 'buy') {
+      text = `купить ${coin1fullName} на ${inputAmount} ${coin2fullName}`;
+    }
+    if (type === 'sell') {
+      text = `продать ${inputAmount} ${coin1fullName} за ${coin2fullName}`;
+    }
+
+    const fetchOrder = async () => {
+      const data = {
+        tlgid: tlgid,
+        type: type,
+        coin1short: coin1,
+        coin1full: coin1fullName,
+        coin1chain: chain1,
+        coin2short: coin2,
+        coin2full: coin2fullName,
+        coin2chain: chain2,
+        amount: inputAmount,
+        helptext: text,
+      };
+
+      console.log('DATA=', data);
+
+      try {
+        const response = await axios.post('/new_stockorder_market', data);
+
+        console.log(response.data);
+
+        if (response.data.statusFn == 'saved') {
+          navigate(
+            '/stock_3success-page'
+            // {
+            // state: {
+            //   qtyToSend,
+            //   coin,
+            // },
+            // }
+          );
+        } else {
+          setErrorText('попробуйте позже');
+          setShowError(true);
+        }
+      } catch (error) {
+        console.error('Ошибка при выполнении запроса:', error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchOrder();
+  }
+
   return (
     <Page back={true}>
       {isLoading && (
@@ -459,11 +542,12 @@ export const Stock: FC = () => {
             </Cell>
             <Cell>
               <div className={styles.wrapperButtons}>
-                
                 <div>
                   <Button
                     onClick={() => buySellTypeChangerHandler('buy')}
-                    className={`${styles.buyBtn} ${activeBtn === 1 ? styles.activeBtn : ''}`}
+                    className={`${styles.buyBtn} ${
+                      activeBtn === 1 ? styles.activeBtn : ''
+                    }`}
                   >
                     Купить
                   </Button>
@@ -472,7 +556,9 @@ export const Stock: FC = () => {
                 <div>
                   <Button
                     onClick={() => buySellTypeChangerHandler('sell')}
-                    className={`${styles.sellBtn} ${activeBtn === 2 ? styles.activeBtn : ''}`}
+                    className={`${styles.sellBtn} ${
+                      activeBtn === 2 ? styles.activeBtn : ''
+                    }`}
                   >
                     Продать
                   </Button>
@@ -491,7 +577,7 @@ export const Stock: FC = () => {
             </Cell>
           </Section>
 
-          <Section style={{ marginBottom: 100 }}>
+          <Section>
             {type === 'buy' && (
               <>
                 {/* <Input
@@ -551,18 +637,17 @@ export const Stock: FC = () => {
                   {maxBuy} {coin1fullName}
                 </Cell>
 
-
-                {showActionBtn && 
-                <div className={styles.wrapperActionBtn}>
-                  <Button
-                    onClick={() => actionBtnHandler('buy')}
-                    stretched
-                    className={styles.buyActionBtn}
-                  >
-                    Купить {coin1fullName}
-                  </Button>
-                </div>
-                }
+                {showActionBtn && (
+                  <div className={styles.wrapperActionBtn}>
+                    <Button
+                      onClick={() => actionBtnHandler('buy')}
+                      stretched
+                      className={styles.buyActionBtn}
+                    >
+                      Купить {coin1fullName}
+                    </Button>
+                  </div>
+                )}
               </>
             )}
 
@@ -611,30 +696,66 @@ export const Stock: FC = () => {
                   {maxSell} {coin2fullName}
                 </Cell>
 
-                
-                {showActionBtn &&
+                {showActionBtn && (
+                  <div className={styles.wrapperActionBtn}>
+                    <Button
+                      onClick={() => actionBtnHandler('sell')}
+                      className={styles.sellActionBtn}
+                      stretched
+                    >
+                      Продать {coin1fullName}
+                    </Button>
+                  </div>
+                )}
+              </>
+            )}
+          </Section>
+          <Section style={{ marginBottom: 100 }}>
+            <TabsList>
+              {options.map((option) => (
+                <TabsList.Item
+                  key={option.id}
+                  selected={selectedTab === option.id}
+                  onClick={() => segmentBtnHandler(option.id)}
+                >
+                  {option.label}
+                </TabsList.Item>
+              ))}
+            </TabsList>
 
-                
-                <div className={styles.wrapperActionBtn}>
-                  <Button
-                    onClick={() => actionBtnHandler('sell')}
-                    className={styles.sellActionBtn}
-                    stretched
-                  >
-                    Продать {coin1fullName}
-                  </Button>
-                </div>
-                }
+            {selectedTab === 'tab1' && (
+              <>
+                {openOrdersArray.map((order: any) => (
+                  <>
+                    <Cell
+                      // key={coin.currency}
+                      subtitle={order.info}
+                      after={<Cell>{order.status}</Cell>}
+                      // className={styles.activiText}
+                    >
+                      {order.type}
+                    </Cell>
+                    <Divider />
+                  </>
+                ))}
+              </>
+            )}
 
-                {/* <div className={styles.wrapperActionBtn}>
-                  <Button
-                    onClick={() => actionBtnHandler('buy')}
-                    stretched
-                    className={styles.buyActionBtn}
-                  >
-                    Купить {coin1fullName}
-                  </Button>
-                </div>   */}
+            {selectedTab === 'tab2' && (
+              <>
+                {doneOrdersArray.map((order: any) => (
+                  <>
+                    <Cell
+                      // key={coin.currency}
+                      subtitle={order.info}
+                      after={<Cell>{order.formattedDate}</Cell>}
+                      className={styles.activiText}
+                    >
+                      {order.type}
+                    </Cell>
+                    <Divider />
+                  </>
+                ))}
               </>
             )}
           </Section>

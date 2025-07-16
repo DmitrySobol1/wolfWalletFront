@@ -16,7 +16,11 @@ export const TEXTS = {
     exchangeTitle: 'Обмен завершен',
     exchangeText: 'зачислим в ближайшее время на ваш баланс',
     openWalletBtn: 'Открыть кошелек',
-    minSumToExchangeText: 'мин. сумма для обмена'
+    minSumToExchangeText: 'мин. сумма для обмена',
+    stockTitle: 'Заявка размещена на бирже',
+    openStockBtn: 'Открыть биржу',
+    openOrder: 'Открытые ордера',
+    historyOrder: 'История ордеров '
     
     
   },
@@ -37,7 +41,12 @@ export const TEXTS = {
      exchangeTitle: 'Exchange done',
      exchangeText: 'will be credited to your balance shortly',
      openWalletBtn: 'Open wallet',
-     minSumToExchangeText: 'min amount to exchange'
+     minSumToExchangeText: 'min amount to exchange',
+     stockTitle: 'Your order have been placed',
+     openStockBtn: 'Open crypto stock',
+     openOrder: 'Open orders',
+    historyOrder: 'History orders'
+    
     
   },
   de: {
@@ -57,7 +66,11 @@ export const TEXTS = {
      exchangeTitle: 'Austausch erfolgt',
      exchangeText: 'wird Ihrem Guthaben in Kürze gutgeschrieben',
      openWalletBtn: 'Brieftasche öffnen',
-     minSumToExchangeText: 'mindestbetrag für den Umtausch'
+     minSumToExchangeText: 'mindestbetrag für den Umtausch',
+     stockTitle: 'Ihre Bestellung wurde aufgegeben',
+     openStockBtn: 'Krypto-Aktie eröffnen',
+     openOrder: 'Offene Aufträge',
+      historyOrder: 'Verlaufsbestellungen'
        
   },
 };
