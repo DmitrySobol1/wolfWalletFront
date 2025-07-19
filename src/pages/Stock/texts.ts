@@ -20,7 +20,8 @@ export const TEXTS = {
     stockTitle: 'Заявка размещена на бирже',
     openStockBtn: 'Открыть биржу',
     openOrder: 'Открытые ордера',
-    historyOrder: 'История ордеров '
+    historyOrder: 'История ордеров ',
+    tryLaterText : 'Биржа недоступна, попробуйте позже'
     
     
   },
@@ -45,7 +46,8 @@ export const TEXTS = {
      stockTitle: 'Your order have been placed',
      openStockBtn: 'Open crypto stock',
      openOrder: 'Open orders',
-    historyOrder: 'History orders'
+    historyOrder: 'History orders',
+    tryLaterText : 'Stock is not available at the moment, please try later'
     
     
   },
@@ -70,7 +72,8 @@ export const TEXTS = {
      stockTitle: 'Ihre Bestellung wurde aufgegeben',
      openStockBtn: 'Krypto-Aktie eröffnen',
      openOrder: 'Offene Aufträge',
-      historyOrder: 'Verlaufsbestellungen'
+      historyOrder: 'Verlaufsbestellungen',
+      tryLaterText : 'Kryptoaktien sind im Moment nicht verfügbar, bitte versuchen Sie es später'
        
   },
 };
