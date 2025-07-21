@@ -1,8 +1,8 @@
 export const TEXTS = {
   ru: {
-    title: 'Обмен криптовалюты',
+    title: 'Выберите торговую пару',
     header1: 'Вы платите',
-    wordMaximum: 'Максимум: ',
+    wordMaximum: 'Макс',
     swapText: 'поменять',
     youGetText: 'Вы получате',
     title2From: 'Валюта для обмена',
@@ -21,14 +21,24 @@ export const TEXTS = {
     openStockBtn: 'Открыть биржу',
     openOrder: 'Открытые ордера',
     historyOrder: 'История ордеров ',
-    tryLaterText : 'Биржа недоступна, попробуйте позже'
+    tryLaterText : 'Биржа недоступна, попробуйте позже',
+    btnBuyText: 'Купить',
+    btnSellText: 'Продать',
+    marketOrdertext: 'Маркет ордер',
+    stockPriceText: 'Рыночная цена:',
+    totalText: 'Всего ',
+    availableText: 'Доступно: ',
+    maxBuyText: 'Максимальная покупка:',
+    minSumText: 'мин. сумма',
+    zeroText: 'выбран 0',
+    notEnoughText: 'недостаточно монет',
     
     
   },
   en: {
-    title: 'Exchange cryptocurrency',
+    title: 'Select a trading pair',
     header1: 'You pay',
-    wordMaximum: 'Max: ',
+    wordMaximum: 'Max',
     swapText: 'swap',
     youGetText: 'You get',
     title2From: 'Currency to be exchanged',
@@ -47,14 +57,26 @@ export const TEXTS = {
      openStockBtn: 'Open crypto stock',
      openOrder: 'Open orders',
     historyOrder: 'History orders',
-    tryLaterText : 'Stock is not available at the moment, please try later'
+    tryLaterText : 'Stock is not available at the moment, please try later',
+    btnBuyText: 'Buy',
+    btnSellText: 'Sell',
+    marketOrdertext: 'Market order',
+    stockPriceText: 'Market price:',
+    totalText: 'Total ',
+    availableText: 'Available: ',
+    maxBuyText: 'Max sum to buy:',
+    minSumText: 'min. sum',
+    zeroText: 'you choosed 0',
+    notEnoughText: 'not enough coins',
+    
+
     
     
   },
   de: {
-    title: 'Finanzierung durch Kryptowährungen',
+    title: 'Wählen Sie ein Handelspaar',
     header1: 'Sie zahlen', 
-    wordMaximum: 'Maximum: ',
+    wordMaximum: 'Max',
     swapText: 'tauschen',
     youGetText: 'Sie erhalten',
     title2From: 'Umzutauschende währung',
@@ -73,7 +95,18 @@ export const TEXTS = {
      openStockBtn: 'Krypto-Aktie eröffnen',
      openOrder: 'Offene Aufträge',
       historyOrder: 'Verlaufsbestellungen',
-      tryLaterText : 'Kryptoaktien sind im Moment nicht verfügbar, bitte versuchen Sie es später'
+      tryLaterText : 'Kryptoaktien sind im Moment nicht verfügbar, bitte versuchen Sie es später',
+      btnBuyText: 'Kaufen',
+    btnSellText: 'Verkaufen',
+    marketOrdertext: 'Marktauftrag',
+    stockPriceText: 'Marktpreis:',
+    totalText: 'Insgesamt ',
+    availableText: 'Verfügbar: ',
+     maxBuyText: 'Maximal zu kaufende Summe:',
+     minSumText: 'mindestbetrag',
+     zeroText: 'sie haben 0 gewählt',
+     notEnoughText: 'nicht genug münzen'
+
        
   },
 };

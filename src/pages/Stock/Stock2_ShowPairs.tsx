@@ -39,7 +39,7 @@ export const Stock2_ShowPairs: FC = () => {
 
   //FIXME:
   // @ts-ignore
-  const { title2From,title2To } = TEXTS[language];
+  const { title } = TEXTS[language];
 
   const [pairs, setPairs] = useState([]);
 
@@ -95,8 +95,7 @@ export const Stock2_ShowPairs: FC = () => {
       {!isLoading && (
         <List>
           <Section 
-        //   header={title2} 
-          header= 'Выберите торговую пару'
+          header= {title}
           style={{ marginBottom: 100 }}
 
           >

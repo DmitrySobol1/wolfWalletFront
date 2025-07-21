@@ -32,6 +32,9 @@ import { Page } from '@/components/Page.tsx';
 import { Icon20ChevronDown } from '@telegram-apps/telegram-ui/dist/icons/20/chevron_down';
 import { Icon28CloseAmbient } from '@telegram-apps/telegram-ui/dist/icons/28/close_ambient';
 
+import CachedIcon from '@mui/icons-material/Cached';
+import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+
 import { TEXTS } from './texts.ts';
 
 import styles from './stock.module.css';
@@ -45,14 +48,7 @@ export const Stock: FC = () => {
 
   const location = useLocation();
 
-  const {
-    coin1New,
-    coin1NewFull,
-    coin1chainNew,
-    coin2New,
-    coin2NewFull,
-    coin2chainNew,
-  } = location.state || {};
+  const {coin1New,coin1NewFull,coin1chainNew,coin2New,coin2NewFull,coin2chainNew} = location.state || {};
 
   // console.log('coin1',coin1short,coin1full,coin1chain)
   // console.log('coin2',coin2short,coin2full,coin2chain)
@@ -73,7 +69,7 @@ export const Stock: FC = () => {
 
   //FIXME:
   // @ts-ignore
-  const {wordMaximum,header1,youGetText,errorSumTooBig,errorMinSumBig,nextBtn,minSumToExchangeText,openOrder,historyOrder,tryLaterText } = TEXTS[language];
+  const {notEnoughText,zeroText, minSumText,maxBuyText,availableText,wordMaximum,header1,youGetText,errorSumTooBig,errorMinSumBig,nextBtn,minSumToExchangeText,openOrder,historyOrder,tryLaterText,btnBuyText,btnSellText,marketOrdertext,stockPriceText,totalText } = TEXTS[language];
 
   const [price, setPrice] = useState(0);
   // const [balances, setBalances] = useState([]);
@@ -97,6 +93,7 @@ export const Stock: FC = () => {
   const [activeBtn, setActiveBtn] = useState(1);
 
   const [minOperationNumber, setMinOperationNumber] = useState(0)
+  const [actionBtnLoading, setActionBtnLoading]  = useState(false)
   
 
 
@@ -606,7 +603,7 @@ export const Stock: FC = () => {
         console.log('достиг 100% | слайдер=', coin2qty);
 
         if (coin2qty < minOperationNumber ){
-            setErrorText(`мин сумма=${minOperationNumber}`);
+            setErrorText(`${minSumText}=${minOperationNumber}`);
             setShowError(true);
             setShowActionBtn(false);
         } else {
@@ -617,7 +614,7 @@ export const Stock: FC = () => {
         
       } else if (value == 0) {
         setInputAmount(0);
-        setErrorText('выбран 0');
+        setErrorText(zeroText);
         setShowError(true);
         setShowActionBtn(false);
       } else {
@@ -626,7 +623,7 @@ export const Stock: FC = () => {
         setInputAmount(counting);
 
         if (counting < minOperationNumber ){
-            setErrorText(`мин сумма=${minOperationNumber}`);
+            setErrorText(`${minSumText}=${minOperationNumber}`);
             setShowError(true);
             setShowActionBtn(false);
             
@@ -647,7 +644,7 @@ export const Stock: FC = () => {
         console.log('достиг 100% | слайдер=', coin1qty);
 
         if (coin1qty < minOperationNumber ){
-            setErrorText(`мин сумма=${minOperationNumber}`);
+            setErrorText(`${minSumText}=${minOperationNumber}`);
             setShowError(true);
             setShowActionBtn(false);
             
@@ -659,7 +656,7 @@ export const Stock: FC = () => {
         
       } else if (value == 0) {
         setInputAmount(0);
-        setErrorText('выбран 0');
+        setErrorText(zeroText);
         setShowError(true);
         setShowActionBtn(false);
       } else {
@@ -669,7 +666,7 @@ export const Stock: FC = () => {
 
 
         if (counting < minOperationNumber ){
-            setErrorText(`мин сумма=${minOperationNumber}`);
+            setErrorText(`${minSumText}=${minOperationNumber}`);
             setShowError(true);
             setShowActionBtn(false);
             
@@ -695,7 +692,7 @@ export const Stock: FC = () => {
 
       if (coin2qty < minOperationNumber) {
         setInputAmount(coin2qty);
-        setErrorText(`мин сумма=${minOperationNumber}`);
+        setErrorText(`${minSumText}=${minOperationNumber}`);
         setShowError(true);
         setShowActionBtn(false);
         
@@ -711,7 +708,7 @@ export const Stock: FC = () => {
     if (typeValue == 'sell') {
       if (coin1qty < minOperationNumber) {
         setInputAmount(coin1qty);
-        setErrorText(`мин сумма=${minOperationNumber}`);
+        setErrorText(`${minSumText}=${minOperationNumber}`);
         setShowError(true);
         setShowActionBtn(false);
         
@@ -762,14 +759,14 @@ export const Stock: FC = () => {
     // }
 
     if (inputValue == 0) {
-      setErrorText('ввели 0');
+      setErrorText(zeroText);
       setShowError(true);
       setShowActionBtn(false);
       return;
     }
 
     if ( Number(inputValue) < minOperationNumber && (type == 'buy' || type == 'sell') ){
-        setErrorText(`мин сумма=${minOperationNumber}`);
+        setErrorText(`${minSumText}=${minOperationNumber}`);
         setShowError(true);
         setShowActionBtn(false);
     }
@@ -781,7 +778,7 @@ export const Stock: FC = () => {
       (Number(inputValue) > Number(coin1qty) && type == 'sell') ||
       (Number(inputValue) > Number(coin2qty) && type == 'buy')
     ) {
-      setErrorText('больше чем максимум');
+      setErrorText(notEnoughText);
       setShowError(true);
       setShowActionBtn(false);
       // setConvertedAmount(0);
@@ -826,10 +823,12 @@ export const Stock: FC = () => {
   //function actionBtnHandler
   function actionBtnHandler(type: string) {
     if (inputAmount == 0) {
-      setErrorText('выбрано 0');
+      setErrorText(zeroText);
       setShowError(true);
       return;
     }
+
+    setActionBtnLoading(true)
 
     let text = '';
     if (type === 'buy') {
@@ -871,8 +870,9 @@ export const Stock: FC = () => {
             // }
           );
         } else {
-          setErrorText('попробуйте позже');
+          setErrorText(tryLaterText);
           setShowError(true);
+          setActionBtnLoading(false)
         }
       } catch (error) {
         console.error('Ошибка при выполнении запроса:', error);
@@ -927,7 +927,7 @@ export const Stock: FC = () => {
                       activeBtn === 1 ? styles.activeBtn : ''
                     }`}
                   >
-                    Купить
+                    {btnBuyText}
                   </Button>
                 </div>
 
@@ -938,7 +938,7 @@ export const Stock: FC = () => {
                       activeBtn === 2 ? styles.activeBtn : ''
                     }`}
                   >
-                    Продать
+                    {btnSellText}
                   </Button>
                 </div>
               </div>
@@ -947,11 +947,11 @@ export const Stock: FC = () => {
             {/* <Cell>Маркет ордер - {type}</Cell> */}
 
             <Select>
-              <option>Маркет ордер</option>
+              <option>{marketOrdertext}</option>
             </Select>
 
             <Cell 
-            subhead="Рыночная цена:"
+            subhead={stockPriceText}
             multiline
             >
               1 {coin1} = {price} {coin2fullName}
@@ -976,7 +976,7 @@ export const Stock: FC = () => {
 
                 <Input
                   status="focused"
-                  header={`Всего ${coin2fullName}:`}
+                  header={`${totalText} ${coin2fullName}:`}
                   type="text"
                   inputMode="decimal"
                   pattern="[0-9]*\.?[0-9]*"
@@ -994,7 +994,7 @@ export const Stock: FC = () => {
                       }}
                       onClick={() => maxBtnHandler(type)}
                     >
-                      Макс
+                      {wordMaximum}
                     </Tappable>
                   }
                 />
@@ -1010,22 +1010,23 @@ export const Stock: FC = () => {
                   </Cell>
                 )}
 
-                <Cell subhead="Доступно:">
+                <Cell subhead={availableText}>
                   {coin2qty} {coin2fullName}
                 </Cell>
 
-                <Cell subhead="Макс. покупка:">
+                <Cell subhead={maxBuyText}>
                   {maxBuy} {coin1fullName}
                 </Cell>
 
                 {showActionBtn && (
                   <div className={styles.wrapperActionBtn}>
                     <Button
+                      loading = {actionBtnLoading}
                       onClick={() => actionBtnHandler('buy')}
                       stretched
                       className={styles.buyActionBtn}
                     >
-                      Купить {coin1fullName}
+                      {btnBuyText} {coin1fullName}
                     </Button>
                   </div>
                 )}
@@ -1084,7 +1085,7 @@ export const Stock: FC = () => {
                       className={styles.sellActionBtn}
                       stretched
                     >
-                      Продать {coin1fullName}
+                      {btnSellText} {coin1fullName}
                     </Button>
                   </div>
                 )}
@@ -1110,11 +1111,12 @@ export const Stock: FC = () => {
                   <>
                     <Cell
                       // key={coin.currency}
-                      subtitle={order.info}
-                      after={<Cell>{order.status}</Cell>}
+                      subtitle={order.info[language]}
+                      // after={<Cell>{order.status[language]}</Cell>}
+                      after={<Cell><CachedIcon/></Cell>}
                       // className={styles.activiText}
                     >
-                      {order.type}
+                      {order.type[language]}
                     </Cell>
                     <Divider />
                   </>
@@ -1128,11 +1130,12 @@ export const Stock: FC = () => {
                   <>
                     <Cell
                       // key={coin.currency}
-                      subtitle={order.info}
-                      after={<Cell>{order.formattedDate}</Cell>}
+                      subtitle={order.info[language]}
+                      // after={<Cell>{order.formattedDate}</Cell>}
+                      after={<Cell><CheckCircleIcon/></Cell>}
                       className={styles.activiText}
                     >
-                      {order.type}
+                     {order.formattedDate} | {order.type[language]} 
                     </Cell>
                     <Divider />
                   </>
