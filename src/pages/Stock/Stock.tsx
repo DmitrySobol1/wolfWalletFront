@@ -1037,7 +1037,7 @@ export const Stock: FC = () => {
               <>
                 <Input
                   status="focused"
-                  header={`Всего ${coin1fullName}:`}
+                  header={`${totalText} ${coin1fullName}:`}
                   type="text"
                   inputMode="decimal"
                   pattern="[0-9]*\.?[0-9]*"
@@ -1054,7 +1054,7 @@ export const Stock: FC = () => {
                       }}
                       onClick={() => maxBtnHandler(type)}
                     >
-                      Макс
+                      {wordMaximum}
                     </Tappable>
                   }
                 />
@@ -1070,17 +1070,18 @@ export const Stock: FC = () => {
                   </Cell>
                 )}
 
-                <Cell subhead="Доступно:">
+                <Cell subhead={availableText}>
                   {coin1qty} {coin1fullName}
                 </Cell>
 
-                <Cell subhead="Макс. продажа:">
+                <Cell subhead={maxBuyText}>
                   {maxSell} {coin2fullName}
                 </Cell>
 
                 {showActionBtn && (
                   <div className={styles.wrapperActionBtn}>
                     <Button
+                      loading = {actionBtnLoading}
                       onClick={() => actionBtnHandler('sell')}
                       className={styles.sellActionBtn}
                       stretched
