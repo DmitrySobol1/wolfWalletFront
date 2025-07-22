@@ -11,6 +11,7 @@ export const TEXTS = {
     one_transfer: 'Внутренний перевод',
     one_payout: 'Вывод',
     one_exchange: 'Обмен',
+    stockMarket: 'Операция на бирже',
     // one_transferTo: 'Перевод юзеру',
     textBalanceZero: 'Ваш баланс равен 0',
     noPay: 'не было операций'
@@ -27,13 +28,14 @@ export const TEXTS = {
     one_transfer: 'In app transfer',
     one_payout: 'Withdraw',
     one_exchange: 'Exchange',
+    stockMarket: 'Crypto stock',
     // one_transferTo: 'Transfer to user',
     textBalanceZero: 'Your balance is 0',
     noPay: 'were not performed'
     
   },
   de: {
-    under_balance: 'Gesamtsaldo in',
+    under_balance: 'Gesamtsaldo in', 
     pay_in: 'Einzahlung',
     pay_out: 'Zurückziehen',
     transfer: 'Übertragung',
@@ -44,6 +46,7 @@ export const TEXTS = {
     one_transfer: 'In-App-Übertragung',
     one_payout: 'Zurückziehen',
     one_exchange: 'Austausch',
+    stockMarket: 'Krypto-Aktien',
     // one_transferTo: 'Geldüberweisung an Benutzer',
     textBalanceZero: 'Ihr Saldo ist 0',
     noPay: 'wurden nicht durchgeführt'

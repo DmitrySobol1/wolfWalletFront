@@ -32,8 +32,8 @@ import { Page } from '@/components/Page.tsx';
 import { Icon20ChevronDown } from '@telegram-apps/telegram-ui/dist/icons/20/chevron_down';
 import { Icon28CloseAmbient } from '@telegram-apps/telegram-ui/dist/icons/28/close_ambient';
 
-import CachedIcon from '@mui/icons-material/Cached';
-import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+// import CachedIcon from '@mui/icons-material/Cached';
+// import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 
 import { TEXTS } from './texts.ts';
 
@@ -45,6 +45,7 @@ export const Stock: FC = () => {
   const navigate = useNavigate();
   const { language } = useContext(LanguageContext);
   const [isLoading, setIsLoading] = useState(true);
+  const [loadingCenterSection, setLoadingCenterSection] = useState(false);
 
   const location = useLocation();
 
@@ -69,7 +70,7 @@ export const Stock: FC = () => {
 
   //FIXME:
   // @ts-ignore
-  const {notEnoughText,zeroText, minSumText,maxBuyText,availableText,wordMaximum,header1,youGetText,errorSumTooBig,errorMinSumBig,nextBtn,minSumToExchangeText,openOrder,historyOrder,tryLaterText,btnBuyText,btnSellText,marketOrdertext,stockPriceText,totalText } = TEXTS[language];
+  const {notEnoughText,zeroText, minSumText,maxBuyText,availableText,wordMaximum,header1,youGetText,errorSumTooBig,errorMinSumBig,nextBtn,minSumToExchangeText,openOrder,historyOrder,tryLaterText,btnBuyText,btnSellText,marketOrdertext,stockPriceText,totalText, noOpenText,noHistoryText } = TEXTS[language];
 
   const [price, setPrice] = useState(0);
   // const [balances, setBalances] = useState([]);
@@ -337,6 +338,7 @@ export const Stock: FC = () => {
         console.error('Ошибка при загрузке пары или цены:', error);
       } finally {
         setIsLoading(false);
+        setLoadingCenterSection(false)
         // setShowLoader(false);
         // setWolfButtonActive(true);
       }
@@ -517,11 +519,27 @@ export const Stock: FC = () => {
           },
         });
 
+
         if (response.data.statusFn == 'ok' && response.data.count >= 1) {
           setOpenOrdersArray(response.data.data);
           console.log('OPEN ORDERS', response.data);
         } else {
-          // ..отдать на фронт инфо, что нет данных
+          const newItem = { type: {
+            ru: '',
+            en: '',
+            de: '',
+            
+          },
+            info: {
+              ru: noOpenText,
+            en: noOpenText,
+            de: noOpenText
+            }  };
+         
+           
+          //@ts-ignore
+            setOpenOrdersArray([newItem]);
+            
         }
       } catch (error) {
         console.error('Ошибка при выполнении запроса:', error);
@@ -546,14 +564,31 @@ export const Stock: FC = () => {
           params: {
             tlgid: tlgid,
           },
-        });
+        }); 
 
         if (response.data.statusFn == 'ok' && response.data.count >= 1) {
           setDoneOrdersArray(response.data.data);
           console.log('DONE ORDERS', response.data);
-        } else {
-          // ..отдать на фронт инфо, что нет данных
+        } 
+          else {
+          const newItem = { type: {
+            ru: '',
+            en: '',
+            de: '',
+            
+          },
+            info: {
+              ru: noHistoryText,
+            en: noHistoryText,
+            de: noHistoryText
+            }  };
+         
+           
+          //@ts-ignore
+            setDoneOrdersArray([newItem]);
+            
         }
+        
       } catch (error) {
         console.error('Ошибка при выполнении запроса:', error);
       } finally {
@@ -576,6 +611,7 @@ export const Stock: FC = () => {
 
   //function buySellTypeChangerHandler
   function buySellTypeChangerHandler(choosenValue: string) {
+    setLoadingCenterSection(true)
     setShowError(false);
     // setIsLoading(true)
     if (choosenValue == 'buy') {
@@ -958,6 +994,27 @@ export const Stock: FC = () => {
             </Cell>
           </Section>
 
+
+         { loadingCenterSection && (
+         
+          <div
+          style={{
+            textAlign: 'center',
+            justifyContent: 'center',
+            padding: '100px',
+          }}
+        >
+          <Spinner size="m" />
+        </div>
+        
+          ) }    
+         
+          { !loadingCenterSection && (
+            
+            
+         
+         
+
           <Section>
             {type === 'buy' && (
               <>
@@ -1093,6 +1150,10 @@ export const Stock: FC = () => {
               </>
             )}
           </Section>
+
+          )
+         } 
+
           <Section style={{ marginBottom: 100 }}>
             <TabsList>
               {options.map((option) => (
@@ -1114,7 +1175,7 @@ export const Stock: FC = () => {
                       // key={coin.currency}
                       subtitle={order.info[language]}
                       // after={<Cell>{order.status[language]}</Cell>}
-                      after={<Cell><CachedIcon/></Cell>}
+                      // after={<Cell><CachedIcon/></Cell>}
                       // className={styles.activiText}
                     >
                       {order.type[language]}
@@ -1133,10 +1194,10 @@ export const Stock: FC = () => {
                       // key={coin.currency}
                       subtitle={order.info[language]}
                       // after={<Cell>{order.formattedDate}</Cell>}
-                      after={<Cell><CheckCircleIcon/></Cell>}
+                      // after={<Cell><CheckCircleIcon/></Cell>}
                       className={styles.activiText}
                     >
-                     {order.formattedDate} | {order.type[language]} 
+                     {order.formattedDate}  {order.type[language]} 
                     </Cell>
                     <Divider />
                   </>

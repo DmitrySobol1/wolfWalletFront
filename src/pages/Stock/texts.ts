@@ -32,6 +32,8 @@ export const TEXTS = {
     minSumText: 'мин. сумма',
     zeroText: 'выбран 0',
     notEnoughText: 'недостаточно монет',
+    noOpenText: 'нет открытых ордеров',
+    noHistoryText: 'нет истории сделок'
     
     
   },
@@ -68,6 +70,8 @@ export const TEXTS = {
     minSumText: 'min. sum',
     zeroText: 'you choosed 0',
     notEnoughText: 'not enough coins',
+    noOpenText: 'no open deal',
+    noHistoryText: 'no deal history'
     
 
     
@@ -105,7 +109,9 @@ export const TEXTS = {
      maxBuyText: 'Maximal zu kaufende Summe:',
      minSumText: 'mindestbetrag',
      zeroText: 'sie haben 0 gewählt',
-     notEnoughText: 'nicht genug münzen'
+     notEnoughText: 'nicht genug münzen',
+     noOpenText: 'kein offenes Geschäftl',
+     noHistoryText: 'no-deal-geschichte'
 
        
   },

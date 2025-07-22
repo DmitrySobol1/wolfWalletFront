@@ -64,6 +64,7 @@ export const WalletPage: FC = () => {
     one_exchange,
     textBalanceZero,
     noPay,
+    stockMarket
     //  @ts-ignore
   } = TEXTS[language];
 
@@ -204,6 +205,7 @@ export const WalletPage: FC = () => {
           });
 
           console.log('payins=', response.data);
+          
           if (response.data.status === 'ok') {
             setMyPayIns(response.data.data);
           } else if (response.data.status === 'no') {
@@ -264,6 +266,7 @@ export const WalletPage: FC = () => {
     transfer: one_transfer,
     no: noPay,
     exchange: one_exchange,
+    stockMarket: stockMarket
   } as const;
 
   return (
