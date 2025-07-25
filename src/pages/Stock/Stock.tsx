@@ -1334,19 +1334,6 @@ export const Stock: FC = () => {
                     {maxSell} {coin2fullName}
                   </Cell>
 
-                  {/* ************************************************ */}
-                  {/* //FIXME: удалить после настройки */}
-                  <div className={styles.wrapperActionBtn}>
-                    <Button
-                      // loading={actionBtnLoading}
-                      onClick={() => actionBtnHandler('sell')}
-                      className={styles.testBtn}
-                      stretched
-                    >
-                      Тест кнопка - для Лимитного
-                    </Button>
-                  </div>
-                  {/* ************************************************ */}
 
                   {showActionBtn && (
                     <div className={styles.wrapperActionBtn}>
