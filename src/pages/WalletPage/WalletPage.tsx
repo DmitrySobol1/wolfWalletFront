@@ -64,7 +64,8 @@ export const WalletPage: FC = () => {
     one_exchange,
     textBalanceZero,
     noPay,
-    stockMarket
+    stockMarket,
+    stockLimit,
     //  @ts-ignore
   } = TEXTS[language];
 
@@ -266,7 +267,8 @@ export const WalletPage: FC = () => {
     transfer: one_transfer,
     no: noPay,
     exchange: one_exchange,
-    stockMarket: stockMarket
+    stockMarket: stockMarket,
+    stockLimit: stockLimit,
   } as const;
 
   return (

@@ -932,10 +932,10 @@ export const Stock: FC = () => {
     if (isLimitOrder) {
       if (type === 'buy') {
         //FIXME: сделать текст
-        text = 'DO THIS';
+        text = `купить ${coin1fullName} на ${inputAmount} ${coin2fullName},  по цене 1 ${coin1fullName} = ${limitPrice} ${coin2fullName}`
       }
       if (type === 'sell') {
-        text = `продать ${inputAmount} ${coin1fullName} по цене ${limitPrice} ${coin2fullName}`;
+        text = `продать ${inputAmount} ${coin1fullName}, по цене 1 ${coin1fullName} = ${limitPrice} ${coin2fullName}`;
       }
     }
 
@@ -1030,6 +1030,17 @@ export const Stock: FC = () => {
 
   function limitPriceHndl(action: string) {
     if (action == 'plus') {
+
+      if (limitPrice == 0){
+        
+        const counting = Number(
+        (Number(1) + Number(1 * 0.05)).toFixed(6)
+      );
+      setLimitPrice(counting);
+      return
+
+      }
+
       const counting = Number(
         (Number(limitPrice) + Number(limitPrice * 0.05)).toFixed(6)
       );
@@ -1243,7 +1254,6 @@ export const Stock: FC = () => {
               {type === 'sell' && (
                 <>
                   {isLimitOrder && (
-                    <div className={styles.wrapperPriceDiv}>
                       <div>
                         <Input
                           status="focused"
@@ -1253,42 +1263,45 @@ export const Stock: FC = () => {
                           onChange={(e) => qtyHandlerLimitPrice(e)}
                           pattern="[0-9]*\.?[0-9]*"
                           value={limitPrice}
-                          // onChange={(e) => limitPriceHndl(e)}
+                          after={
+                          <div className={styles.wrapperPriceDiv}>
+                            <div>
+                              <Tappable
+                                Component="div"
+                                style={{
+                                  display: 'flex',
+                                  color: '#168acd',
+                                  fontWeight: '600',
+                                }}
+                                onClick={() => limitPriceHndl('plus')}
+                              >
+                                <Title level="1" weight="1">
+                                  +
+                                </Title>
+                              </Tappable>
+                            </div>
+                            <div>
+                              <Tappable
+                                Component="div"
+                                style={{
+                                  display: 'flex',
+                                  color: '#168acd',
+                                  fontWeight: '600',
+                                }}
+                                onClick={() => limitPriceHndl('minus')}
+                              >
+                                <Title level="1" weight="1">
+                                  -
+                                </Title>
+                              </Tappable>
+                            </div>
+                          </div>
+                        }
+                          
                         />
                       </div>
 
-                      <div>
-                        <Tappable
-                          Component="div"
-                          style={{
-                            display: 'flex',
-                            color: '#168acd',
-                            fontWeight: '600',
-                          }}
-                          onClick={() => limitPriceHndl('plus')}
-                        >
-                          <Title level="1" weight="1">
-                            +
-                          </Title>
-                        </Tappable>
-                      </div>
-
-                      <div>
-                        <Tappable
-                          Component="div"
-                          style={{
-                            display: 'flex',
-                            color: '#168acd',
-                            fontWeight: '600',
-                          }}
-                          onClick={() => limitPriceHndl('minus')}
-                        >
-                          <Title level="1" weight="1">
-                            -
-                          </Title>
-                        </Tappable>
-                      </div>
-                    </div>
+                      
                   )}
 
                   <Input
