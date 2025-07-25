@@ -11,6 +11,7 @@ import {
   Tappable,
   TabsList,
   Divider,
+  Title,
 } from '@telegram-apps/telegram-ui';
 import type { FC } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
@@ -49,7 +50,14 @@ export const Stock: FC = () => {
 
   const location = useLocation();
 
-  const {coin1New,coin1NewFull,coin1chainNew,coin2New,coin2NewFull,coin2chainNew} = location.state || {};
+  const {
+    coin1New,
+    coin1NewFull,
+    coin1chainNew,
+    coin2New,
+    coin2NewFull,
+    coin2chainNew,
+  } = location.state || {};
 
   // console.log('coin1',coin1short,coin1full,coin1chain)
   // console.log('coin2',coin2short,coin2full,coin2chain)
@@ -70,7 +78,32 @@ export const Stock: FC = () => {
 
   //FIXME:
   // @ts-ignore
-  const {notEnoughText,zeroText, minSumText,maxBuyText,availableText,wordMaximum,header1,youGetText,errorSumTooBig,errorMinSumBig,nextBtn,minSumToExchangeText,openOrder,historyOrder,tryLaterText,btnBuyText,btnSellText,marketOrdertext,stockPriceText,totalText, noOpenText,noHistoryText } = TEXTS[language];
+  const {
+    limitOrdertext,
+    notEnoughText,
+    zeroText,
+    minSumText,
+    maxBuyText,
+    availableText,
+    wordMaximum,
+    // header1,
+    // youGetText,
+    // errorSumTooBig,
+    // errorMinSumBig,
+    // nextBtn,
+    // minSumToExchangeText,
+    openOrder,
+    historyOrder,
+    tryLaterText,
+    btnBuyText,
+    btnSellText,
+    marketOrdertext,
+    stockPriceText,
+    totalText,
+    noOpenText,
+    noHistoryText,
+    //@ts-ignore
+  } = TEXTS[language];
 
   const [price, setPrice] = useState(0);
   // const [balances, setBalances] = useState([]);
@@ -93,13 +126,16 @@ export const Stock: FC = () => {
   const [showActionBtn, setShowActionBtn] = useState(true);
   const [activeBtn, setActiveBtn] = useState(1);
 
-  const [minOperationNumber, setMinOperationNumber] = useState(0)
-  const [actionBtnLoading, setActionBtnLoading]  = useState(false)
-  
+  const [minOperationNumber, setMinOperationNumber] = useState(0);
+  const [actionBtnLoading, setActionBtnLoading] = useState(false);
 
+  const [isLimitOrder, setIsLimitOrder] = useState(true);
+  const [valueSelectToggleMarketLimit, setValueSelectToggleMarketLimit] =
+    useState('limit');
+  const [limitPrice, setLimitPrice] = useState(0);
 
   //FIXME: добавить на все страницы
-  const [showTryLater,setShowTryLater] = useState(false)
+  const [showTryLater, setShowTryLater] = useState(false);
 
   const [selectedTab, setSelectedTab] = useState('tab1');
   const options = [
@@ -161,6 +197,7 @@ export const Stock: FC = () => {
         });
         console.log('priceResponse=', priceResponse.data);
         setPrice(priceResponse.data.data.price);
+        setLimitPrice(priceResponse.data.data.price);
 
         //получаем баланс в NP
         const amountResponse = await axios.get('/get_balance_for_pay_out', {
@@ -206,139 +243,188 @@ export const Stock: FC = () => {
           amountResponse.data.arrayOfUserBalanceWithUsdPrice
         );
 
-
-        let networkFeeResult=0
+        let networkFeeResult = 0;
         // получить комиссию сети за вывод мотеты
-        if (type == 'buy'){
-          networkFeeResult = await getNetworkFee(selectedCoin2full)
-          console.log('FROM FIRST USEEFEFCT | network fee =', networkFeeResult, selectedCoin2full)
+        if (type == 'buy') {
+          networkFeeResult = await getNetworkFee(selectedCoin2full);
+          console.log(
+            'FROM FIRST USEEFEFCT | network fee =',
+            networkFeeResult,
+            selectedCoin2full
+          );
         }
 
-        if (type == 'sell'){
-          networkFeeResult = await getNetworkFee(selectedCoin1full)
-          console.log('FROM FIRST USEEFEFCT | network fee =', networkFeeResult, selectedCoin1full)
+        if (type == 'sell') {
+          networkFeeResult = await getNetworkFee(selectedCoin1full);
+          console.log(
+            'FROM FIRST USEEFEFCT | network fee =',
+            networkFeeResult,
+            selectedCoin1full
+          );
         }
 
         //получить нашу комиссию
-        const ourComissionResult = await getOurComission()
-        console.log('FROM FIRST USEEFEFCT | our comission =', ourComissionResult, '%')
-
+        const ourComissionResult = await getOurComission();
+        console.log(
+          'FROM FIRST USEEFEFCT | our comission =',
+          ourComissionResult,
+          '%'
+        );
 
         // получаем минимальные суммы для withdraw/deposit
-        if (type == 'buy'){
+        if (type == 'buy') {
+          const arrayMinimals1: number[] = [];
+          const arrayMinimals2: number[] = [];
 
-          const arrayMinimals1: number[] = []
-          const arrayMinimals2: number[] = []
+          const minWithdrawNpResult = await minWithdrawNp(selectedCoin2full);
+          console.log(
+            'FROM FIRST USEEFEFCT | min sum minWithdrawNp=',
+            minWithdrawNpResult,
+            selectedCoin2full
+          );
+          arrayMinimals1.push(minWithdrawNpResult);
 
-          const minWithdrawNpResult = await minWithdrawNp(selectedCoin2full)
-          console.log('FROM FIRST USEEFEFCT | min sum minWithdrawNp=', minWithdrawNpResult, selectedCoin2full )
-          arrayMinimals1.push(minWithdrawNpResult)
+          const minDepositStockResult = await minDepositStock(
+            selectedCoin2,
+            selectedChain2
+          );
+          console.log(
+            'FROM FIRST USEEFEFCT | min sum minDepositStock=',
+            minDepositStockResult,
+            selectedCoin2,
+            selectedChain2
+          );
+          arrayMinimals1.push(minDepositStockResult);
 
-          const minDepositStockResult = await minDepositStock(selectedCoin2,selectedChain2)
-          console.log('FROM FIRST USEEFEFCT | min sum minDepositStock=', minDepositStockResult, selectedCoin2, selectedChain2)
-          arrayMinimals1.push(minDepositStockResult)
-          
+          const minDepositNpResult = await minDepositNp(selectedCoin1full);
+          console.log(
+            'FROM FIRST USEEFEFCT | min sum minDepositNp=',
+            minDepositNpResult,
+            selectedCoin1full
+          );
+          arrayMinimals2.push(minDepositNpResult);
 
-          const minDepositNpResult = await minDepositNp(selectedCoin1full)
-          console.log('FROM FIRST USEEFEFCT | min sum minDepositNp=', minDepositNpResult, selectedCoin1full)
-          arrayMinimals2.push(minDepositNpResult)
-          
-          const minWithdrawStockResult = await minWithdrawStock(selectedCoin1,selectedChain1)
-          console.log('FROM FIRST USEEFEFCT | min sum minWithdrawStock=', minWithdrawStockResult, selectedCoin1, selectedChain1)
-          arrayMinimals2.push(minWithdrawStockResult)
-
-
-          //подсчет минимальной для операции сумму
-          const maxFromMinimal1 = Math.max(...arrayMinimals1);
-          const maxFromMinimal2 = Math.max(...arrayMinimals2);
-
-
-          const minimalOne_step1 = (maxFromMinimal1 + networkFeeResult) / 1 - (ourComissionResult/100)
-          const minimalOne_step2 = minimalOne_step1 + minimalOne_step1*0.2
-          const minimalOne = minimalOne_step2
-          console.log ('minimalOne=',minimalOne)
-
-          const percentKoefficient = 5
-          const minimalTwo_step1 = maxFromMinimal2 / (1 - (percentKoefficient/100))
-          const minimalTwo_step2 = minimalTwo_step1 * priceResponse.data.data.price
-          const minimalTwo_step3 = (minimalTwo_step2+networkFeeResult) / (1 - (ourComissionResult/100) )
-          const minimalTwo_step4 = minimalTwo_step3 + minimalTwo_step3*0.2
-          const minimalTwo = minimalTwo_step4
-          console.log ('minimalTwo=',minimalTwo)
-
-          if (minimalOne > minimalTwo ) {
-            setMinOperationNumber(minimalOne)
-          } else {
-              setMinOperationNumber(minimalTwo)
-          }
-          
-
-        } 
-
-        if (type == 'sell'){
-
-          const arrayMinimals1: number[] = []
-          const arrayMinimals2: number[] = []
-
-           const minWithdrawNpResult = await minWithdrawNp(selectedCoin1full)
-           console.log('FROM FIRST USEEFEFCT | min sum minWithdrawNp =', minWithdrawNpResult, selectedCoin1full )
-           arrayMinimals1.push(minWithdrawNpResult)
-
-           const minDepositStockResult = await minDepositStock(selectedCoin1,selectedChain1)
-           console.log('FROM FIRST USEEFEFCT | min sum minDepositStock=', minDepositStockResult, selectedCoin1,selectedChain1)
-           arrayMinimals1.push(minDepositStockResult)
-
-           const minDepositNpResult = await minDepositNp(selectedCoin2full)
-           console.log('FROM FIRST USEEFEFCT | min sum minDepositNp=', minDepositNpResult, selectedCoin2full)
-           arrayMinimals2.push(minDepositNpResult) 
-           
-           const minWithdrawStockResult = await minWithdrawStock(selectedCoin2,selectedChain2)
-           console.log('FROM FIRST USEEFEFCT | min sum minWithdrawStock=', minWithdrawStockResult, selectedCoin2, selectedChain2)
-           arrayMinimals2.push(minWithdrawStockResult) 
-
-
+          const minWithdrawStockResult = await minWithdrawStock(
+            selectedCoin1,
+            selectedChain1
+          );
+          console.log(
+            'FROM FIRST USEEFEFCT | min sum minWithdrawStock=',
+            minWithdrawStockResult,
+            selectedCoin1,
+            selectedChain1
+          );
+          arrayMinimals2.push(minWithdrawStockResult);
 
           //подсчет минимальной для операции сумму
           const maxFromMinimal1 = Math.max(...arrayMinimals1);
           const maxFromMinimal2 = Math.max(...arrayMinimals2);
 
-          console.log('maxFromMinimal1',maxFromMinimal1)
+          const minimalOne_step1 =
+            (maxFromMinimal1 + networkFeeResult) / 1 - ourComissionResult / 100;
+          const minimalOne_step2 = minimalOne_step1 + minimalOne_step1 * 0.2;
+          const minimalOne = minimalOne_step2;
+          console.log('minimalOne=', minimalOne);
 
-          
-          const minimalOne_step1 = (maxFromMinimal1 + networkFeeResult) / 1 - (ourComissionResult/100)
-          const minimalOne_step2 = minimalOne_step1 + minimalOne_step1*0.2
+          const percentKoefficient = 5;
+          const minimalTwo_step1 =
+            maxFromMinimal2 / (1 - percentKoefficient / 100);
+          const minimalTwo_step2 =
+            minimalTwo_step1 * priceResponse.data.data.price;
+          const minimalTwo_step3 =
+            (minimalTwo_step2 + networkFeeResult) /
+            (1 - ourComissionResult / 100);
+          const minimalTwo_step4 = minimalTwo_step3 + minimalTwo_step3 * 0.2;
+          const minimalTwo = minimalTwo_step4;
+          console.log('minimalTwo=', minimalTwo);
 
-          const minimalOne = minimalOne_step2
-          console.log ('minimalOne=',minimalOne)
-
-          const percentKoefficient = 5
-          const minimalTwo_step1 = maxFromMinimal2 / (1 - (percentKoefficient/100))
-          const minimalTwo_step2 = minimalTwo_step1 / priceResponse.data.data.price
-          const minimalTwo_step3 = (minimalTwo_step2+networkFeeResult) / (1 - (ourComissionResult/100))
-          const minimalTwo_step4 = minimalTwo_step3 + minimalTwo_step3*0.2
-          const minimalTwo = minimalTwo_step4
-          console.log ('minimalTwo=',minimalTwo)
-
-          if (minimalOne > minimalTwo ) {
-            setMinOperationNumber(minimalOne)
+          if (minimalOne > minimalTwo) {
+            setMinOperationNumber(minimalOne);
           } else {
-            setMinOperationNumber(minimalTwo)
+            setMinOperationNumber(minimalTwo);
           }
-
         }
 
+        if (type == 'sell') {
+          const arrayMinimals1: number[] = [];
+          const arrayMinimals2: number[] = [];
 
-        
+          const minWithdrawNpResult = await minWithdrawNp(selectedCoin1full);
+          console.log(
+            'FROM FIRST USEEFEFCT | min sum minWithdrawNp =',
+            minWithdrawNpResult,
+            selectedCoin1full
+          );
+          arrayMinimals1.push(minWithdrawNpResult);
 
+          const minDepositStockResult = await minDepositStock(
+            selectedCoin1,
+            selectedChain1
+          );
+          console.log(
+            'FROM FIRST USEEFEFCT | min sum minDepositStock=',
+            minDepositStockResult,
+            selectedCoin1,
+            selectedChain1
+          );
+          arrayMinimals1.push(minDepositStockResult);
 
+          const minDepositNpResult = await minDepositNp(selectedCoin2full);
+          console.log(
+            'FROM FIRST USEEFEFCT | min sum minDepositNp=',
+            minDepositNpResult,
+            selectedCoin2full
+          );
+          arrayMinimals2.push(minDepositNpResult);
 
+          const minWithdrawStockResult = await minWithdrawStock(
+            selectedCoin2,
+            selectedChain2
+          );
+          console.log(
+            'FROM FIRST USEEFEFCT | min sum minWithdrawStock=',
+            minWithdrawStockResult,
+            selectedCoin2,
+            selectedChain2
+          );
+          arrayMinimals2.push(minWithdrawStockResult);
 
+          //подсчет минимальной для операции сумму
+          const maxFromMinimal1 = Math.max(...arrayMinimals1);
+          const maxFromMinimal2 = Math.max(...arrayMinimals2);
 
+          console.log('maxFromMinimal1', maxFromMinimal1);
+
+          const minimalOne_step1 =
+            (maxFromMinimal1 + networkFeeResult) / 1 - ourComissionResult / 100;
+          const minimalOne_step2 = minimalOne_step1 + minimalOne_step1 * 0.2;
+
+          const minimalOne = minimalOne_step2;
+          console.log('minimalOne=', minimalOne);
+
+          const percentKoefficient = 5;
+          const minimalTwo_step1 =
+            maxFromMinimal2 / (1 - percentKoefficient / 100);
+          const minimalTwo_step2 =
+            minimalTwo_step1 / priceResponse.data.data.price;
+          const minimalTwo_step3 =
+            (minimalTwo_step2 + networkFeeResult) /
+            (1 - ourComissionResult / 100);
+          const minimalTwo_step4 = minimalTwo_step3 + minimalTwo_step3 * 0.2;
+          const minimalTwo = minimalTwo_step4;
+          console.log('minimalTwo=', minimalTwo);
+
+          if (minimalOne > minimalTwo) {
+            setMinOperationNumber(minimalOne);
+          } else {
+            setMinOperationNumber(minimalTwo);
+          }
+        }
       } catch (error) {
         console.error('Ошибка при загрузке пары или цены:', error);
       } finally {
         setIsLoading(false);
-        setLoadingCenterSection(false)
+        setLoadingCenterSection(false);
         // setShowLoader(false);
         // setWolfButtonActive(true);
       }
@@ -347,166 +433,142 @@ export const Stock: FC = () => {
     fetchPairAndPrice();
   }, [type]);
 
+  // расчет минимальных суммы переводов
+  async function minWithdrawNp(coin: string) {
+    try {
+      const response = await axios.get('/get_minWithdrawNp', {
+        params: {
+          coin: coin,
+        },
+      });
 
+      if (response.data.statusFn == 'ok') {
+        // setPlatformRestrictions1(prev => [...prev, response.data.result]);
+        return response.data.result;
+      } else {
+        setShowTryLater(true);
+      }
+    } catch (error) {
+      console.error('Ошибка при выполнении запроса:', error);
+    } finally {
+      // setIsLoading(false)
+      // setWolfButtonActive(true);
+    }
+  }
 
-       
-  
-        // расчет минимальных суммы переводов
-        async function minWithdrawNp(coin:string) {
-          
-          try {
-            
-            const response = await axios.get('/get_minWithdrawNp', {
-              params: {
-                coin: coin,
-              },
-            });
+  async function minDepositStock(coin: string, chain: string) {
+    // setIsLoading(true)
+    try {
+      const response = await axios.get('/get_minDepositWithdrawStock', {
+        params: {
+          coin: coin,
+          chain: chain,
+        },
+      });
 
-            if (response.data.statusFn == 'ok'){
-              // setPlatformRestrictions1(prev => [...prev, response.data.result]);
-              return response.data.result
-            } else {
-              setShowTryLater(true)
-            }
+      if (response.data.statusFn == 'ok') {
+        // setPlatformRestrictions1(prev => [...prev, response.data.deposit]);
+        return response.data.deposit;
+      } else {
+        setShowTryLater(true);
+      }
+    } catch (error) {
+      console.error('Ошибка при выполнении запроса:', error);
+    } finally {
+      // setIsLoading(false);
+      // setWolfButtonActive(true);
+    }
+  }
 
-          } catch (error) {
-            console.error('Ошибка при выполнении запроса:', error);
-          } finally {
-            // setIsLoading(false)
-            // setWolfButtonActive(true);
-          }
-        };
+  async function minDepositNp(coin: string) {
+    try {
+      const response = await axios.get('/get_minDepositNp', {
+        params: {
+          coin: coin,
+        },
+      });
 
+      if (response.data.statusFn == 'ok') {
+        return response.data.result;
+      } else {
+        setShowTryLater(true);
+      }
+    } catch (error) {
+      console.error('Ошибка при выполнении запроса:', error);
+    } finally {
+      // setIsLoading(false)
+      // setWolfButtonActive(true);
+    }
+  }
 
-         async function minDepositStock(coin:string, chain:string) {
-          // setIsLoading(true)
-          try {
-            
-            const response = await axios.get('/get_minDepositWithdrawStock', {
-              params: {
-                coin: coin,
-                chain: chain
-              },
-            });
+  async function minWithdrawStock(coin: string, chain: string) {
+    // setIsLoading(true)
+    try {
+      const response = await axios.get('/get_minDepositWithdrawStock', {
+        params: {
+          coin: coin,
+          chain: chain,
+        },
+      });
 
-            if (response.data.statusFn == 'ok'){
-              // setPlatformRestrictions1(prev => [...prev, response.data.deposit]);
-              return response.data.deposit
-            } else {
-              setShowTryLater(true)
-            }
+      if (response.data.statusFn == 'ok') {
+        return response.data.withdrawal;
+      } else {
+        setShowTryLater(true);
+      }
+    } catch (error) {
+      console.error('Ошибка при выполнении запроса:', error);
+    } finally {
+      // setIsLoading(false);
+      // setWolfButtonActive(true);
+    }
+  }
 
-          } catch (error) {
-            console.error('Ошибка при выполнении запроса:', error);
-          } finally {
-            // setIsLoading(false);
-            // setWolfButtonActive(true);
-          }
-        };
+  // получить комиссию сети
+  async function getNetworkFee(coin: string) {
+    try {
+      const response = await axios.get('/get_withdrawal_fee', {
+        params: {
+          coin: coin,
+          amount: 1,
+        },
+      });
 
+      if (response.data.statusFn == 'ok') {
+        return response.data.networkFees;
+      } else {
+        setShowTryLater(true);
+      }
+    } catch (error) {
+      console.error('Ошибка при выполнении запроса:', error);
+    } finally {
+      // setIsLoading(false)
+      // setWolfButtonActive(true);
+    }
+  }
 
-        
-          async function minDepositNp(coin:string) {
-          try {
-            const response = await axios.get('/get_minDepositNp', {
-              params: {
-                coin: coin,
-              },
-            });
+  // ..получение нашей комиссии (число в )
+  async function getOurComission() {
+    try {
+      const response = await axios.get('/get_ourComissionStockMarket');
 
-            if (response.data.statusFn == 'ok'){
-              return response.data.result
-            } else {
-              setShowTryLater(true)
-            }
+      if (response.data.statusFn == 'ok') {
+        //в БД число хранится в процентах
+        const inPercent = response.data.comission;
+        // const inNum = Number(inPercent)/100
 
-          } catch (error) {
-            console.error('Ошибка при выполнении запроса:', error);
-          } finally {
-            // setIsLoading(false)
-            // setWolfButtonActive(true);
-          }
-        };
+        return inPercent;
+      } else {
+        setShowTryLater(true);
+      }
+    } catch (error) {
+      console.error('Ошибка при выполнении запроса:', error);
+    } finally {
+      // setIsLoading(false)
+      // setWolfButtonActive(true);
+    }
+  }
 
-
-        async function minWithdrawStock(coin:string, chain:string) {
-          // setIsLoading(true)
-          try {
-            const response = await axios.get('/get_minDepositWithdrawStock', {
-              params: {
-                coin: coin,
-                chain: chain
-              },
-            });
-
-            if (response.data.statusFn == 'ok'){
-              return response.data.withdrawal
-            } else {
-              setShowTryLater(true)
-            }
-
-          } catch (error) {
-            console.error('Ошибка при выполнении запроса:', error);
-          } finally {
-            // setIsLoading(false);
-            // setWolfButtonActive(true);
-          }
-        };
-
-
-        // получить комиссию сети
-        async function getNetworkFee(coin:string) {
-          try {
-            const response = await axios.get('/get_withdrawal_fee', {
-              params: {
-                coin: coin,
-                amount: 1
-              },
-            });
-
-            if (response.data.statusFn == 'ok'){
-              return response.data.networkFees
-            } else {
-              setShowTryLater(true)
-            }
-
-          } catch (error) {
-            console.error('Ошибка при выполнении запроса:', error);
-          } finally {
-            // setIsLoading(false)
-            // setWolfButtonActive(true);
-          }
-        };
-
-
-        
-        // ..получение нашей комиссии (число в )
-        async function getOurComission() {
-          try {
-            const response = await axios.get('/get_ourComissionStockMarket');
-
-            if (response.data.statusFn == 'ok'){
-
-              //в БД число хранится в процентах  
-              const inPercent = response.data.comission
-              // const inNum = Number(inPercent)/100
-
-              return inPercent
-            } else {
-              setShowTryLater(true)
-            }
-
-          } catch (error) {
-            console.error('Ошибка при выполнении запроса:', error);
-          } finally {
-            // setIsLoading(false)
-            // setWolfButtonActive(true);
-          }
-        };
-
-
-
-  
   // получить открытые ордера
   const [openOrdersArray, setOpenOrdersArray] = useState([]);
 
@@ -519,27 +581,25 @@ export const Stock: FC = () => {
           },
         });
 
-
         if (response.data.statusFn == 'ok' && response.data.count >= 1) {
           setOpenOrdersArray(response.data.data);
           console.log('OPEN ORDERS', response.data);
         } else {
-          const newItem = { type: {
-            ru: '',
-            en: '',
-            de: '',
-            
-          },
+          const newItem = {
+            type: {
+              ru: '',
+              en: '',
+              de: '',
+            },
             info: {
               ru: noOpenText,
-            en: noOpenText,
-            de: noOpenText
-            }  };
-         
-           
+              en: noOpenText,
+              de: noOpenText,
+            },
+          };
+
           //@ts-ignore
-            setOpenOrdersArray([newItem]);
-            
+          setOpenOrdersArray([newItem]);
         }
       } catch (error) {
         console.error('Ошибка при выполнении запроса:', error);
@@ -552,9 +612,7 @@ export const Stock: FC = () => {
     fetchOrders();
   }, []);
 
-
-
-// получить закрытые ордера
+  // получить закрытые ордера
   const [doneOrdersArray, setDoneOrdersArray] = useState([]);
 
   useEffect(() => {
@@ -564,31 +622,28 @@ export const Stock: FC = () => {
           params: {
             tlgid: tlgid,
           },
-        }); 
+        });
 
         if (response.data.statusFn == 'ok' && response.data.count >= 1) {
           setDoneOrdersArray(response.data.data);
           console.log('DONE ORDERS', response.data);
-        } 
-          else {
-          const newItem = { type: {
-            ru: '',
-            en: '',
-            de: '',
-            
-          },
+        } else {
+          const newItem = {
+            type: {
+              ru: '',
+              en: '',
+              de: '',
+            },
             info: {
               ru: noHistoryText,
-            en: noHistoryText,
-            de: noHistoryText
-            }  };
-         
-           
+              en: noHistoryText,
+              de: noHistoryText,
+            },
+          };
+
           //@ts-ignore
-            setDoneOrdersArray([newItem]);
-            
+          setDoneOrdersArray([newItem]);
         }
-        
       } catch (error) {
         console.error('Ошибка при выполнении запроса:', error);
       } finally {
@@ -600,10 +655,6 @@ export const Stock: FC = () => {
     fetchOrders();
   }, []);
 
-
-
-
-
   //function choosePair
   function choosePair() {
     navigate('/stock_2showPairs-page');
@@ -611,7 +662,7 @@ export const Stock: FC = () => {
 
   //function buySellTypeChangerHandler
   function buySellTypeChangerHandler(choosenValue: string) {
-    setLoadingCenterSection(true)
+    setLoadingCenterSection(true);
     setShowError(false);
     // setIsLoading(true)
     if (choosenValue == 'buy') {
@@ -638,16 +689,14 @@ export const Stock: FC = () => {
         setInputAmount(coin2qty);
         console.log('достиг 100% | слайдер=', coin2qty);
 
-        if (coin2qty < minOperationNumber ){
-            setErrorText(`${minSumText}=${minOperationNumber}`);
-            setShowError(true);
-            setShowActionBtn(false);
+        if (coin2qty < minOperationNumber) {
+          setErrorText(`${minSumText}=${minOperationNumber}`);
+          setShowError(true);
+          setShowActionBtn(false);
         } else {
           setShowError(false);
           setShowActionBtn(true);
         }
-
-        
       } else if (value == 0) {
         setInputAmount(0);
         setErrorText(zeroText);
@@ -658,18 +707,15 @@ export const Stock: FC = () => {
         // setSliderAmount(counting);
         setInputAmount(counting);
 
-        if (counting < minOperationNumber ){
-            setErrorText(`${minSumText}=${minOperationNumber}`);
-            setShowError(true);
-            setShowActionBtn(false);
-            
+        if (counting < minOperationNumber) {
+          setErrorText(`${minSumText}=${minOperationNumber}`);
+          setShowError(true);
+          setShowActionBtn(false);
         } else {
           setShowError(false);
           console.log('не достиг | слайдер=', counting);
           setShowActionBtn(true);
         }
-
-        
       }
     }
 
@@ -679,17 +725,14 @@ export const Stock: FC = () => {
         setInputAmount(coin1qty);
         console.log('достиг 100% | слайдер=', coin1qty);
 
-        if (coin1qty < minOperationNumber ){
-            setErrorText(`${minSumText}=${minOperationNumber}`);
-            setShowError(true);
-            setShowActionBtn(false);
-            
+        if (coin1qty < minOperationNumber) {
+          setErrorText(`${minSumText}=${minOperationNumber}`);
+          setShowError(true);
+          setShowActionBtn(false);
         } else {
           setShowError(false);
           setShowActionBtn(true);
         }
-
-        
       } else if (value == 0) {
         setInputAmount(0);
         setErrorText(zeroText);
@@ -700,21 +743,15 @@ export const Stock: FC = () => {
         // setSliderAmount(counting);
         setInputAmount(counting);
 
-
-        if (counting < minOperationNumber ){
-            setErrorText(`${minSumText}=${minOperationNumber}`);
-            setShowError(true);
-            setShowActionBtn(false);
-            
+        if (counting < minOperationNumber) {
+          setErrorText(`${minSumText}=${minOperationNumber}`);
+          setShowError(true);
+          setShowActionBtn(false);
         } else {
-
           setShowError(false);
           console.log('не достиг | слайдер=', counting);
           setShowActionBtn(true);
-
         }
-
-        
       }
     }
   }
@@ -725,20 +762,16 @@ export const Stock: FC = () => {
     // setSum(amount);
 
     if (typeValue == 'buy') {
-
       if (coin2qty < minOperationNumber) {
         setInputAmount(coin2qty);
         setErrorText(`${minSumText}=${minOperationNumber}`);
         setShowError(true);
         setShowActionBtn(false);
-        
       } else {
         setInputAmount(coin2qty);
         setShowError(false);
         setShowActionBtn(true);
       }
-
-      
     }
 
     if (typeValue == 'sell') {
@@ -747,7 +780,6 @@ export const Stock: FC = () => {
         setErrorText(`${minSumText}=${minOperationNumber}`);
         setShowError(true);
         setShowActionBtn(false);
-        
       } else {
         setInputAmount(coin1qty);
         setShowError(false);
@@ -801,13 +833,14 @@ export const Stock: FC = () => {
       return;
     }
 
-    if ( Number(inputValue) < minOperationNumber && (type == 'buy' || type == 'sell') ){
-        setErrorText(`${minSumText}=${minOperationNumber}`);
-        setShowError(true);
-        setShowActionBtn(false);
+    if (
+      Number(inputValue) < minOperationNumber &&
+      (type == 'buy' || type == 'sell')
+    ) {
+      setErrorText(`${minSumText}=${minOperationNumber}`);
+      setShowError(true);
+      setShowActionBtn(false);
     }
-
-    
 
     //@ts-ignore FIXME:
     if (
@@ -858,57 +891,101 @@ export const Stock: FC = () => {
 
   //function actionBtnHandler
   function actionBtnHandler(type: string) {
+    
     if (inputAmount == 0) {
       setErrorText(zeroText);
       setShowError(true);
       return;
     }
 
-    setActionBtnLoading(true)
-
+    setActionBtnLoading(true);
     let text = '';
-    if (type === 'buy') {
-      text = `купить ${coin1fullName} на ${inputAmount} ${coin2fullName}`;
+
+    if (isLimitOrder){
+      if (type === 'buy') {
+        //FIXME: сделать текст
+        text = 'DO THIS';
+      }
+      if (type === 'sell') {
+        text = `продать ${inputAmount} ${coin1fullName} по цене ${limitPrice} ${coin2fullName}`;
+      }
     }
-    if (type === 'sell') {
-      text = `продать ${inputAmount} ${coin1fullName} за ${coin2fullName}`;
+    
+    
+    
+    if (!isLimitOrder){
+      if (type === 'buy') {
+        text = `купить ${coin1fullName} на ${inputAmount} ${coin2fullName}`;
+      }
+      if (type === 'sell') {
+        text = `продать ${inputAmount} ${coin1fullName} за ${coin2fullName}`;
+      }
     }
 
-    const fetchOrder = async () => {
-      const data = {
-        tlgid: tlgid,
-        type: type,
-        coin1short: coin1,
-        coin1full: coin1fullName,
-        coin1chain: chain1,
-        coin2short: coin2,
-        coin2full: coin2fullName,
-        coin2chain: chain2,
-        amount: inputAmount,
-        helptext: text,
-      };
+
+    //FIXME: добавить функцию для Limit
+
+    //это функция для Market
+    const fetchOrderMarket = async () => {
+
+      let data = {}
+      
+      if (!isLimitOrder){
+          data = {
+            tlgid: tlgid,
+            type: type,
+            coin1short: coin1,
+            coin1full: coin1fullName,
+            coin1chain: chain1,
+            coin2short: coin2,
+            coin2full: coin2fullName,
+            coin2chain: chain2,
+            amount: inputAmount,
+            helptext: text,
+          };
+      }
+
+      
+      if (isLimitOrder){
+          data = {
+            tlgid: tlgid,
+            type: type,
+            coin1short: coin1,
+            coin1full: coin1fullName,
+            coin1chain: chain1,
+            coin2short: coin2,
+            coin2full: coin2fullName,
+            coin2chain: chain2,
+            amount: inputAmount,
+            helptext: text,
+            limitPrice: limitPrice
+          };
+      }
+      
 
       console.log('DATA=', data);
 
       try {
-        const response = await axios.post('/new_stockorder_market', data);
 
-        console.log(response.data);
+        let response
 
-        if (response.data.statusFn == 'saved') {
-          navigate(
-            '/stock_3success-page'
-            // {
-            // state: {
-            //   qtyToSend,
-            //   coin,
-            // },
-            // }
-          );
+        if (!isLimitOrder){
+          response = await axios.post('/new_stockorder_market', data);
+        }
+        
+        if (isLimitOrder){
+          response = await axios.post('/new_stockorder_limit', data);
+        }
+
+
+        // console.log(response.data);
+
+        if (response?.data?.statusFn == 'saved') {
+          navigate('/stock_3success-page');        
         } else {
           setErrorText(tryLaterText);
           setShowError(true);
-          setActionBtnLoading(false)
+          setActionBtnLoading(false);
         }
       } catch (error) {
         console.error('Ошибка при выполнении запроса:', error);
@@ -917,7 +994,35 @@ export const Stock: FC = () => {
       }
     };
 
-    fetchOrder();
+    
+      fetchOrderMarket();
+  }
+
+  //@ts-ignore
+  const handleTogle = (value) => {
+    setValueSelectToggleMarketLimit(value.target.value);
+
+    if (value.target.value === 'market') {
+      setIsLimitOrder(false);
+    } else if (value.target.value === 'limit') {
+      setIsLimitOrder(true);
+    }
+  };
+
+  function limitPriceHndl(action: string) {
+    if (action == 'plus') {
+      const counting = Number(
+        (Number(limitPrice) + Number(limitPrice * 0.05)).toFixed(6)
+      );
+      setLimitPrice(counting);
+    }
+
+    if (action == 'minus') {
+      const counting = Number(
+        (Number(limitPrice) - Number(limitPrice * 0.05)).toFixed(6)
+      );
+      setLimitPrice(counting);
+    }
   }
 
   return (
@@ -935,16 +1040,13 @@ export const Stock: FC = () => {
       )}
 
       {/* если пришла ошибка с бека */}
-      {showTryLater &&
-          <Cell 
-          before={<Icon28CloseAmbient />}
-          multiline
-          >
-                <span className={styles.errorText}>{tryLaterText}</span>{' '}
-          </Cell>
-      }
+      {showTryLater && (
+        <Cell before={<Icon28CloseAmbient />} multiline>
+          <span className={styles.errorText}>{tryLaterText}</span>{' '}
+        </Cell>
+      )}
 
-      {(!isLoading && !showTryLater ) && (
+      {!isLoading && !showTryLater && (
         <List>
           <Section
           // header={title}
@@ -982,177 +1084,268 @@ export const Stock: FC = () => {
 
             {/* <Cell>Маркет ордер - {type}</Cell> */}
 
-            <Select>
-              <option>{marketOrdertext}</option>
+            <Select
+              value={valueSelectToggleMarketLimit}
+              //@ts-ignore
+              onChange={(value) => handleTogle(value)}
+            >
+              <option value="market">{marketOrdertext}</option>
+              <option value="limit">{limitOrdertext}</option>
             </Select>
 
-            <Cell 
-            subhead={stockPriceText}
-            multiline
-            >
+            <Cell subhead={stockPriceText} multiline>
               1 {coin1} = {price} {coin2fullName}
             </Cell>
           </Section>
 
+          {loadingCenterSection && (
+            <div
+              style={{
+                textAlign: 'center',
+                justifyContent: 'center',
+                padding: '100px',
+              }}
+            >
+              <Spinner size="m" />
+            </div>
+          )}
 
-         { loadingCenterSection && (
-         
-          <div
-          style={{
-            textAlign: 'center',
-            justifyContent: 'center',
-            padding: '100px',
-          }}
-        >
-          <Spinner size="m" />
-        </div>
-        
-          ) }    
-         
-          { !loadingCenterSection && (
-            
-            
-         
-         
+          {!loadingCenterSection && (
+            <Section>
+              {type === 'buy' && (
+                <>
+                  {isLimitOrder && (
+                    <div className={styles.wrapperPriceDiv}>
+                      <div>
+                        <Input
+                          status="focused"
+                          header="цена"
+                          type="text"
+                          inputMode="decimal"
+                          pattern="[0-9]*\.?[0-9]*"
+                          value={limitPrice}
+                          // onChange={(e) => limitPriceHndl(e)}
+                        />
+                      </div>
 
-          <Section>
-            {type === 'buy' && (
-              <>
-                {/* <Input
-                status="focused"
-                header={header1}
-                type="text"
-                inputMode="decimal"
-                pattern="[0-9]*\.?[0-9]*"
-                // placeholder='{`${sumT_sub} ${coin}`}'
-                value={amount}
-                onChange={(e) => qtyHandler(e)}
-                onFocus={() => setIsInputActive(true)}
-                onBlur={() => setIsInputActive(false)}
-              /> */}
+                      <div>
+                        <Tappable
+                          Component="div"
+                          style={{
+                            display: 'flex',
+                            color: '#168acd',
+                            fontWeight: '600',
+                          }}
+                          onClick={() => limitPriceHndl('plus')}
+                        >
+                          <Title level="1" weight="1">
+                            +
+                          </Title>
+                        </Tappable>
+                      </div>
 
-                <Input
-                  status="focused"
-                  header={`${totalText} ${coin2fullName}:`}
-                  type="text"
-                  inputMode="decimal"
-                  pattern="[0-9]*\.?[0-9]*"
-                  // placeholder="I am focused input, are u focused on me?"
-                  // value={sliderAmount}
-                  value={inputAmount}
-                  onChange={(e) => qtyHandler(e)}
-                  after={
-                    <Tappable
-                      Component="div"
-                      style={{
-                        display: 'flex',
-                        color: '#168acd',
-                        fontWeight: '600',
-                      }}
-                      onClick={() => maxBtnHandler(type)}
-                    >
-                      {wordMaximum}
-                    </Tappable>
-                  }
-                />
+                      <div>
+                        <Tappable
+                          Component="div"
+                          style={{
+                            display: 'flex',
+                            color: '#168acd',
+                            fontWeight: '600',
+                          }}
+                          onClick={() => limitPriceHndl('minus')}
+                        >
+                          <Title level="1" weight="1">
+                            -
+                          </Title>
+                        </Tappable>
+                      </div>
+                    </div>
+                  )}
 
-                <Slider
-                  step={1}
-                  onChange={(value) => changeSlider(value, type)}
-                />
+                  <Input
+                    status="focused"
+                    header={`${totalText} ${coin2fullName}:`}
+                    type="text"
+                    inputMode="decimal"
+                    pattern="[0-9]*\.?[0-9]*"
+                    // placeholder="I am focused input, are u focused on me?"
+                    // value={sliderAmount}
+                    value={inputAmount}
+                    onChange={(e) => qtyHandler(e)}
+                    after={
+                      <Tappable
+                        Component="div"
+                        style={{
+                          display: 'flex',
+                          color: '#168acd',
+                          fontWeight: '600',
+                        }}
+                        onClick={() => maxBtnHandler(type)}
+                      >
+                        {wordMaximum}
+                      </Tappable>
+                    }
+                  />
 
-                {showError && (
-                  <Cell before={<Icon28CloseAmbient />}>
-                    <span className={styles.errorText}>{errorText}</span>{' '}
+                  <Slider
+                    step={1}
+                    onChange={(value) => changeSlider(value, type)}
+                  />
+
+                  {showError && (
+                    <Cell before={<Icon28CloseAmbient />}>
+                      <span className={styles.errorText}>{errorText}</span>{' '}
+                    </Cell>
+                  )}
+
+                  <Cell subhead={availableText}>
+                    {coin2qty} {coin2fullName}
                   </Cell>
-                )}
 
-                <Cell subhead={availableText}>
-                  {coin2qty} {coin2fullName}
-                </Cell>
-
-                <Cell subhead={maxBuyText}>
-                  {maxBuy} {coin1fullName}
-                </Cell>
-
-                {showActionBtn && (
-                  <div className={styles.wrapperActionBtn}>
-                    <Button
-                      loading = {actionBtnLoading}
-                      onClick={() => actionBtnHandler('buy')}
-                      stretched
-                      className={styles.buyActionBtn}
-                    >
-                      {btnBuyText} {coin1fullName}
-                    </Button>
-                  </div>
-                )}
-              </>
-            )}
-
-            {type === 'sell' && (
-              <>
-                <Input
-                  status="focused"
-                  header={`${totalText} ${coin1fullName}:`}
-                  type="text"
-                  inputMode="decimal"
-                  pattern="[0-9]*\.?[0-9]*"
-                  // placeholder="I am focused input, are u focused on me?"
-                  value={inputAmount}
-                  onChange={(e) => qtyHandler(e)}
-                  after={
-                    <Tappable
-                      Component="div"
-                      style={{
-                        display: 'flex',
-                        color: '#168acd',
-                        fontWeight: '600',
-                      }}
-                      onClick={() => maxBtnHandler(type)}
-                    >
-                      {wordMaximum}
-                    </Tappable>
-                  }
-                />
-
-                <Slider
-                  step={1}
-                  onChange={(value) => changeSlider(value, type)}
-                />
-
-                {showError && (
-                  <Cell before={<Icon28CloseAmbient />}>
-                    <span className={styles.errorText}>{errorText}</span>{' '}
+                  <Cell subhead={maxBuyText}>
+                    {maxBuy} {coin1fullName}
                   </Cell>
-                )}
 
-                <Cell subhead={availableText}>
-                  {coin1qty} {coin1fullName}
-                </Cell>
+                  {showActionBtn && (
+                    <div className={styles.wrapperActionBtn}>
+                      <Button
+                        loading={actionBtnLoading}
+                        onClick={() => actionBtnHandler('buy')}
+                        stretched
+                        className={styles.buyActionBtn}
+                      >
+                        {btnBuyText} {coin1fullName}
+                      </Button>
+                    </div>
+                  )}
+                </>
+              )}
 
-                <Cell subhead={maxBuyText}>
-                  {maxSell} {coin2fullName}
-                </Cell>
+              {type === 'sell' && (
+                <>
+                  {isLimitOrder && (
+                    <div className={styles.wrapperPriceDiv}>
+                      <div>
+                        <Input
+                          status="focused"
+                          header="цена"
+                          type="text"
+                          inputMode="decimal"
+                          pattern="[0-9]*\.?[0-9]*"
+                          value={limitPrice}
+                          // onChange={(e) => limitPriceHndl(e)}
+                        />
+                      </div>
 
-                {showActionBtn && (
+                      <div>
+                        <Tappable
+                          Component="div"
+                          style={{
+                            display: 'flex',
+                            color: '#168acd',
+                            fontWeight: '600',
+                          }}
+                          onClick={() => limitPriceHndl('plus')}
+                        >
+                          <Title level="1" weight="1">
+                            +
+                          </Title>
+                        </Tappable>
+                      </div>
+
+                      <div>
+                        <Tappable
+                          Component="div"
+                          style={{
+                            display: 'flex',
+                            color: '#168acd',
+                            fontWeight: '600',
+                          }}
+                          onClick={() => limitPriceHndl('minus')}
+                        >
+                          <Title level="1" weight="1">
+                            -
+                          </Title>
+                        </Tappable>
+                      </div>
+                    </div>
+                  )}
+
+                  <Input
+                    status="focused"
+                    header={`${totalText} ${coin1fullName}:`}
+                    type="text"
+                    inputMode="decimal"
+                    pattern="[0-9]*\.?[0-9]*"
+                    // placeholder="I am focused input, are u focused on me?"
+                    value={inputAmount}
+                    onChange={(e) => qtyHandler(e)}
+                    after={
+                      <Tappable
+                        Component="div"
+                        style={{
+                          display: 'flex',
+                          color: '#168acd',
+                          fontWeight: '600',
+                        }}
+                        onClick={() => maxBtnHandler(type)}
+                      >
+                        {wordMaximum}
+                      </Tappable>
+                    }
+                  />
+
+                  <Slider
+                    step={1}
+                    onChange={(value) => changeSlider(value, type)}
+                  />
+
+                  {showError && (
+                    <Cell before={<Icon28CloseAmbient />}>
+                      <span className={styles.errorText}>{errorText}</span>{' '}
+                    </Cell>
+                  )}
+
+                  <Cell subhead={availableText}>
+                    {coin1qty} {coin1fullName}
+                  </Cell>
+
+                  <Cell subhead={maxBuyText}>
+                    {maxSell} {coin2fullName}
+                  </Cell>
+
+                  
+                  {/* ************************************************ */}
+                  {/* //FIXME: удалить после настройки */}
                   <div className={styles.wrapperActionBtn}>
-                    <Button
-                      loading = {actionBtnLoading}
-                      onClick={() => actionBtnHandler('sell')}
-                      className={styles.sellActionBtn}
-                      stretched
-                    >
-                      {btnSellText} {coin1fullName}
-                    </Button>
+                      <Button
+                        // loading={actionBtnLoading}
+                        onClick={() => actionBtnHandler('sell')}
+                        className={styles.testBtn}
+                        stretched
+                      >
+                        Тест кнопка - для Лимитного
+                     </Button>
                   </div>
-                )}
-              </>
-            )}
-          </Section>
+                  {/* ************************************************ */}
 
-          )
-         } 
+
+                  {showActionBtn && (
+                    <div className={styles.wrapperActionBtn}>
+                      <Button
+                        loading={actionBtnLoading}
+                        onClick={() => actionBtnHandler('sell')}
+                        className={styles.sellActionBtn}
+                        stretched
+                      >
+                        {btnSellText} {coin1fullName}
+                      </Button>
+                    </div>
+                  )}
+                </>
+              )}
+            </Section>
+          )}
 
           <Section style={{ marginBottom: 100 }}>
             <TabsList>
@@ -1197,7 +1390,7 @@ export const Stock: FC = () => {
                       // after={<Cell><CheckCircleIcon/></Cell>}
                       className={styles.activiText}
                     >
-                     {order.formattedDate}  {order.type[language]} 
+                      {order.formattedDate} {order.type[language]}
                     </Cell>
                     <Divider />
                   </>

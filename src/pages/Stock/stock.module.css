@@ -61,3 +61,18 @@
     border: 2px solid black;
     opacity: 100%;
 }
+
+
+.wrapperPriceDiv {
+    display: flex;
+    /* justify-content: center; */
+    align-items: center;
+    gap:15px;
+}
+
+/* //FIXME: DELETE AFTER TEST */
+.testBtn {
+    background-color:#0800ff;
+    margin-left: 20px;
+    margin-bottom: 20px;
+}
