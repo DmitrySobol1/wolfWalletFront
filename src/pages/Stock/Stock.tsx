@@ -129,9 +129,9 @@ export const Stock: FC = () => {
   const [minOperationNumber, setMinOperationNumber] = useState(0);
   const [actionBtnLoading, setActionBtnLoading] = useState(false);
 
-  const [isLimitOrder, setIsLimitOrder] = useState(true);
+  const [isLimitOrder, setIsLimitOrder] = useState(false);
   const [valueSelectToggleMarketLimit, setValueSelectToggleMarketLimit] =
-    useState('limit');
+    useState('market');
   const [limitPrice, setLimitPrice] = useState(0);
 
   //FIXME: добавить на все страницы
@@ -394,8 +394,6 @@ export const Stock: FC = () => {
           const maxFromMinimal2 = Math.max(...arrayMinimals2);
 
           console.log('maxFromMinimal1', maxFromMinimal1);
-
-          
 
           const minimalOne_step1 =
             (maxFromMinimal1 + networkFeeResult) / 1 - ourComissionResult / 100;
@@ -891,9 +889,37 @@ export const Stock: FC = () => {
     // setShowNextBtn(true);
   }
 
+  //function qtyHandler for limit price
+  async function qtyHandlerLimitPrice(e: React.ChangeEvent<HTMLInputElement>) {
+    const inputValue = e.target.value;
+    const normalizedValue = Number(
+      inputValue
+        .replace(/,/g, '.')
+        .replace(/[^\d.]/g, '')
+        .replace(/^(\d*\.?\d*).*/, '$1')
+    ); // Удаляет всё после второй точки
+
+    setLimitPrice(normalizedValue);
+
+    setShowError(false);
+    setShowActionBtn(true);
+
+    const check = /^[\d.]*$/.test(inputValue);
+    if (!check) {
+      console.log('stop');
+      return;
+    }
+
+    if (Number(inputValue) == 0) {
+      setErrorText(zeroText);
+      setShowError(true);
+      setShowActionBtn(false);
+      return;
+    }
+  }
+
   //function actionBtnHandler
   function actionBtnHandler(type: string) {
-    
     if (inputAmount == 0) {
       setErrorText(zeroText);
       setShowError(true);
@@ -903,7 +929,7 @@ export const Stock: FC = () => {
     setActionBtnLoading(true);
     let text = '';
 
-    if (isLimitOrder){
+    if (isLimitOrder) {
       if (type === 'buy') {
         //FIXME: сделать текст
         text = 'DO THIS';
@@ -912,10 +938,8 @@ export const Stock: FC = () => {
         text = `продать ${inputAmount} ${coin1fullName} по цене ${limitPrice} ${coin2fullName}`;
       }
     }
-    
-    
-    
-    if (!isLimitOrder){
+
+    if (!isLimitOrder) {
       if (type === 'buy') {
         text = `купить ${coin1fullName} на ${inputAmount} ${coin2fullName}`;
       }
@@ -924,66 +948,60 @@ export const Stock: FC = () => {
       }
     }
 
-
     //FIXME: добавить функцию для Limit
 
     //это функция для Market
     const fetchOrderMarket = async () => {
+      let data = {};
 
-      let data = {}
-      
-      if (!isLimitOrder){
-          data = {
-            tlgid: tlgid,
-            type: type,
-            coin1short: coin1,
-            coin1full: coin1fullName,
-            coin1chain: chain1,
-            coin2short: coin2,
-            coin2full: coin2fullName,
-            coin2chain: chain2,
-            amount: inputAmount,
-            helptext: text,
-          };
+      if (!isLimitOrder) {
+        data = {
+          tlgid: tlgid,
+          type: type,
+          coin1short: coin1,
+          coin1full: coin1fullName,
+          coin1chain: chain1,
+          coin2short: coin2,
+          coin2full: coin2fullName,
+          coin2chain: chain2,
+          amount: inputAmount,
+          helptext: text,
+        };
       }
 
-      
-      if (isLimitOrder){
-          data = {
-            tlgid: tlgid,
-            type: type,
-            coin1short: coin1,
-            coin1full: coin1fullName,
-            coin1chain: chain1,
-            coin2short: coin2,
-            coin2full: coin2fullName,
-            coin2chain: chain2,
-            amount: inputAmount,
-            helptext: text,
-            limitPrice: limitPrice
-          };
+      if (isLimitOrder) {
+        data = {
+          tlgid: tlgid,
+          type: type,
+          coin1short: coin1,
+          coin1full: coin1fullName,
+          coin1chain: chain1,
+          coin2short: coin2,
+          coin2full: coin2fullName,
+          coin2chain: chain2,
+          amount: inputAmount,
+          helptext: text,
+          limitPrice: limitPrice,
+        };
       }
-      
 
       console.log('DATA=', data);
 
       try {
+        let response;
 
-        let response
-
-        if (!isLimitOrder){
+        if (!isLimitOrder) {
           response = await axios.post('/new_stockorder_market', data);
         }
-        
-        if (isLimitOrder){
+
+        if (isLimitOrder) {
           response = await axios.post('/new_stockorder_limit', data);
         }
-
 
         // console.log(response.data);
 
         if (response?.data?.statusFn == 'saved') {
-          navigate('/stock_3success-page');        
+          navigate('/stock_3success-page');
         } else {
           setErrorText(tryLaterText);
           setShowError(true);
@@ -996,8 +1014,7 @@ export const Stock: FC = () => {
       }
     };
 
-    
-      fetchOrderMarket();
+    fetchOrderMarket();
   }
 
   //@ts-ignore
@@ -1117,50 +1134,50 @@ export const Stock: FC = () => {
               {type === 'buy' && (
                 <>
                   {isLimitOrder && (
-                    <div className={styles.wrapperPriceDiv}>
-                      <div>
-                        <Input
-                          status="focused"
-                          header="цена"
-                          type="text"
-                          inputMode="decimal"
-                          pattern="[0-9]*\.?[0-9]*"
-                          value={limitPrice}
-                          // onChange={(e) => limitPriceHndl(e)}
-                        />
-                      </div>
-
-                      <div>
-                        <Tappable
-                          Component="div"
-                          style={{
-                            display: 'flex',
-                            color: '#168acd',
-                            fontWeight: '600',
-                          }}
-                          onClick={() => limitPriceHndl('plus')}
-                        >
-                          <Title level="1" weight="1">
-                            +
-                          </Title>
-                        </Tappable>
-                      </div>
-
-                      <div>
-                        <Tappable
-                          Component="div"
-                          style={{
-                            display: 'flex',
-                            color: '#168acd',
-                            fontWeight: '600',
-                          }}
-                          onClick={() => limitPriceHndl('minus')}
-                        >
-                          <Title level="1" weight="1">
-                            -
-                          </Title>
-                        </Tappable>
-                      </div>
+                    <div>
+                      <Input
+                        status="focused"
+                        header="цена"
+                        type="text"
+                        inputMode="decimal"
+                        pattern="[0-9]*\.?[0-9]*"
+                        onChange={(e) => qtyHandlerLimitPrice(e)}
+                        value={limitPrice}
+                        after={
+                          <div className={styles.wrapperPriceDiv}>
+                            <div>
+                              <Tappable
+                                Component="div"
+                                style={{
+                                  display: 'flex',
+                                  color: '#168acd',
+                                  fontWeight: '600',
+                                }}
+                                onClick={() => limitPriceHndl('plus')}
+                              >
+                                <Title level="1" weight="1">
+                                  +
+                                </Title>
+                              </Tappable>
+                            </div>
+                            <div>
+                              <Tappable
+                                Component="div"
+                                style={{
+                                  display: 'flex',
+                                  color: '#168acd',
+                                  fontWeight: '600',
+                                }}
+                                onClick={() => limitPriceHndl('minus')}
+                              >
+                                <Title level="1" weight="1">
+                                  -
+                                </Title>
+                              </Tappable>
+                            </div>
+                          </div>
+                        }
+                      />
                     </div>
                   )}
 
@@ -1233,6 +1250,7 @@ export const Stock: FC = () => {
                           header="цена"
                           type="text"
                           inputMode="decimal"
+                          onChange={(e) => qtyHandlerLimitPrice(e)}
                           pattern="[0-9]*\.?[0-9]*"
                           value={limitPrice}
                           // onChange={(e) => limitPriceHndl(e)}
@@ -1316,21 +1334,19 @@ export const Stock: FC = () => {
                     {maxSell} {coin2fullName}
                   </Cell>
 
-                  
                   {/* ************************************************ */}
                   {/* //FIXME: удалить после настройки */}
                   <div className={styles.wrapperActionBtn}>
-                      <Button
-                        // loading={actionBtnLoading}
-                        onClick={() => actionBtnHandler('sell')}
-                        className={styles.testBtn}
-                        stretched
-                      >
-                        Тест кнопка - для Лимитного
-                     </Button>
+                    <Button
+                      // loading={actionBtnLoading}
+                      onClick={() => actionBtnHandler('sell')}
+                      className={styles.testBtn}
+                      stretched
+                    >
+                      Тест кнопка - для Лимитного
+                    </Button>
                   </div>
                   {/* ************************************************ */}
-
 
                   {showActionBtn && (
                     <div className={styles.wrapperActionBtn}>
