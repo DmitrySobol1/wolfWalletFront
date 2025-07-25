@@ -86,6 +86,8 @@ export const Stock: FC = () => {
     maxBuyText,
     availableText,
     wordMaximum,
+    priceLimitText,
+    maxSellText,
     // header1,
     // youGetText,
     // errorSumTooBig,
@@ -811,21 +813,9 @@ export const Stock: FC = () => {
       return;
     }
 
-    //@ts-ignore FIXME:
-    // if (inputValue == 0) {
-    //   setConvertedAmount(0);
-    //   return;
-    // }
+    
 
     //@ts-ignore FIXME:
-    // if (inputValue < minAmount) {
-    //   setErrorText(errorMinSumBig);
-    //   setShowError(true);
-    //   setShowMinSumValue(true);
-    //   setConvertedAmount(0);
-    //   return;
-    // }
-
     if (inputValue == 0) {
       setErrorText(zeroText);
       setShowError(true);
@@ -909,6 +899,25 @@ export const Stock: FC = () => {
       console.log('stop');
       return;
     }
+
+
+        
+        const countingBuy = Number(
+          (
+            Number(coin2qty) / Number(normalizedValue)
+          ).toFixed(6)
+        );
+        setMaxBuy(countingBuy);
+
+        const countingSell = Number(
+          (
+            Number(normalizedValue) * Number(coin1qty)
+          ).toFixed(6)
+        );
+        setMaxSell(countingSell);
+
+
+
 
     if (Number(inputValue) == 0) {
       setErrorText(zeroText);
@@ -1029,30 +1038,50 @@ export const Stock: FC = () => {
   };
 
   function limitPriceHndl(action: string) {
+
+    let counting = 1
+
     if (action == 'plus') {
 
       if (limitPrice == 0){
         
-        const counting = Number(
-        (Number(1) + Number(1 * 0.05)).toFixed(6)
+        counting = Number(
+        (Number(counting) + Number(counting * 0.05)).toFixed(6)
       );
       setLimitPrice(counting);
       return
 
       }
 
-      const counting = Number(
+      counting = Number(
         (Number(limitPrice) + Number(limitPrice * 0.05)).toFixed(6)
       );
       setLimitPrice(counting);
     }
 
     if (action == 'minus') {
-      const counting = Number(
+      counting = Number(
         (Number(limitPrice) - Number(limitPrice * 0.05)).toFixed(6)
       );
       setLimitPrice(counting);
     }
+
+    
+    
+    const countingBuy = Number(
+          (
+            Number(coin2qty) / Number(counting)
+          ).toFixed(6)
+        );
+        setMaxBuy(countingBuy);
+
+        const countingSell = Number(
+          (
+            Number(counting) * Number(coin1qty)
+          ).toFixed(6)
+        );
+        setMaxSell(countingSell);
+
   }
 
   return (
@@ -1148,7 +1177,7 @@ export const Stock: FC = () => {
                     <div>
                       <Input
                         status="focused"
-                        header="цена"
+                        header={`${priceLimitText} (${coin2})`}
                         type="text"
                         inputMode="decimal"
                         pattern="[0-9]*\.?[0-9]*"
@@ -1257,7 +1286,7 @@ export const Stock: FC = () => {
                       <div>
                         <Input
                           status="focused"
-                          header="цена"
+                          header={`${priceLimitText} (${coin2})`}
                           type="text"
                           inputMode="decimal"
                           onChange={(e) => qtyHandlerLimitPrice(e)}
@@ -1343,7 +1372,7 @@ export const Stock: FC = () => {
                     {coin1qty} {coin1fullName}
                   </Cell>
 
-                  <Cell subhead={maxBuyText}>
+                  <Cell subhead={maxSellText}>
                     {maxSell} {coin2fullName}
                   </Cell>
 

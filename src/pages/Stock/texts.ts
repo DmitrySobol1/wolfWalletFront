@@ -27,14 +27,16 @@ export const TEXTS = {
     marketOrdertext: 'Маркет ордер',
     limitOrdertext: 'Лимитный ордер',
     stockPriceText: 'Рыночная цена:',
-    totalText: 'Всего ',
+    totalText: 'Количество ',
     availableText: 'Доступно: ',
     maxBuyText: 'Максимальная покупка:',
+    maxSellText: 'Максимальная продажа:',
     minSumText: 'мин. сумма',
     zeroText: 'выбран 0',
     notEnoughText: 'недостаточно монет',
     noOpenText: 'нет открытых ордеров',
-    noHistoryText: 'нет истории сделок'
+    noHistoryText: 'нет истории сделок',
+    priceLimitText: 'Цена'
     
     
   },
@@ -66,14 +68,16 @@ export const TEXTS = {
     marketOrdertext: 'Market order',
     limitOrdertext: 'Limit order',
     stockPriceText: 'Market price:',
-    totalText: 'Total ',
+    totalText: 'Quantity ',
     availableText: 'Available: ',
     maxBuyText: 'Max sum to buy:',
+    maxSellText: 'Max sum to sell:',
     minSumText: 'min. sum',
     zeroText: 'you choosed 0',
     notEnoughText: 'not enough coins',
     noOpenText: 'no open deal',
-    noHistoryText: 'no deal history'
+    noHistoryText: 'no deal history',
+    priceLimitText: 'Price'
     
 
     
@@ -107,14 +111,16 @@ export const TEXTS = {
     marketOrdertext: 'Marktauftrag',
     limitOrdertext: 'Limit-Order',
     stockPriceText: 'Marktpreis:',
-    totalText: 'Insgesamt ',
+    totalText: 'Menge ',
     availableText: 'Verfügbar: ',
      maxBuyText: 'Maximal zu kaufende Summe:',
+     maxSellText: 'Maximale verkaufssumme:',
      minSumText: 'mindestbetrag',
      zeroText: 'sie haben 0 gewählt',
      notEnoughText: 'nicht genug münzen',
      noOpenText: 'kein offenes Geschäftl',
-     noHistoryText: 'no-deal-geschichte'
+     noHistoryText: 'no-deal-geschichte',
+     priceLimitText: 'Preis'
 
        
   },
