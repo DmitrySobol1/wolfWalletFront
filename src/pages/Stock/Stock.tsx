@@ -395,6 +395,8 @@ export const Stock: FC = () => {
 
           console.log('maxFromMinimal1', maxFromMinimal1);
 
+          
+
           const minimalOne_step1 =
             (maxFromMinimal1 + networkFeeResult) / 1 - ourComissionResult / 100;
           const minimalOne_step2 = minimalOne_step1 + minimalOne_step1 * 0.2;
