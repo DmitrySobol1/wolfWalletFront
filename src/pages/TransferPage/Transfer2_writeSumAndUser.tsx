@@ -1,3 +1,12 @@
+import type { FC } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
+import { useState, useContext, useEffect } from 'react';
+
+import { LanguageContext } from '../../components/App.tsx';
+
+import axios from '../../axios.ts';
+import { useTlgid } from '../../components/Tlgid';
+
 import {
   Section,
   List,
@@ -7,76 +16,64 @@ import {
   Button,
   Spinner,
 } from '@telegram-apps/telegram-ui';
-import type { FC } from 'react';
-import { useLocation,useNavigate } from 'react-router-dom';
-
-import { useState, useContext, useEffect } from 'react';
-import { LanguageContext } from '../../components/App.tsx';
-
-import axios from '../../axios.ts';
-
-import {useTlgid} from '../../components/Tlgid'
-
 import { Page } from '@/components/Page.tsx';
-
 import { Icon28CloseAmbient } from '@telegram-apps/telegram-ui/dist/icons/28/close_ambient';
 import { Icon24Close } from '@telegram-apps/telegram-ui/dist/icons/24/close';
+
+import { TryLater } from '../../components/TryLater/TryLater.tsx';
 
 import styles from './transfer.module.css';
 import { TEXTS } from './texts.ts';
 
 export const Transfer2_writeSumAndUser: FC = () => {
+  const tlgid = useTlgid();
+
   const navigate = useNavigate();
   const location = useLocation();
   const { coin, amount } = location.state || {};
-
-   const tlgid = useTlgid();
+  const { language } = useContext(LanguageContext);
 
   const [adress, setAdress] = useState('');
   const [sum, setSum] = useState('');
   const [showError, setShowError] = useState(false);
   const [errorText, setErrorText] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [showTryLater, setShowTryLater] = useState(false);
   const [ourComission, setOurComission] = useState(0);
   const [totalComissionText, setTotalComissionText] = useState('');
-  const [selfNowpaymentid,setSelfNowpaymentid] = useState('')
-
-  const { language } = useContext(LanguageContext);
+  const [selfNowpaymentid, setSelfNowpaymentid] = useState('');
 
   //FIXME: если переносить на несколько строк, возникает ошибка!!!
   // @ts-ignore
-  const {title2,balanceT,comissionT,adressT,adress_sub,sumT,sumT_sub,max,nextbtn,errorEmpty,userNoExist,errorSumEpmty,errorBalanceLow,errorUser,errorSumLow,errorSelfAdress} = TEXTS[language];
-
-
+  const {title2,balanceT,comissionT,adressT,adress_sub,sumT,sumT_sub,max,nextbtn,errorEmpty,userNoExist,errorSumEpmty, errorBalanceLow, errorUser, errorSumLow, errorSelfAdress} = TEXTS[language];
 
   //получаем transfer комиссию
   useEffect(() => {
     const fetchTransferComission = async () => {
       try {
         // FIXME: any
-        const response: any = await axios.get('/get_transfer_fee', {
+        const response: any = await axios.get('/transfer/get_transfer_fee', {
           params: {
             coin: coin,
-            tlgid:tlgid
+            tlgid: tlgid,
           },
         });
 
+        if (response.data.statusBE === 'notOk' || !response.data.status) {
+          setShowTryLater(true);
+          setIsLoading(false);
+        }
+
         if (response.data.status == 'ok') {
-          console.log('TRT COMISSON=', response);
-          setSelfNowpaymentid(response.data.selfNowpaymentid)
+          setSelfNowpaymentid(response.data.selfNowpaymentid);
           setOurComission(response.data.qty);
           const coinUp = coin.toUpperCase();
           const textToDisplay = `${response.data.qty} ${coinUp}`;
           setTotalComissionText(textToDisplay);
         }
-
-        //FIXME:
-        // если с сервера вернется ошибка или статус 'coin not found', то вывести объект oops
       } catch (error) {
         console.error('Ошибка при выполнении запроса:', error);
       } finally {
-        // setShowLoader(false);
-        // setWolfButtonActive(true);
       }
     };
 
@@ -103,9 +100,7 @@ export const Transfer2_writeSumAndUser: FC = () => {
   };
 
   function maxBtnHandler() {
-    // setIsInputActive(true)
     setShowError(false);
-    // const counting = String(Number(amount) - Number(ourComission));
     setSum(amount);
   }
 
@@ -114,25 +109,27 @@ export const Transfer2_writeSumAndUser: FC = () => {
     let checkAdress = false;
     let checkSum = false;
 
-    console.log('selfNowpaymentid=',selfNowpaymentid, 'adress=',adress)
-
     try {
       if (adress === '') {
         setErrorText(errorEmpty);
         setShowError(true);
         return;
       }
-      
+
       if (adress == selfNowpaymentid) {
         setErrorText(errorSelfAdress);
         setShowError(true);
         return;
       }
 
-
-      const response = await axios.post('/get_user', {
+      const response = await axios.post('/transfer/get_user', {
         adress: adress,
       });
+
+      if (response.data.statusBE === 'notOk') {
+        setShowTryLater(true);
+        setIsLoading(false);
+      }
 
       if (response.data.count == 1) {
         checkAdress = true;
@@ -165,7 +162,7 @@ export const Transfer2_writeSumAndUser: FC = () => {
       setErrorText(errorBalanceLow);
       setShowError(true);
       return;
-    }  else {
+    } else {
       console.log(
         'amount=',
         amount,
@@ -187,7 +184,6 @@ export const Transfer2_writeSumAndUser: FC = () => {
           sum,
           adress,
           ourComission,
-      
         },
       });
     }
@@ -195,6 +191,8 @@ export const Transfer2_writeSumAndUser: FC = () => {
 
   return (
     <Page back={true}>
+      {showTryLater && <TryLater />}
+
       {isLoading && (
         <div
           style={{
@@ -207,7 +205,7 @@ export const Transfer2_writeSumAndUser: FC = () => {
         </div>
       )}
 
-      {!isLoading && (
+      {!isLoading && !showTryLater && (
         <List>
           <Section>
             <Cell
@@ -221,23 +219,11 @@ export const Transfer2_writeSumAndUser: FC = () => {
               {balanceT}
             </Cell>
 
-            {/* <Cell
-              subtitle={
-                <span>
-                  {minSumToWithdraw}{' '}
-                  <span className={styles.inputHeaderText}>{coin}</span>
-                </span>
-              }
-            >
-              {minSumT}
-            </Cell> */}
-
             <Cell subtitle={totalComissionText}>{comissionT}</Cell>
           </Section>
 
           <Section header={title2}>
             <Input
-              // status="focused"
               header={adressT}
               placeholder={adress_sub}
               value={adress}
@@ -255,7 +241,6 @@ export const Transfer2_writeSumAndUser: FC = () => {
               }
             />
             <Input
-              // status="focused"
               type="text"
               inputMode="decimal"
               pattern="[0-9]*\.?[0-9]*"
@@ -267,8 +252,6 @@ export const Transfer2_writeSumAndUser: FC = () => {
               placeholder={`${sumT_sub} ${coin}`}
               value={sum}
               onChange={(e) => sumHandler(e)}
-              // onFocus={() => setIsInputActive(true)}
-              // onBlur={() => setIsInputActive(false)}
               after={
                 <Tappable
                   Component="div"

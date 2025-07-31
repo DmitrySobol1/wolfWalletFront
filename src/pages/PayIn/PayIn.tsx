@@ -1,3 +1,10 @@
+import type { FC } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useEffect, useState, useContext } from 'react';
+import { LanguageContext } from '../../components/App.tsx';
+
+import axios from '../../axios';
+
 import {
   Section,
   List,
@@ -5,52 +12,48 @@ import {
   Divider,
   Spinner,
 } from '@telegram-apps/telegram-ui';
-import type { FC } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { useEffect, useState, useContext } from 'react';
-import { LanguageContext } from '../../components/App.tsx';
-// import { TotalBalanceContext } from '../../components/App.tsx';
 
-// import { settingsButton } from '@telegram-apps/sdk';
-
-import axios from '../../axios';
 
 import { Page } from '@/components/Page.tsx';
 import { Icon16Chevron } from '@telegram-apps/telegram-ui/dist/icons/16/chevron';
 
-// import { Icon28Devices } from '@telegram-apps/telegram-ui/dist/icons/28/devices';
-// import { Icon28Archive } from '@telegram-apps/telegram-ui/dist/icons/28/archive';
-// import { Icon28Heart } from '@telegram-apps/telegram-ui/dist/icons/28/heart';
+import {TryLater} from '../../components/TryLater/TryLater.tsx'
+
 
 import { TEXTS } from './texts.ts';
+// import styles from '../WalletPage/walletpage.module.css';
 
 export const PayIn: FC = () => {
+  
   const navigate = useNavigate();
+  
   const { language } = useContext(LanguageContext);
   const [isLoading, setIsLoading] = useState(true);
-  //   const { balance } = useContext(TotalBalanceContext);
+  const [showTryLater, setShowTryLater] = useState(false);
+  const [coins, setCoins] = useState([]);
 
   //FIXME:
   // @ts-ignore
-  const { title } = TEXTS[language];
+  const { title, tryLaterText} = TEXTS[language];
 
-  const [coins, setCoins] = useState([]);
 
   // доступные монеты (Get available checked currencies)
   useEffect(() => {
     const fetchCoins = async () => {
       try {
-        const response = await axios.get('/get_available_coins');
+        const response = await axios.get('/payin/get_available_coins');
 
-        // coins = response.data
+        if (response.data.statusBE === 'notOk'){
+          setShowTryLater(true);
+          setIsLoading(false)
+        }
+        
         setCoins(response.data.selectedCurrencies);
         setIsLoading(false);
-        // console.log(coins)
       } catch (error) {
         console.error('Ошибка при выполнении запроса:', error);
       } finally {
-        // setShowLoader(false);
-        // setWolfButtonActive(true);
+        
       }
     };
 
@@ -58,7 +61,6 @@ export const PayIn: FC = () => {
   }, []);
 
   function coinBtnHandler(coin: string) {
-    // console.log('choosed coin=',coin)
     navigate('/payin_adress-page', {
       state: {
         coin: coin,
@@ -66,10 +68,14 @@ export const PayIn: FC = () => {
     });
   }
  
- 
 
   return (
     <Page back={true}>
+
+   {showTryLater && <TryLater/>}
+
+
+
       {isLoading && (
         <div
           style={{
@@ -82,7 +88,7 @@ export const PayIn: FC = () => {
         </div>
       )}
 
-      {!isLoading && (
+      {!isLoading && !showTryLater && (
         <List>
           <Section header={title}>
            

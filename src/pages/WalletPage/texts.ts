@@ -15,7 +15,8 @@ export const TEXTS = {
     stockLimit: 'Лимитный ордер',
     // one_transferTo: 'Перевод юзеру',
     textBalanceZero: 'Ваш баланс равен 0',
-    noPay: 'не было операций'
+    noPay: 'не было операций',
+    tryLaterText : 'Сервис временно недоступен, попробуйте позже',
   },
   en: {
     under_balance: 'Total balance in',
@@ -33,7 +34,8 @@ export const TEXTS = {
     stockLimit: 'Limit order',
     // one_transferTo: 'Transfer to user',
     textBalanceZero: 'Your balance is 0',
-    noPay: 'were not performed'
+    noPay: 'were not performed',
+    tryLaterText : 'App is not available at the moment, please try later',
     
   },
   de: {
@@ -52,7 +54,8 @@ export const TEXTS = {
     stockLimit: 'Limit-Order',
     // one_transferTo: 'Geldüberweisung an Benutzer',
     textBalanceZero: 'Ihr Saldo ist 0',
-    noPay: 'wurden nicht durchgeführt'
+    noPay: 'wurden nicht durchgeführt',
+    tryLaterText : 'Die App ist derzeit nicht verfügbar. Bitte versuchen Sie es später erneut.',
   },
 };
 

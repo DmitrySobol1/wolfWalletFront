@@ -1,3 +1,10 @@
+import type { FC } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
+import { useState, useContext, useEffect } from 'react';
+
+import axios from '../../axios';
+import { LanguageContext } from '../../components/App.tsx';
+
 import {
   Section,
   List,
@@ -7,22 +14,11 @@ import {
   Button,
   Spinner,
 } from '@telegram-apps/telegram-ui';
-import type { FC } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
-import { useState, useContext,useEffect } from 'react';
-import { LanguageContext } from '../../components/App.tsx';
-// import { TotalBalanceContext } from '../../components/App.tsx';
-
-
-
-import axios from '../../axios';
-
 import { Page } from '@/components/Page.tsx';
-
-
 import { Icon28CloseAmbient } from '@telegram-apps/telegram-ui/dist/icons/28/close_ambient';
 import { Icon24Close } from '@telegram-apps/telegram-ui/dist/icons/24/close';
 
+import { TryLater } from '../../components/TryLater/TryLater.tsx';
 
 import styles from './payout.module.css';
 import { TEXTS } from './texts.ts';
@@ -31,146 +27,130 @@ export const Payout2_writeAdress: FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const { coin, amount } = location.state || {};
+  const { language } = useContext(LanguageContext);
 
   const [adress, setAdress] = useState('');
   const [sum, setSum] = useState('');
   const [showError, setShowError] = useState(false);
   const [errorText, setErrorText] = useState('');
   const [isLoading, setIsLoading] = useState(true);
-  const [minSumToWithdraw,setMinSumToWithdraw] = useState(0)
-  const [ourComission,setOurComission] = useState(0)
+  const [minSumToWithdraw, setMinSumToWithdraw] = useState(0);
+  const [ourComission, setOurComission] = useState(0);
   const [isInputActive, setIsInputActive] = useState(false);
-  const [networkFees,setNetworkFees] = useState(0)
-  
-  const { language } = useContext(LanguageContext);
-  
-  
+  const [networkFees, setNetworkFees] = useState(0);
+  const [showTryLater, setShowTryLater] = useState(false);
+  const [totalComissionNum, setTotalComissionNum] = useState(0);
+
   //FIXME: если переносить на несколько строк, возникает ошибка!!!
   // @ts-ignore
-  const {title2,balanceT,comissionT,adressT,adress_sub,sumT,sumT_sub,max,nextbtn,errorEmpty,errorNotValid,errorSumEpmty,errorSumTooBig,errrorBalanceLow,errorSumLow,errorMinSumBig,minSumT,commisionTextWhenLoad} = TEXTS[language];
-  
+  const {title2,balanceT,comissionT,adressT,adress_sub,sumT,sumT_sub,max,nextbtn,errorEmpty, errorNotValid, errorSumEpmty, errorSumTooBig, errrorBalanceLow, errorSumLow,errorMinSumBig,minSumT,commisionTextWhenLoad} = TEXTS[language];
 
-  const [totalComissionNum,setTotalComissionNum]=useState(0)
-  const [totalComissionText,setTotalComissionText] = useState(commisionTextWhenLoad)
-
-
-// useEffect(() => {
-//   console.log('Updated sum:', sum); // Сработает после реального обновления
-// }, [sum]); // Зависимость от sum
-
-
-
-  
+  const [totalComissionText, setTotalComissionText] = useState(
+    commisionTextWhenLoad
+  );
 
   // получаем мин сумму и our comission
   useEffect(() => {
-      const fetchMinSumAndComission = async () => {
-        try {
-          const response = await axios.get('/get_info_for_payout', {
-            params: {
-              coin: coin,
-            },
-          });
-  
-          // FIXME: если с сервера придет статус = false, то показать компонент oops
-          if (response.data.status === true){
-            setMinSumToWithdraw(response.data.minSumToWithdraw)
-            setOurComission(response.data.ourComission)
-          }
-      
-          
-          console.log(response.data)
-        } catch (error) {
-          console.error('Ошибка при выполнении запроса:', error);
-        } finally {
-          setIsLoading(false)
+    const fetchMinSumAndComission = async () => {
+      try {
+        const response = await axios.get('/payout/get_info_for_payout', {
+          params: {
+            coin: coin,
+          },
+        });
+
+        if (response.data.statusBE === 'notOk') {
+          setShowTryLater(true);
+          setIsLoading(false);
         }
-      };
-  
-      fetchMinSumAndComission();
-    }, []);
 
-
-
-//получаем network fees
-    useEffect(() => {
-      const fetchNetworkComission = async () => {
-
-        const sumToBeChargedByNetworkFees = Number(sum) - Number(ourComission)
-
-        if (!isInputActive || !sum) return;
-        try {
-          const response = await axios.get('/get_withdrawal_fee', {
-            params: {
-              coin: coin,
-              amount:sumToBeChargedByNetworkFees
-            },
-          });
-          
-          setNetworkFees(response.data.networkFees)
-          const countingComission = response.data.networkFees + ourComission
-          setTotalComissionNum(countingComission)
-
-          const coinUp = coin.toUpperCase()
-          const textToDisplay = `${countingComission} ${coinUp}`
-          setTotalComissionText(textToDisplay)
-
-          
-        } catch (error) {
-          console.error('Ошибка при выполнении запроса:', error);
-        } finally {
-          // setShowLoader(false);
-          // setWolfButtonActive(true);
+        if (response.data.status === true) {
+          setMinSumToWithdraw(response.data.minSumToWithdraw);
+          setOurComission(response.data.ourComission);
+        } else {
+          setShowTryLater(true);
+          setIsLoading(false);
         }
-      };
-  
-      fetchNetworkComission();
-    }, [sum]);
+      } catch (error) {
+        console.error('Ошибка при выполнении запроса:', error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
 
+    fetchMinSumAndComission();
+  }, []);
 
+  //получаем network fees
+  useEffect(() => {
+    const fetchNetworkComission = async () => {
+      const sumToBeChargedByNetworkFees = Number(sum) - Number(ourComission);
+      if (sumToBeChargedByNetworkFees < 0 ) return
 
+      if (!isInputActive || !sum) return;
+      try {
 
+       
+
+        const response = await axios.get('/payout/get_withdrawal_fee', {
+          params: {
+            coin: coin,
+            amount: sumToBeChargedByNetworkFees,
+          },
+        });
+
+        if (response.data.statusBE === 'notOk') {
+          setShowTryLater(true);
+          setIsLoading(false);
+        } else {
+          setNetworkFees(response.data.networkFees);
+          const countingComission = response.data.networkFees + ourComission;
+          setTotalComissionNum(countingComission);
+
+          const coinUp = coin.toUpperCase();
+          const textToDisplay = `${countingComission} ${coinUp}`;
+          setTotalComissionText(textToDisplay);
+        }
+      } catch (error) {
+        console.error('Ошибка при выполнении запроса:', error);
+      } finally {
+      }
+    };
+
+    fetchNetworkComission();
+  }, [sum]);
 
   function adressHandler(e: any) {
     setAdress(e.target.value);
     setShowError(false);
   }
 
+  //заменить запятую на точку в inputе суммы
 
+  const sumHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const inputValue = e.target.value;
 
-//заменить запятую на точку в inputе суммы
+    const normalizedValue = inputValue
+      .replace(/,/g, '.')
+      .replace(/[^\d.]/g, '')
+      .replace(/^(\d*\.?\d*).*/, '$1'); // Удаляет всё после второй точки
 
-const sumHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
-  const inputValue = e.target.value;
+    setSum(normalizedValue);
 
-  const normalizedValue = inputValue
-    .replace(/,/g, '.')
-    .replace(/[^\d.]/g, '')
-    .replace(/^(\d*\.?\d*).*/, '$1'); // Удаляет всё после второй точки
+    if (e.target.value === '') {
+      setTotalComissionText(commisionTextWhenLoad);
+    }
 
-  setSum(normalizedValue);
-  
-  if (e.target.value === '') {
-    setTotalComissionText(commisionTextWhenLoad);
-  }
-  
-  setShowError(false);
-};
-
-
-
-
-
-
+    setShowError(false);
+  };
 
   function maxBtnHandler() {
-  setIsInputActive(true)
-  setSum(amount);
-}
-
+    setIsInputActive(true);
+    setSum(amount);
+  }
 
   async function nextBtnHandler() {
-    setIsLoading(true)
+    setIsLoading(true);
     let checkAdress = false;
     let checkSum = false;
 
@@ -181,23 +161,26 @@ const sumHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
         return;
       }
 
-      const response = await axios.post('/validate_adress', {
+      const response = await axios.post('/payout/validate_adress', {
         adress: adress,
         coin: coin,
       });
 
+      if (response.data.statusBE === 'notOk') {
+        setShowTryLater(true);
+        setIsLoading(false);
+      }
+
       if (response.data === 'OK') {
         checkAdress = true;
-        console.log('adress OKK');
       }
     } catch (error) {
-      
       setErrorText(errorNotValid);
       setShowError(true);
       console.error('Ошибка при выполнении запроса:', error);
       return;
     } finally {
-      setIsLoading(false)
+      setIsLoading(false);
     }
 
     // После окончания асинхронного запроса проверяем сумму
@@ -209,51 +192,43 @@ const sumHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
       setErrorText(errorSumTooBig);
       setShowError(true);
       return;
-    } else if (totalComissionNum>=amount){
+    } else if (totalComissionNum >= amount) {
       //text = ваш баланс должен быть больше комиссии
       setErrorText(errrorBalanceLow);
       setShowError(true);
-    } else if (totalComissionNum>=Number(sum)){
+    } else if (totalComissionNum >= Number(sum)) {
       //text = сумма должна быть больше комисии, иначе вы получите 0
       setErrorText(errorSumLow);
       setShowError(true);
-
-    } else if (minSumToWithdraw>Number(sum)){
+    } else if (minSumToWithdraw > Number(sum)) {
       //text = введенная сумма меньше мин суммы для вывода
       setErrorText(errorMinSumBig);
       setShowError(true);
-    }
-    else if (amount >= sum) {
+    } else if (amount >= sum) {
       checkSum = true;
     }
-
-    
 
     if (checkAdress === false || checkSum === false) {
       setShowError(true);
     }
 
     if (checkAdress && checkSum) {
-      
       navigate('/payout_3showcomission-page', {
         state: {
           coin,
           sum,
           adress,
           ourComission,
-          networkFees
+          networkFees,
         },
       });
     }
-
-    // payout_3showcomission-page
   }
-
-  
-
 
   return (
     <Page back={true}>
+      {showTryLater && <TryLater />}
+
       {isLoading && (
         <div
           style={{
@@ -266,7 +241,7 @@ const sumHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
         </div>
       )}
 
-      {!isLoading && (
+      {!isLoading && !showTryLater && (
         <List>
           <Section>
             <Cell
@@ -290,8 +265,6 @@ const sumHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
             >
               {minSumT}
             </Cell>
-
-
 
             <Cell subtitle={totalComissionText}>{comissionT}</Cell>
           </Section>
@@ -317,8 +290,8 @@ const sumHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
             />
             <Input
               // status="focused"
-               type="text"
-                inputMode="decimal"
+              type="text"
+              inputMode="decimal"
               pattern="[0-9]*\.?[0-9]*"
               header={
                 <span>

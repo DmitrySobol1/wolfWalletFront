@@ -1,3 +1,14 @@
+import type { FC } from 'react';
+import { useLocation } from 'react-router-dom';
+import { useEffect, useState, useRef, useContext } from 'react';
+
+import axios from '../../axios';
+
+import { LanguageContext } from '../../components/App.tsx';
+import { useTlgid } from '../../components/Tlgid';
+
+import { TEXTS } from './texts.ts';
+
 import {
   Section,
   List,
@@ -6,58 +17,45 @@ import {
   Tooltip,
   Spinner,
 } from '@telegram-apps/telegram-ui';
-import type { FC } from 'react';
-import { useLocation } from 'react-router-dom';
-import { useEffect, useState, useRef, useContext } from 'react';
-
-import { LanguageContext } from '../../components/App.tsx';
-
-import axios from '../../axios';
-
 import { Page } from '@/components/Page.tsx';
-
-import {useTlgid} from '../../components/Tlgid'
-
 import { Icon28Devices } from '@telegram-apps/telegram-ui/dist/icons/28/devices';
 import { Icon28Stats } from '@telegram-apps/telegram-ui/dist/icons/28/stats';
 import { Icon28Archive } from '@telegram-apps/telegram-ui/dist/icons/28/archive';
 
-
-import { TEXTS } from './texts.ts';
+import {TryLater} from '../../components/TryLater/TryLater.tsx'
 
 export const PayInAdress: FC = () => {
+  const tlgid = useTlgid();
 
   const { language } = useContext(LanguageContext);
-  const [isLoading, setIsLoading] = useState(true);
-  
-
   const location = useLocation();
   const { coin } = location.state || {};
 
+  const [isLoading, setIsLoading] = useState(true);
+  const [showTryLater, setShowTryLater] = useState(false);
   const [minAmount, setMinAmount] = useState('');
   const [payAdress, setPayAdress] = useState('');
   const [showTextCopied, setShowTextCopied] = useState(false);
 
   //FIXME:
   // @ts-ignore
-  const { minsum, adress, copyit, copiedtext } = TEXTS[language]; 
-
-  
-const tlgid = useTlgid();
+  const { minsum, adress, copyit, copiedtext, tryLaterText } = TEXTS[language];
 
   useEffect(() => {
     const fetchPayInAdress = async () => {
       try {
-        const response = await axios.post('/get_info_for_payinadress', {
+        const response = await axios.post('/payin/get_info_for_payinadress', {
           tlgid: tlgid,
           coin: coin,
         });
 
-        
-        console.log(response);
+        if (response.data.statusBE === 'notOk') {
+          setShowTryLater(true);
+          setIsLoading(false);
+        }
+
         setMinAmount(response.data.minAmount);
         setPayAdress(response.data.payAdress);
-        
       } catch (error) {
         console.error('Ошибка при выполнении запроса:', error);
       } finally {
@@ -69,10 +67,9 @@ const tlgid = useTlgid();
   }, []);
 
   const copyAdress = async () => {
-  
     try {
       await navigator.clipboard.writeText(payAdress);
-      console.log('copied=', payAdress);
+
       setShowTextCopied(true);
 
       setTimeout(() => setShowTextCopied(false), 2000);
@@ -83,10 +80,11 @@ const tlgid = useTlgid();
 
   const buttonRef = useRef(null);
 
- 
-
   return (
     <Page back={true}>
+     
+     {showTryLater && <TryLater/>}
+
       {isLoading && (
         <div
           style={{
@@ -99,7 +97,7 @@ const tlgid = useTlgid();
         </div>
       )}
 
-      {!isLoading && (
+      {!isLoading && !showTryLater && (
         <List>
           <Section>
             <Cell
@@ -122,7 +120,6 @@ const tlgid = useTlgid();
               {copyit}
             </ButtonCell>
 
-           
             {showTextCopied && (
               <Tooltip mode="light" targetRef={buttonRef} withArrow={false}>
                 {copiedtext}

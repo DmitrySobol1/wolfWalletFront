@@ -1,3 +1,9 @@
+import type { FC } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
+import { useState, useContext } from 'react';
+import { LanguageContext } from '../../components/App.tsx';
+import axios from '../../axios';
+
 import {
   Section,
   List,
@@ -5,60 +11,44 @@ import {
   Cell,
   Spinner,
 } from '@telegram-apps/telegram-ui';
-import type { FC } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
-import { useState, useContext } from 'react';
-import { LanguageContext } from '../../components/App.tsx';
-
-import {useTlgid} from '../../components/Tlgid'
-
-
-import axios from '../../axios';
-
-import styles from './payout.module.css';
-
 import { Page } from '@/components/Page.tsx';
-
 import { Icon16Chevron } from '@telegram-apps/telegram-ui/dist/icons/16/chevron';
 import { Icon20Select } from '@telegram-apps/telegram-ui/dist/icons/20/select';
 
+import { TryLater } from '../../components/TryLater/TryLater.tsx';
 
+import { useTlgid } from '../../components/Tlgid';
+
+import styles from './payout.module.css';
 import { TEXTS } from './texts.ts';
 
 export const Payout3_showComission: FC = () => {
-  const navigate = useNavigate();
-  const location = useLocation();
-  const { coin, sum, adress, ourComission,networkFees } = location.state || {};
-
- 
-  const [showError, setShowError] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
-  
-
-  
   const tlgid = useTlgid();
 
   const { language } = useContext(LanguageContext);
-  
+  const navigate = useNavigate();
+  const location = useLocation();
+  const { coin, sum, adress, ourComission, networkFees } = location.state || {};
+
+  const [showError, setShowError] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [showTryLater, setShowTryLater] = useState(false);
+
   //  FIXME:
   // @ts-ignore
   const { title3, totalSum, comissionT, sendText, to, cnfBtn } = TEXTS[language];
 
-  const qtyToSend = Number(((Number(sum) - Number(ourComission)-Number(networkFees))).toFixed(6))
-  const qtyForApiRqst=Number(qtyToSend) + Number(networkFees)
- 
-  //вариант 1
-  const calcalutedTotalComission = Number(networkFees)+Number(ourComission)
-  
-  // //вариант 2
-  // useEffect(() => {
-  //   setCalcalutedTotalComission(Number(networkFees) + Number(ourComission));
-  // }, []);
+  const qtyToSend = Number(
+    (Number(sum) - Number(ourComission) - Number(networkFees)).toFixed(6)
+  );
+  const qtyForApiRqst = Number(qtyToSend) + Number(networkFees);
+
+  const calcalutedTotalComission = Number(networkFees) + Number(ourComission);
 
   async function cnfBtnHandler() {
     setIsLoading(true);
     try {
-      const response: any = await axios.post('/rqst_to_payout', {
+      const response: any = await axios.post('/payout/rqst_to_payout', {
         coin,
         sum,
         tlgid,
@@ -66,10 +56,13 @@ export const Payout3_showComission: FC = () => {
         networkFees,
         ourComission,
         qtyToSend,
-        qtyForApiRqst
+        qtyForApiRqst,
       });
 
-      console.log(response);
+      if (response.data.statusBE === 'notOk') {
+        setShowTryLater(true);
+        setIsLoading(false);
+      }
 
       if (response.data.status === 'OK') {
         navigate('/payout_4success-page', {
@@ -94,6 +87,8 @@ export const Payout3_showComission: FC = () => {
 
   return (
     <Page back={true}>
+      {showTryLater && <TryLater />}
+
       {isLoading && (
         <div
           style={{
@@ -106,7 +101,7 @@ export const Payout3_showComission: FC = () => {
         </div>
       )}
 
-      {!isLoading && (
+      {!isLoading && !showTryLater && (
         <List>
           {showError == false && (
             <Section header={title3}>
@@ -156,6 +151,7 @@ export const Payout3_showComission: FC = () => {
             </Section>
           )}
           {showError && (
+            // FIXME: добавить перевод
             <Section>
               <>
                 <Cell subtitle="вернитесь в кошелек и повторите вывод">

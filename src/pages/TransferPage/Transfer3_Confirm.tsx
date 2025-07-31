@@ -12,6 +12,7 @@ import { LanguageContext } from '../../components/App.tsx';
 
 import {useTlgid} from '../../components/Tlgid'
 
+import { TryLater } from '../../components/TryLater/TryLater.tsx';
 
 import axios from '../../axios';
 
@@ -33,6 +34,7 @@ export const Transfer3_Confirm: FC = () => {
 
   const [showError, setShowError] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [showTryLater, setShowTryLater] = useState(false);
   
 
   
@@ -54,7 +56,7 @@ export const Transfer3_Confirm: FC = () => {
   async function cnfBtnHandler() {
     setIsLoading(true);
     try {
-      const response: any = await axios.post('/rqst_to_transfer', {
+      const response: any = await axios.post('/transfer/rqst_to_transfer', {
         coin,
         sum,
         tlgid,
@@ -62,6 +64,11 @@ export const Transfer3_Confirm: FC = () => {
         ourComission,
         
       });
+
+      if (response.data.statusBE === 'notOk' || !response.data.status) {
+          setShowTryLater(true);
+          setIsLoading(false);
+      }
 
       console.log(response);
 
@@ -90,6 +97,9 @@ export const Transfer3_Confirm: FC = () => {
 
   return (
     <Page back={true}>
+
+    {showTryLater && <TryLater />}
+
       {isLoading && (
         <div
           style={{
@@ -102,7 +112,7 @@ export const Transfer3_Confirm: FC = () => {
         </div>
       )}
 
-      {!isLoading && (
+      {!isLoading && !showTryLater && (
         <List>
           {showError == false && (
             <Section header={title3}>
