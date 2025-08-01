@@ -143,11 +143,23 @@ export const Payout3_showComission: FC = () => {
                 {to}
               </Cell>
 
-              <Cell>
+              {/* <Cell>
                 <Button mode="filled" size="m" onClick={cnfBtnHandler}>
                   {cnfBtn}
                 </Button>
-              </Cell>
+              </Cell> */}
+
+               <div className={styles.wrapperActionBtn}>
+                      <Button
+                        // loading={actionBtnLoading}
+                        onClick={cnfBtnHandler}
+                        stretched 
+                        className={styles.actionBtn}
+                      >
+                        {cnfBtn}
+                      </Button>
+              </div>    
+
             </Section>
           )}
           {showError && (
@@ -160,6 +172,9 @@ export const Payout3_showComission: FC = () => {
                 <Button mode="filled" size="m" onClick={goToWalletHandler}>
                   Вернуться в кошелек
                 </Button>
+
+
+
               </>
             </Section>
           )}

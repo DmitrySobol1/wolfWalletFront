@@ -348,11 +348,23 @@ export const Payout2_writeAdress: FC = () => {
               </Cell>
             )}
 
-            <Cell>
-              <Button mode="filled" size="m" onClick={nextBtnHandler}>
+            {/* <Cell>
+              <Button mode="filled" size="m" onClick={nextBtnHandler} stretched>
                 {nextbtn}
               </Button>
-            </Cell>
+            </Cell> */}
+
+            <div className={styles.wrapperActionBtn}>
+                      <Button
+                        // loading={actionBtnLoading}
+                        onClick={nextBtnHandler}
+                        stretched 
+                        className={styles.actionBtn}
+                      >
+                        {nextbtn}
+                      </Button>
+              </div>
+
           </Section>
         </List>
       )}

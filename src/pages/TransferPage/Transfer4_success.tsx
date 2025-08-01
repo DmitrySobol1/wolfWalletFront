@@ -17,7 +17,7 @@ import { Page } from '@/components/Page.tsx';
 
 import { Icon20Select } from '@telegram-apps/telegram-ui/dist/icons/20/select';
 
-
+import styles from './transfer.module.css';
 import { TEXTS } from './texts.ts';
 
 export const Transfer4_success: FC = () => {
@@ -63,11 +63,22 @@ export const Transfer4_success: FC = () => {
             </Subheadline>
           </Cell>
 
-          <Cell>
+          {/* <Cell>
             <Button mode="filled" size="m" onClick={nextBtnHandler}>
               {openWalletBtn}
             </Button>
-          </Cell>
+          </Cell> */}
+
+          <div className={styles.wrapperActionBtn}>
+                                <Button
+                                  onClick={nextBtnHandler}
+                                  stretched 
+                                  className={styles.actionBtn}
+                                >
+                                  {openWalletBtn}
+                                </Button>
+                        </div>   
+
         </Section>
       </List>
     </Page>

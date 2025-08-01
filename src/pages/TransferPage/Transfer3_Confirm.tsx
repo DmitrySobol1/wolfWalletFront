@@ -10,7 +10,7 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import { useState, useContext } from 'react';
 import { LanguageContext } from '../../components/App.tsx';
 
-import {useTlgid} from '../../components/Tlgid'
+import { useTlgid } from '../../components/Tlgid';
 
 import { TryLater } from '../../components/TryLater/TryLater.tsx';
 
@@ -23,7 +23,6 @@ import { Page } from '@/components/Page.tsx';
 import { Icon16Chevron } from '@telegram-apps/telegram-ui/dist/icons/16/chevron';
 import { Icon20Select } from '@telegram-apps/telegram-ui/dist/icons/20/select';
 
-
 import { TEXTS } from './texts.ts';
 
 export const Transfer3_Confirm: FC = () => {
@@ -31,27 +30,23 @@ export const Transfer3_Confirm: FC = () => {
   const location = useLocation();
   const { coin, sum, adress, ourComission } = location.state || {};
 
-
   const [showError, setShowError] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [showTryLater, setShowTryLater] = useState(false);
-  
 
-  
   const tlgid = useTlgid();
 
   const { language } = useContext(LanguageContext);
-  
+
   //  FIXME:
   // @ts-ignore
   const { title3, totalSum, comissionT, sendText, to, cnfBtn } = TEXTS[language];
 
-  const qtyToSend = Number(((Number(sum) - Number(ourComission))).toFixed(6))
-//   const qtyForApiRqst=Number(qtyToSend) 
- 
+  const qtyToSend = Number((Number(sum) - Number(ourComission)).toFixed(6));
+  //   const qtyForApiRqst=Number(qtyToSend)
+
   //вариант 1
-//   const calcalutedTotalComission = Number(networkFees)+Number(ourComission)
-    
+  //   const calcalutedTotalComission = Number(networkFees)+Number(ourComission)
 
   async function cnfBtnHandler() {
     setIsLoading(true);
@@ -62,19 +57,16 @@ export const Transfer3_Confirm: FC = () => {
         tlgid,
         adress,
         ourComission,
-        
       });
 
       if (response.data.statusBE === 'notOk' || !response.data.status) {
-          setShowTryLater(true);
-          setIsLoading(false);
+        setShowTryLater(true);
+        setIsLoading(false);
       }
 
       console.log(response);
 
       if (response.data.status === 'OK') {
-        
-        
         navigate('/transfer_4success-page', {
           state: {
             qtyToSend,
@@ -97,8 +89,7 @@ export const Transfer3_Confirm: FC = () => {
 
   return (
     <Page back={true}>
-
-    {showTryLater && <TryLater />}
+      {showTryLater && <TryLater />}
 
       {isLoading && (
         <div
@@ -154,13 +145,15 @@ export const Transfer3_Confirm: FC = () => {
                 {to}
               </Cell>
 
-              <Cell>
-                <Button mode="filled" size="m" 
-                onClick={cnfBtnHandler}
+              <div className={styles.wrapperActionBtn}>
+                <Button
+                  onClick={cnfBtnHandler}
+                  stretched
+                  className={styles.actionBtn}
                 >
                   {cnfBtn}
                 </Button>
-              </Cell>
+              </div>
             </Section>
           )}
           {showError && (

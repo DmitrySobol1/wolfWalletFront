@@ -1181,7 +1181,7 @@ export const Stock: FC = () => {
                       <Button
                         loading={actionBtnLoading}
                         onClick={() => actionBtnHandler('buy')}
-                        stretched
+                        stretched 
                         className={styles.buyActionBtn}
                       >
                         {btnBuyText} {coin1fullName}

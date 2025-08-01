@@ -273,11 +273,18 @@ export const Transfer2_writeSumAndUser: FC = () => {
               </Cell>
             )}
 
-            <Cell>
-              <Button mode="filled" size="m" onClick={nextBtnHandler}>
-                {nextbtn}
-              </Button>
-            </Cell>
+            
+
+            <div className={styles.wrapperActionBtn}>
+                                <Button
+                                  onClick={nextBtnHandler}
+                                  stretched 
+                                  className={styles.actionBtn}
+                                >
+                                  {nextbtn}
+                                </Button>
+                        </div>  
+
           </Section>
         </List>
       )}
