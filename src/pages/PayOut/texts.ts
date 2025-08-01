@@ -14,10 +14,11 @@ export const TEXTS = {
     errorNotValid: 'Адрес не валидный',
     errorSumEpmty: 'Сумма пустая',
     errorSumTooBig: 'Сумма больше вашего баланса',
-
+    errorEnterBiggerSum: 'Сумма для вывода должна быть больше',
     errrorBalanceLow: 'Ваш баланс должен быть больше комиссии',
     errorSumLow: 'Сумма должна быть больше комисии, иначе вы получите 0',
     errorMinSumBig: 'Введенная сумма меньше мин суммы для вывода',
+
    
     title3: 'Подтвердите данные',
     totalSum: 'Общая сумма',
@@ -29,7 +30,7 @@ export const TEXTS = {
     withdrawText: 'Монеты будут отправлены в ближайшее время',
     openWalletBtn: 'Открыть кошелек',
     minSumT: 'Минимальная сумма для вывода',
-    commisionTextWhenLoad: 'Будет рассчитана после ввода суммы'
+    commisionTextWhenLoad: 'Будет рассчитана после ввода суммы',
   },
   en: {
     title: 'Withdraw cryptocurrency',
@@ -46,6 +47,13 @@ export const TEXTS = {
     errorNotValid: 'Adress is not valid',
     errorSumEpmty: 'Sum is empty',
     errorSumTooBig: 'Sum is bigger than your balance',
+    errorEnterBiggerSum: 'Please enter bigger sum',
+    
+     errrorBalanceLow: 'Your balance must be greater than the commission.',
+    errorSumLow: 'The amount must be greater than the commission, otherwise you will receive 0.',
+    errorMinSumBig: 'The amount entered is less than the minimum withdrawal amount.',
+    
+    
     title3: 'Confirmition',
     totalSum: 'Total sum',
     sendText: 'To be sent',
@@ -73,6 +81,13 @@ export const TEXTS = {
     errorNotValid: 'Adresse ist ungültig',
     errorSumEpmty: 'Summe ist leer',
     errorSumTooBig: 'Die Summe ist größer als Ihr Guthaben',
+    errorEnterBiggerSum: 'Bitte geben Sie einen höheren Betrag ein.',
+     errrorBalanceLow: 'Ihr Guthaben muss höher sein als die Provision.',
+    errorSumLow: 'Der Betrag muss höher sein als die Provision, sonst erhalten Sie 0.',
+    errorMinSumBig: 'Der eingegebene Betrag liegt unter dem Mindestauszahlungsbetrag.',
+    
+    
+    
     title3: 'Konfirmation',
     totalSum: 'Gesamtbetrag',
     sendText: 'Zu versenden',

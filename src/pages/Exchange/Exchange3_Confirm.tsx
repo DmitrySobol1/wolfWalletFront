@@ -1,3 +1,11 @@
+import type { FC } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
+import { useContext, useState } from 'react';
+
+import axios from '../../axios.ts';
+import { LanguageContext } from '../../components/App.tsx';
+import { useTlgid } from '../../components/Tlgid';
+
 import {
   Section,
   List,
@@ -5,27 +13,11 @@ import {
   Button,
   Spinner,
 } from '@telegram-apps/telegram-ui';
-import type { FC } from 'react';
-// import { useLocation } from 'react-router-dom';
-import { useNavigate, useLocation } from 'react-router-dom';
-import { useContext, useState } from 'react';
-// import { useEffect, useState, useContext } from 'react';
-import { LanguageContext } from '../../components/App.tsx';
-
-import { useTlgid } from '../../components/Tlgid';
-
-// import vsaarrows from '../../img/vs_arrows.png';
-// import { settingsButton } from '@telegram-apps/sdk';
-
-import axios from '../../axios.ts';
-
 import { Page } from '@/components/Page.tsx';
-// import { Icon16Chevron } from '@telegram-apps/telegram-ui/dist/icons/16/chevron';
-// import { Icon28CloseAmbient } from '@telegram-apps/telegram-ui/dist/icons/28/close_ambient';
+
+import { TryLater } from '../../components/TryLater/TryLater.tsx';
 
 import { TEXTS } from './texts.ts';
-
-// import styles from './exchange.module.css';
 
 export const Exchange3_Confirm: FC = () => {
   const tlgid = useTlgid();
@@ -33,6 +25,7 @@ export const Exchange3_Confirm: FC = () => {
   const navigate = useNavigate();
   const { language } = useContext(LanguageContext);
   const [isLoading, setIsLoading] = useState(false);
+  const [showTryLater, setShowTryLater] = useState(false);
 
   const location = useLocation();
   const {
@@ -48,41 +41,28 @@ export const Exchange3_Confirm: FC = () => {
   // @ts-ignore
   const { header1, youGetText, cnfBtn } = TEXTS[language];
 
-  //    function nextBtnHandler(){
-  //     console.log('clicked')
-
-  //     //{
-  // // "tlgid": 412697670,
-  // // "amount": 0.15,
-  // // "coinFrom": "ton",
-  // // "convertedAmount":4,
-  // // "coinTo" : "4",
-  // // "nowpaymentComission": 6,
-  // // "ourComission": 7
-  // // }
-
-  //     navigate('/exchange_4success-page', {
-  //       state: {
-  //         convertedAmount,
-  //         coinTo
-  //       },
-  //     });
-  //    }
-
   async function nextBtnHandler() {
     setIsLoading(true);
     try {
-      const response: any = await axios.post('/rqst_fromUser_toMaster', {
-        tlgid,
-        amount,
-        coinFrom,
-        convertedAmount,
-        coinTo,
-        nowpaymentComission,
-        ourComission,
-      });
+      const response: any = await axios.post(
+        '/exchange/rqst_fromUser_toMaster',
+        {
+          tlgid,
+          amount,
+          coinFrom,
+          convertedAmount,
+          coinTo,
+          nowpaymentComission,
+          ourComission,
+        }
+      );
 
-      console.log(response);
+      console.log(response.data);
+
+      if (response.data.statusBE === 'notOk') {
+        setShowTryLater(true);
+        setIsLoading(false);
+      }
 
       if (response.data.status === 'OK') {
         navigate('/exchange_4success-page', {
@@ -92,11 +72,13 @@ export const Exchange3_Confirm: FC = () => {
           },
         });
       } else {
-        //FIXME: добавить элемент OOPPS ошибка
-        console.log('oooops');
+        setShowTryLater(true);
+        setIsLoading(false);
       }
     } catch (error) {
       console.error('Ошибка при выполнении запроса:', error);
+      setShowTryLater(true);
+      setIsLoading(false);
     } finally {
       setIsLoading(false);
     }
@@ -104,6 +86,8 @@ export const Exchange3_Confirm: FC = () => {
 
   return (
     <Page back={true}>
+      {showTryLater && <TryLater />}
+
       {isLoading && (
         <div
           style={{
@@ -116,7 +100,7 @@ export const Exchange3_Confirm: FC = () => {
         </div>
       )}
 
-      {!isLoading && (
+      {!isLoading && !showTryLater && (
         <List>
           <Section>
             <Cell subhead={header1}>

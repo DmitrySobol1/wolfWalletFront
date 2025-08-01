@@ -1,3 +1,12 @@
+import type { FC } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
+import { useEffect, useState, useContext } from 'react';
+
+import axios from '../../axios.ts';
+import { LanguageContext } from '../../components/App.tsx';
+import { useTlgid } from '../../components/Tlgid';
+import { settingsButton } from '@telegram-apps/sdk';
+
 import {
   Section,
   List,
@@ -9,27 +18,14 @@ import {
   Button,
   Avatar,
 } from '@telegram-apps/telegram-ui';
-import type { FC } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
-import { useEffect, useState, useContext } from 'react';
-import { LanguageContext } from '../../components/App.tsx';
-
-import { useTlgid } from '../../components/Tlgid';
-
-import { TabbarMenu } from '../../components/TabbarMenu/TabbarMenu.tsx';
-
-// import vsaarrows from '../../img/vs_arrows.png';
-
-import { settingsButton } from '@telegram-apps/sdk';
-
-import axios from '../../axios.ts';
-
 import { Page } from '@/components/Page.tsx';
 import { Icon16Chevron } from '@telegram-apps/telegram-ui/dist/icons/16/chevron';
 import { Icon28CloseAmbient } from '@telegram-apps/telegram-ui/dist/icons/28/close_ambient';
 
-import { TEXTS } from './texts.ts';
+import { TabbarMenu } from '../../components/TabbarMenu/TabbarMenu.tsx';
+import { TryLater } from '../../components/TryLater/TryLater.tsx';
 
+import { TEXTS } from './texts.ts';
 import styles from './exchange.module.css';
 
 export const Exchange1_SetSum: FC = () => {
@@ -38,9 +34,24 @@ export const Exchange1_SetSum: FC = () => {
   const navigate = useNavigate();
   const { language } = useContext(LanguageContext);
   const [isLoading, setIsLoading] = useState(true);
-
   const location = useLocation();
   const { choosedCoin, typeCoin, oppositeCoin } = location.state || {};
+
+  const [comissions, setComissions] = useState([]);
+  const [coinFrom, setCoinFrom] = useState('TON');
+  const [coinTo, setCoinTo] = useState('BTC');
+  const [amount, setAmount] = useState(0);
+  const [convertedAmount, setConvertedAmount] = useState(0);
+  const [minAmount, setMinAmount] = useState(0);
+  const [nowpaymentComission, setNowpaymentComission] = useState(0);
+  const [ourComission, setOurComission] = useState(0);
+  const [maxAmount, setMaxAmount] = useState(0);
+  const [isInputActive, setIsInputActive] = useState(false);
+  const [showError, setShowError] = useState(false);
+  const [errorText, setErrorText] = useState('');
+  const [showNextBtn, setShowNextBtn] = useState(false);
+  const [showMinSumValue, setShowMinSumValue] = useState(false);
+  const [showTryLater, setShowTryLater] = useState(false);
 
   if (settingsButton.mount.isAvailable()) {
     settingsButton.mount();
@@ -56,55 +67,32 @@ export const Exchange1_SetSum: FC = () => {
     settingsButton.onClick(listener);
   }
 
-  // if (backButton.mount.isAvailable()) {
-  //     backButton.mount();
-  //     backButton.isMounted(); // true
-  //     backButton.show();
-  //   }
-
-  // if (backButton.onClick.isAvailable()) {
-  //   function listener() {
-  //     console.log('back Clicked!');
-  //     navigate('/wallet-page');
-  //   }
-  //   backButton.onClick(listener);
-  // }
-
   //FIXME:
   // @ts-ignore
-  const {wordMaximum,
+  const {
+    wordMaximum,
     header1,
     youGetText,
     errorSumTooBig,
     errorMinSumBig,
     nextBtn,
     minSumToExchangeText,
-     // @ts-ignore
+    // @ts-ignore
   } = TEXTS[language];
 
-  const [comissions, setComissions] = useState([]);
-  const [coinFrom, setCoinFrom] = useState('TON');
-  const [coinTo, setCoinTo] = useState('BTC');
-  const [amount, setAmount] = useState(0);
-  const [convertedAmount, setConvertedAmount] = useState(0);
-  const [minAmount, setMinAmount] = useState(0);
-  // const [showMinAmount, setShowMinAmount] = useState(false);
-  const [nowpaymentComission, setNowpaymentComission] = useState(0);
-  const [ourComission, setOurComission] = useState(0);
-  const [maxAmount, setMaxAmount] = useState(0);
-  const [isInputActive, setIsInputActive] = useState(false);
-  const [showError, setShowError] = useState(false);
-  const [errorText, setErrorText] = useState('');
-  const [showNextBtn, setShowNextBtn] = useState(false);
-  const [showMinSumValue, setShowMinSumValue] = useState(false);
+  
 
   useEffect(() => {
     const fetchCoins = async () => {
       try {
-        // const responseCoins = await axios.get('/get_available_coins');
-        // setCoins(responseCoins.data.selectedCurrencies);
+        const responseComissions = await axios.get(
+          '/exchange/get_comissionExchange'
+        );
+        if (responseComissions.data.statusBE === 'notOk') {
+          setShowTryLater(true);
+          setIsLoading(false);
+        }
 
-        const responseComissions = await axios.get('/get_comissionExchange');
         setComissions(responseComissions.data.data);
 
         let fromForCalculate = coinFrom;
@@ -114,90 +102,60 @@ export const Exchange1_SetSum: FC = () => {
             setCoinFrom(choosedCoin);
             setCoinTo(oppositeCoin);
             fromForCalculate = choosedCoin;
-
-            console.log('FETCH 1 | выбрал монету From');
-            console.log('coinFrom=', fromForCalculate);
-            console.log('coinTo=', oppositeCoin);
           } else if (typeCoin === 'to') {
             setCoinTo(choosedCoin);
             setCoinFrom(oppositeCoin);
             fromForCalculate = oppositeCoin;
-
-            console.log('FETCH 1 | выбрал монету To');
-            console.log('coinFrom=', oppositeCoin);
-            console.log('coinTo=', choosedCoin);
           }
         } else {
-          console.log('FETCH 1 | пришел с главной страницы');
-          console.log('coinFrom=', fromForCalculate);
-          console.log('coinTo=', coinTo);
+          // console.log('FETCH 1 | пришел с главной страницы');
+          // console.log('coinFrom=', fromForCalculate);
+          // console.log('coinTo=', coinTo);
         }
 
         // @ts-ignore FIXME:
         responseComissions.data.data.map((item) => {
           if (item.coin === 'nowpayment') {
             setNowpaymentComission(item.qty);
-            console.log('FETCH 1 | nowpayment comission=', item.qty, '%');
           }
 
           if (item.coin === 'ourcomission') {
             setOurComission(item.qty);
-            console.log('FETCH 1 | ourCommission=', item.qty, '%');
           }
-
-          //TODO: если необходимо сделать комиссию разную для каждой монеты
-          // if (
-          //   item.coin === fromForCalculate.toLowerCase() ||
-          //   item.coin === fromForCalculate
-          // ) {
-          //   setOurComission(item.qty);
-          //   console.log(
-          //     'FETCH 1 | ourCommission для',
-          //     fromForCalculate,
-          //     '=',
-          //     item.qty,'%'
-          //   );
-          // }
         });
 
-        const responseMinAmount = await axios.get('/get_minamount', {
+        const responseMinAmount = await axios.get('/exchange/get_minamount', {
           params: {
             coinFrom: fromForCalculate,
           },
         });
+        if (responseMinAmount.data.statusBE === 'notOk') {
+          setShowTryLater(true);
+          setIsLoading(false);
+        }
 
         setMinAmount(responseMinAmount.data.minAmount);
-        console.log(
-          'FETCH 1 | MinAmount для',
-          fromForCalculate,
-          '=',
-          responseMinAmount.data.minAmount
-        );
 
         // баланс в выбранной валюте
-        const responseBalances = await axios.get('/get_balance_currentCoin', {
-          params: {
-            tlgid: tlgid,
-            coin: fromForCalculate.toLowerCase(),
-          },
-        });
+        const responseBalances = await axios.get(
+          '/exchange/get_balance_currentCoin',
+          {
+            params: {
+              tlgid: tlgid,
+              coin: fromForCalculate.toLowerCase(),
+            },
+          }
+        );
+        if (responseBalances.data.statusBE === 'notOk') {
+          setShowTryLater(true);
+          setIsLoading(false);
+        }
 
         setMaxAmount(responseBalances.data.balance);
-
-        // // @ts-ignore
-        // responseBalances.data.arrayOfUserBalanceWithUsdPrice.map((item) =>{
-        //   if (item.currency === fromForCalculate.toLowerCase()){
-        //     setMaxAmount(item.amount)
-        //   } else {
-        //     setMaxAmount(0)
-        //   }
-        // })
-
-        console.log('BALANCES=', responseBalances.data);
-
-        // setBalances(response.data.arrayOfUserBalanceWithUsdPrice);
       } catch (error) {
         console.error('Ошибка при выполнении запроса:', error);
+        setShowTryLater(true);
+        setIsLoading(false);
       } finally {
         setIsLoading(false);
       }
@@ -206,10 +164,7 @@ export const Exchange1_SetSum: FC = () => {
     fetchCoins();
   }, [isInputActive]);
 
-
-  
   async function qtyHandler(e: React.ChangeEvent<HTMLInputElement>) {
-
     const inputValue = e.target.value;
 
     const normalizedValue = inputValue
@@ -226,7 +181,7 @@ export const Exchange1_SetSum: FC = () => {
 
     const check = /^[\d.]*$/.test(inputValue);
     if (!check) {
-      console.log('stop');
+      // console.log('stop');
       return;
     }
 
@@ -254,38 +209,33 @@ export const Exchange1_SetSum: FC = () => {
     }
 
     //TODO: добавить, что запрос на сервер не сразу отправлять, а задержкой, когда ввод окончен(как в видео про кросы)
-    
 
-    const responseConversion = await axios.get('/get_conversion_rate', {
-      params: {
-        amount: inputValue,
-        coinFrom: coinFrom,
-        coinTo: coinTo,
-      },
-    });
+    const responseConversion = await axios.get(
+      '/exchange/get_conversion_rate',
+      {
+        params: {
+          amount: inputValue,
+          coinFrom: coinFrom,
+          coinTo: coinTo,
+        },
+      }
+    );
+
+    if (responseConversion.data.statusBE === 'notOk') {
+      setShowTryLater(true);
+      setIsLoading(false);
+    }
 
     const amountWithoutComission = responseConversion.data.convertedAmount;
 
     //т.к. комиссия в БД - это число в %
     const npCom = amountWithoutComission * (nowpaymentComission / 100);
     const ourCom = amountWithoutComission * (ourComission / 100);
-
-    console.log('npCom=', npCom);
-    console.log('ourCom=', ourCom);
-
     const amountWithComission = Number(
       (amountWithoutComission - npCom - ourCom).toFixed(6)
     );
 
     setConvertedAmount(amountWithComission);
-    console.log(
-      'fullAmount=',
-      amountWithoutComission,
-      ' npCom=',
-      npCom,
-      ' ourCom = ',
-      ourCom
-    );
     setShowNextBtn(true);
   }
 
@@ -294,8 +244,6 @@ export const Exchange1_SetSum: FC = () => {
     setAmount(maxAmount);
     setShowError(false);
     setShowMinSumValue(false);
-
-    // setShowMinAmount(false);
 
     if (maxAmount == 0) {
       setConvertedAmount(0);
@@ -310,13 +258,21 @@ export const Exchange1_SetSum: FC = () => {
       return;
     }
 
-    const responseConversion = await axios.get('/get_conversion_rate', {
-      params: {
-        amount: maxAmount,
-        coinFrom: coinFrom,
-        coinTo: coinTo,
-      },
-    });
+    const responseConversion = await axios.get(
+      '/exchange/get_conversion_rate',
+      {
+        params: {
+          amount: maxAmount,
+          coinFrom: coinFrom,
+          coinTo: coinTo,
+        },
+      }
+    );
+
+    if (responseConversion.data.statusBE === 'notOk') {
+      setShowTryLater(true);
+      setIsLoading(false);
+    }
 
     const amountWithoutComission = responseConversion.data.convertedAmount;
     const npCom = amountWithoutComission * nowpaymentComission;
@@ -336,7 +292,6 @@ export const Exchange1_SetSum: FC = () => {
   async function vsBtnHandler() {
     try {
       setIsLoading(true);
-
       setShowNextBtn(false);
 
       const from = coinFrom;
@@ -359,35 +314,43 @@ export const Exchange1_SetSum: FC = () => {
         ) {
           //@ts-ignore FIXME:
           setOurComission(item.qty);
-          console.log(
-            'FETCH VS | ourCommission для',
-            to,
-            '=',
-            //@ts-ignore FIXME:
-            item.qty
-          );
         }
       });
 
-      const responseMinAmount = await axios.get('/get_minamount', {
+      const responseMinAmount = await axios.get('/exchange/get_minamount', {
         params: {
           coinFrom: to,
         },
       });
 
+      if (responseMinAmount.data.statusBE === 'notOk') {
+        setShowTryLater(true);
+        setIsLoading(false);
+      }
+
       setMinAmount(responseMinAmount.data.minAmount);
 
       // баланс в выбранной валюте
-      const responseBalances = await axios.get('/get_balance_currentCoin', {
-        params: {
-          tlgid: tlgid,
-          coin: to.toLowerCase(),
-        },
-      });
+      const responseBalances = await axios.get(
+        '/exchange/get_balance_currentCoin',
+        {
+          params: {
+            tlgid: tlgid,
+            coin: to.toLowerCase(),
+          },
+        }
+      );
+
+      if (responseMinAmount.data.statusBE === 'notOk') {
+        setShowTryLater(true);
+        setIsLoading(false);
+      }
 
       setMaxAmount(responseBalances.data.balance);
     } catch (error) {
       console.error('Ошибка при выполнении запроса:', error);
+      setShowTryLater(true);
+      setIsLoading(false);
     } finally {
       setIsLoading(false);
     }
@@ -417,6 +380,8 @@ export const Exchange1_SetSum: FC = () => {
 
   return (
     <Page back={true}>
+      {showTryLater && <TryLater />}
+
       {isLoading && (
         <div
           style={{
@@ -429,7 +394,7 @@ export const Exchange1_SetSum: FC = () => {
         </div>
       )}
 
-      {!isLoading && (
+      {!isLoading && !showTryLater && (
         <List>
           <Section
           // header={title}

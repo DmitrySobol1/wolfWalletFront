@@ -40,10 +40,11 @@ export const Payout2_writeAdress: FC = () => {
   const [networkFees, setNetworkFees] = useState(0);
   const [showTryLater, setShowTryLater] = useState(false);
   const [totalComissionNum, setTotalComissionNum] = useState(0);
+  const [extraVar, setExtraVar] = useState(true)
 
   //FIXME: если переносить на несколько строк, возникает ошибка!!!
   // @ts-ignore
-  const {title2,balanceT,comissionT,adressT,adress_sub,sumT,sumT_sub,max,nextbtn,errorEmpty, errorNotValid, errorSumEpmty, errorSumTooBig, errrorBalanceLow, errorSumLow,errorMinSumBig,minSumT,commisionTextWhenLoad} = TEXTS[language];
+  const {title2,balanceT,comissionT,adressT,adress_sub,sumT,sumT_sub,max,nextbtn,errorEmpty, errorNotValid, errorSumEpmty, errorSumTooBig, errrorBalanceLow, errorSumLow,errorMinSumBig,minSumT,commisionTextWhenLoad, errorEnterBiggerSum} = TEXTS[language];
 
   const [totalComissionText, setTotalComissionText] = useState(
     commisionTextWhenLoad
@@ -85,12 +86,18 @@ export const Payout2_writeAdress: FC = () => {
   useEffect(() => {
     const fetchNetworkComission = async () => {
       const sumToBeChargedByNetworkFees = Number(sum) - Number(ourComission);
-      if (sumToBeChargedByNetworkFees < 0 ) return
+      if (sumToBeChargedByNetworkFees <= 0 ){
+        setExtraVar(true)
+        return
+      }
 
       if (!isInputActive || !sum) return;
       try {
 
-       
+        setExtraVar(false)
+
+        console.log('sum before FN',sum)
+        console.log('amount to be charged before FN',sumToBeChargedByNetworkFees)
 
         const response = await axios.get('/payout/get_withdrawal_fee', {
           params: {
@@ -120,6 +127,7 @@ export const Payout2_writeAdress: FC = () => {
     fetchNetworkComission();
   }, [sum]);
 
+  
   function adressHandler(e: any) {
     setAdress(e.target.value);
     setShowError(false);
@@ -146,8 +154,21 @@ export const Payout2_writeAdress: FC = () => {
 
   function maxBtnHandler() {
     setIsInputActive(true);
+
+    console.log('sum=', sum)
+    console.log('amount=', amount)
+
     setSum(amount);
   }
+
+//   function maxBtnHandler() {
+//   setIsInputActive(true);
+//   setSum(''); // сброс — чтобы следующий setSum гарантированно вызвал useEffect
+//   setTimeout(() => {
+//     setSum(amount);
+//   }, 0); // ставим в следующую итерацию event loop
+// }
+
 
   async function nextBtnHandler() {
     setIsLoading(true);
@@ -204,6 +225,9 @@ export const Payout2_writeAdress: FC = () => {
       //text = введенная сумма меньше мин суммы для вывода
       setErrorText(errorMinSumBig);
       setShowError(true);
+    } else if (extraVar == true) {
+        setErrorText(errorEnterBiggerSum);
+        setShowError(true);
     } else if (amount >= sum) {
       checkSum = true;
     }
