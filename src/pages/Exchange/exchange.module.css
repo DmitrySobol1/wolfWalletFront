@@ -17,3 +17,17 @@
 .errorText {
   color: salmon;
 }
+
+ .wrapperActionBtn {
+    display: flex;    
+    width: 96%;
+    
+}
+
+.actionBtn {
+    /* background-color:#5bb98c; */
+    /* margin: 0 20px 0 20px; */
+    margin-left: 20px;
+    margin-bottom: 15px;
+    
+}

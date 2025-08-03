@@ -508,9 +508,20 @@ export const Exchange1_SetSum: FC = () => {
             </div>
 
             {showNextBtn && (
-              <Button mode="filled" size="m" stretched onClick={nextBtnHandler}>
-                {nextBtn}
-              </Button>
+              // <Button mode="filled" size="m" stretched onClick={nextBtnHandler}>
+              //   {nextBtn}
+              // </Button>
+
+              <div className={styles.wrapperActionBtn}>
+            <Button
+              onClick={nextBtnHandler}
+              stretched
+              className={styles.actionBtn}
+            >
+              {nextBtn}
+            </Button>
+          </div>
+
             )}
           </Section>
         </List>

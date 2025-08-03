@@ -17,6 +17,7 @@ import { Page } from '@/components/Page.tsx';
 
 import { TryLater } from '../../components/TryLater/TryLater.tsx';
 
+import styles from './exchange.module.css';
 import { TEXTS } from './texts.ts';
 
 export const Exchange3_Confirm: FC = () => {
@@ -109,9 +110,18 @@ export const Exchange3_Confirm: FC = () => {
             <Cell subhead={youGetText}>
               {convertedAmount} {coinTo}
             </Cell>
-            <Button mode="filled" size="m" stretched onClick={nextBtnHandler}>
+            
+
+            <div className={styles.wrapperActionBtn}>
+            <Button
+              onClick={nextBtnHandler}
+              stretched
+              className={styles.actionBtn}
+            >
               {cnfBtn}
             </Button>
+          </div>
+
           </Section>
         </List>
       )}

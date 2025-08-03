@@ -17,6 +17,7 @@ import { Page } from '@/components/Page.tsx';
 import { Icon20Select } from '@telegram-apps/telegram-ui/dist/icons/20/select';
 
 import { TEXTS } from './texts.ts';
+import styles from './exchange.module.css';
 
 export const Exchange4_Success: FC = () => {
   const navigate = useNavigate();
@@ -54,11 +55,15 @@ export const Exchange4_Success: FC = () => {
             </Subheadline>
           </Cell>
 
-          <Cell>
-            <Button mode="filled" size="m" stretched onClick={nextBtnHandler}>
+          <div className={styles.wrapperActionBtn}>
+            <Button
+              onClick={nextBtnHandler}
+              stretched
+              className={styles.actionBtn}
+            >
               {openWalletBtn}
             </Button>
-          </Cell>
+          </div>
         </Section>
       </List>
     </Page>
