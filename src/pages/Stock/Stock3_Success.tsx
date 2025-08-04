@@ -18,7 +18,7 @@ import { Icon20Select } from '@telegram-apps/telegram-ui/dist/icons/20/select';
 
 
 import { TEXTS } from './texts.ts';
-
+import styles from './stock.module.css';
     
 
 export const Stock3_success: FC = () => {
@@ -64,11 +64,22 @@ export const Stock3_success: FC = () => {
             </Subheadline>
           </Cell> */}
 
-          <Cell>
+          {/* <Cell>
             <Button mode="filled" size="m" onClick={nextBtnHandler} stretched>
               {openStockBtn}
             </Button>
-          </Cell>
+          </Cell> */}
+
+          <div className={styles.wrapperActionBtn}>
+            <Button
+              onClick={nextBtnHandler}
+              stretched
+              className={styles.actionBtn}
+            >
+              {openStockBtn}
+            </Button>
+          </div>  
+
         </Section>
       </List>
     </Page>
