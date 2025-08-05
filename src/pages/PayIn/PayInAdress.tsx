@@ -123,7 +123,7 @@ export const PayInAdress: FC = () => {
             {showTextCopied && (
               <Tooltip mode="light" targetRef={buttonRef} withArrow={false}>
                 {copiedtext}
-              </Tooltip>
+              </Tooltip> 
             )}
           </Section>
         </List>

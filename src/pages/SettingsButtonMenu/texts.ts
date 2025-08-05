@@ -9,7 +9,10 @@ export const TEXTS = {
     purposeid: 'нужен для внутренних переводов',
     copiedtext: 'скопировано',
     noid: 'отсутствует',
-    createid: 'создать id'
+    createid: 'создать id',
+    valuteChangedT: 'базовая валюта установлена',
+    languageChangedT: 'язык изменен',
+    someError: 'ошибка, попробуйте еще раз'
     
   },
   en: {
@@ -22,7 +25,10 @@ export const TEXTS = {
     purposeid: 'use for internal coin transfer',
     copiedtext: 'copied',
     noid: 'no id',
-    createid: 'create id'
+    createid: 'create id',
+    valuteChangedT: 'main valute changed',
+    languageChangedT: 'language changed',
+    someError: 'error, try again'
   },
   de: {
     title: 'Einstellungen',
@@ -34,6 +40,9 @@ export const TEXTS = {
     purposeid: 'verwendung für den internen Münztransfer',
     copiedtext: 'kopiert',
     noid: 'keine Identität',
-    createid: 'id erstellen'
+    createid: 'id erstellen',
+    valuteChangedT: 'hauptwährung geändert',
+    languageChangedT: 'sprache geändert',
+    someError: 'fehler, bitte versuchen Sie es erneut'
   },
 };

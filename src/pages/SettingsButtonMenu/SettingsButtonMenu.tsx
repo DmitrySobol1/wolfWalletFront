@@ -1,3 +1,8 @@
+import type { FC } from 'react';
+import { useContext, useState, useEffect, useRef } from 'react';
+
+import axios from '../../axios';
+
 import {
   Section,
   Cell,
@@ -8,63 +13,79 @@ import {
   Tappable,
   Tooltip,
 } from '@telegram-apps/telegram-ui';
-import type { FC } from 'react';
-import { useContext, useState, useEffect, useRef } from 'react';
+import { Page } from '@/components/Page.tsx';
+import { Icon32ProfileColoredSquare } from '@telegram-apps/telegram-ui/dist/icons/32/profile_colored_square';
+import { Icon16Chevron } from '@telegram-apps/telegram-ui/dist/icons/16/chevron';
+import { Icon28AddCircle } from '@telegram-apps/telegram-ui/dist/icons/28/add_circle';
+import { TabbarMenu } from '../../components/TabbarMenu/TabbarMenu.tsx';
 
 import { useTlgid } from '../../components/Tlgid';
-
-import axios from '../../axios';
 
 import { LanguageContext } from '../../components/App';
 import { ValuteContext } from '../../components/App';
 
-import { TabbarMenu } from '../../components/TabbarMenu/TabbarMenu.tsx';
-
-import { Page } from '@/components/Page.tsx';
+import { TryLater } from '../../components/TryLater/TryLater.tsx';
 
 import { TEXTS } from './texts.ts';
 
-import { Icon32ProfileColoredSquare } from '@telegram-apps/telegram-ui/dist/icons/32/profile_colored_square';
-import { Icon16Chevron } from '@telegram-apps/telegram-ui/dist/icons/16/chevron';
-import { Icon28AddCircle } from '@telegram-apps/telegram-ui/dist/icons/28/add_circle';
-
 export const SettingsButtonMenu: FC = () => {
+  const tlgid = useTlgid();
+
+  const { language, setLanguage } = useContext(LanguageContext);
+  const { valute, setValute } = useContext(ValuteContext);
+
   const [isShowLanguageSelect, setShowLanguageSelect] = useState(false);
   const [isShowValuteSelect, setShowValuteSelect] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [userNPid, setUserNPid] = useState('');
   const [idNPexist, setIdNPexist] = useState(false);
   const [showTextCopied, setShowTextCopied] = useState(false);
-
-  const tlgid = useTlgid();
-
-  const { language, setLanguage } = useContext(LanguageContext);
-  const { valute, setValute } = useContext(ValuteContext);
-
+  const [showLangValSet, setShowLangValSet] = useState(false);
+  const [langValuteText, setLangValuteText] = useState('');
+  const [showTryLater, setShowTryLater] = useState(false);
   const [selectedValute, setSelectedValute] = useState(valute);
   const [selectedLanguage, setSelectedLanguage] = useState(language);
 
+  const refDiv = useRef(null);
+  const buttonRef = useRef(null);
+
   //FIXME:
   // @ts-ignore
-  const {title,languageT,valuteT, languageTsubtitle, valuteTsubtitle, yourid, purposeid,copiedtext,noid,createid } = TEXTS[language];
+  const {
+    title,
+    languageT,
+    valuteT,
+    languageTsubtitle,
+    valuteTsubtitle,
+    yourid,
+    purposeid,
+    copiedtext,
+    noid,
+    createid,
+    valuteChangedT,
+    languageChangedT,
+    someError,
+    // @ts-ignore
+  } = TEXTS[language];
 
   // получить id юзера
   useEffect(() => {
-    // TODO: можно пост на гет испправить, т.к. получаем инфо
-
     const fetchUserInfo = async () => {
       try {
-        const response = await axios.post('/get_user_id', {
+        const response = await axios.post('/system/get_user_id', {
           tlgid: tlgid,
         });
 
-        console.log(response.data);
-        const nowpaymentid = response.data.nowpaymentid;
+        if (response.data.statusBE === 'notOk') {
+          setShowTryLater(true);
+          setIsLoading(false);
+        }
+
+        const { nowpaymentid } = response.data;
 
         if (nowpaymentid != 0) {
           setIdNPexist(true);
           setUserNPid(nowpaymentid);
-          
         } else {
           setIdNPexist(false);
           setUserNPid(noid);
@@ -89,26 +110,60 @@ export const SettingsButtonMenu: FC = () => {
     setShowValuteSelect(!isShowValuteSelect);
   }
 
-  function selectLanguageHandler(event: any) {
-    setLanguage(event.target.value);
-    setSelectedLanguage(event.target.value);
-    console.log('set language=', event.target.value);
+  async function selectLanguageHandler(event: any) {
+    try {
+      setLanguage(event.target.value);
+      setSelectedLanguage(event.target.value);
+      console.log('set language=', event.target.value);
 
-    axios.post('/change_language', {
-      tlgid: tlgid,
-      language: event.target.value,
-    });
+      const response: any = await axios.post('/system/change_language', {
+        tlgid: tlgid,
+        language: event.target.value,
+      });
+
+      console.log('lang resp', response);
+
+      if (!response) {
+        throw new Error('error in /system/change_language');
+      }
+
+      if (response.data.status === 'changed') {
+        setLangValuteText(languageChangedT);
+        setShowLangValSet(true);
+        setTimeout(() => setShowLangValSet(false), 2000);
+      }
+    } catch {
+      setLangValuteText(someError);
+      setShowLangValSet(true);
+      setTimeout(() => setShowLangValSet(false), 2000);
+    }
   }
 
-  function selectValuteHandler(event: any) {
-    setValute(event.target.value);
-    setSelectedValute(event.target.value);
-    console.log('set valute=', event.target.value);
+  async function selectValuteHandler(event: any) {
+    try {
+      setValute(event.target.value);
+      setSelectedValute(event.target.value);
+      console.log('set valute=', event.target.value);
 
-    axios.post('/change_valute', {
-      tlgid: tlgid,
-      valute: event.target.value,
-    });
+      const response: any = await axios.post('/system/change_valute', {
+        tlgid: tlgid,
+        valute: event.target.value,
+      });
+
+      if (!response) {
+        throw new Error('error in /system/change_valute');
+      }
+
+      if (response.data.status === 'changed') {
+        setLangValuteText(valuteChangedT);
+        setShowLangValSet(true);
+        setTimeout(() => setShowLangValSet(false), 2000);
+      }
+    } catch {
+      setLangValuteText(someError);
+      setShowLangValSet(true);
+      setTimeout(() => setShowLangValSet(false), 2000);
+    }
   }
 
   const copyAdress = async () => {
@@ -128,24 +183,31 @@ export const SettingsButtonMenu: FC = () => {
       setIsLoading(true);
       console.log('start creatin...');
 
-      const response = await axios.post('/create_user_NpId', {
+      const response: any = await axios.post('/system/create_user_NpId', {
         tlgid: tlgid,
       });
+
+      if (response.data.statusBE === 'notOk') {
+        setShowTryLater(true);
+        setIsLoading(false);
+      }
 
       console.log('created = ', response);
       setUserNPid(response.data.nowpaymentid);
       setIdNPexist(true);
     } catch (error) {
       console.error('Ошибка при выполнении запроса:', error);
+      setShowTryLater(true);
+      setIsLoading(false);
     } finally {
       setIsLoading(false);
     }
   }
 
-  const buttonRef = useRef(null);
-
   return (
     <Page back={false}>
+      {showTryLater && <TryLater />}
+
       {isLoading && (
         <div
           style={{
@@ -158,7 +220,7 @@ export const SettingsButtonMenu: FC = () => {
         </div>
       )}
 
-      {!isLoading && (
+      {!isLoading && !showTryLater && (
         <>
           <List>
             <Section>
@@ -242,6 +304,7 @@ export const SettingsButtonMenu: FC = () => {
                 <Cell
                   before={<Icon32ProfileColoredSquare />}
                   after={<Icon16Chevron />}
+                  ref={refDiv}
                 >
                   {valuteT}
                 </Cell>
@@ -260,6 +323,12 @@ export const SettingsButtonMenu: FC = () => {
               )}
             </Section>
           </List>
+
+          {showLangValSet && (
+            <Tooltip mode="light" targetRef={refDiv} withArrow={false}>
+              {langValuteText}
+            </Tooltip>
+          )}
 
           <TabbarMenu />
         </>
