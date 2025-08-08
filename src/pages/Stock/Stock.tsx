@@ -75,6 +75,7 @@ export const Stock: FC = () => {
   const [cancellReasonText, setCancellReasonText ] = useState('')
   const [showReason,setShowReason] = useState(false)  
   const [cancelBtnLoading, setCancelBtnLoading] = useState(false)    
+  const [showAccordion, setShowAccordion] = useState(false)
 
   const {
     coin1New,
@@ -582,22 +583,27 @@ export const Stock: FC = () => {
 
         if (response.data.statusFn == 'ok' && response.data.count >= 1) {
           setOpenOrdersArray(response.data.data);
+          setShowAccordion(true)
         } else {
-          const newItem = {
-            type: {
-              ru: '',
-              en: '',
-              de: '',
-            },
-            info: {
-              ru: noOpenText,
-              en: noOpenText,
-              de: noOpenText,
-            },
-          };
+          setShowAccordion(false)
+          // const newItem = {
+          //   type: {
+          //     ru: noOpenText,
+          //     en: noOpenText,
+          //     de: noOpenText,
+          //   },
+          //   info: {
+          //     ru: '',
+          //     en: '',
+          //     de: '',
+          //   },
+          // };
 
-          //@ts-ignore
-          setOpenOrdersArray([newItem]);
+          // setCancellReasonText('some info')
+          // setShowReason(true)
+
+          // //@ts-ignore
+          // setOpenOrdersArray([newItem]);
         }
       } catch (error) {
         console.error('Ошибка при выполнении запроса:', error);
@@ -1378,9 +1384,16 @@ export const Stock: FC = () => {
 
             {selectedTab === 'tab1' && (
               <>
+
+                { !showAccordion && 
+                      <Cell> 
+                        {noOpenText}
+                      </Cell>
+                }
+
                 {openOrdersArray.map((order: any) => (
                   <>
-
+                    { showAccordion &&
                     <Accordion 
                       onChange={() => accordionExpander(order.id)}
                       expanded={expandedAccordion === order.id}
@@ -1429,6 +1442,10 @@ export const Stock: FC = () => {
                       </AccordionContent>
 
                     </Accordion>
+                    }
+                    
+                    
+
 
                     <Divider />
                   </>
