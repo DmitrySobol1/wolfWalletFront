@@ -22,6 +22,8 @@ import {
   TabsList,
   Divider,
   Title,
+  Accordion,
+  Caption
 } from '@telegram-apps/telegram-ui';
 import { Page } from '@/components/Page.tsx';
 import { Icon20ChevronDown } from '@telegram-apps/telegram-ui/dist/icons/20/chevron_down';
@@ -32,6 +34,8 @@ import { TabbarMenu } from '../../components/TabbarMenu/TabbarMenu.tsx';
 
 import { TEXTS } from './texts.ts';
 import styles from './stock.module.css';
+import { AccordionSummary } from '@telegram-apps/telegram-ui/dist/components/Blocks/Accordion/components/AccordionSummary/AccordionSummary';
+import { AccordionContent } from '@telegram-apps/telegram-ui/dist/components/Blocks/Accordion/components/AccordionContent/AccordionContent';
 
 export const Stock: FC = () => {
   const tlgid = useTlgid();
@@ -67,7 +71,10 @@ export const Stock: FC = () => {
   const [valueSelectToggleMarketLimit, setValueSelectToggleMarketLimit] = useState('market');
   const [limitPrice, setLimitPrice] = useState(0);
   const [selectedTab, setSelectedTab] = useState('tab1');
-
+  const [expandedAccordion, setExpandedAccordion] = useState<string | null>(null);
+  const [cancellReasonText, setCancellReasonText ] = useState('')
+  const [showReason,setShowReason] = useState(false)  
+  const [cancelBtnLoading, setCancelBtnLoading] = useState(false)    
 
   const {
     coin1New,
@@ -115,6 +122,12 @@ export const Stock: FC = () => {
     totalText,
     noOpenText,
     noHistoryText,
+    cnlOrderT,
+    reasonCancellingNowT,
+    reasonAlreadyDoneT,
+    reasonTryIn1minT,
+    reasonCnlReceivedT
+    
     //@ts-ignore
   } = TEXTS[language];
 
@@ -565,6 +578,8 @@ export const Stock: FC = () => {
           setIsLoading(false);
         }
 
+        console.log('Open order=', response)
+
         if (response.data.statusFn == 'ok' && response.data.count >= 1) {
           setOpenOrdersArray(response.data.data);
         } else {
@@ -1006,6 +1021,54 @@ export const Stock: FC = () => {
     setMaxSell(countingSell);
   }
 
+  async function cnlHandler(id:any){
+    try {
+      setCancelBtnLoading(true)
+      console.log('отмена ордера id=', id)
+
+    const response = await axios.post('/stock/cancel_limitorder', {
+      order_id: id
+      
+    });
+   
+    if (response.data.statusBE === 'notOk') {
+            setShowTryLater(true);
+            setIsLoading(false);
+    }
+    
+    if (response.data.statusBE === 'cant cancell') {
+            setCancellReasonText(reasonAlreadyDoneT);
+            setShowReason(true);
+    }
+    
+    if (response.data.statusBE === 'is being cancelling now') {
+            setCancellReasonText(reasonCancellingNowT);
+            setShowReason(true);
+    }
+    
+    if (response.data.statusBE === 'just placed try in 1 minutes') {
+            setCancellReasonText(reasonTryIn1minT);
+            setShowReason(true);
+    }
+    
+    if (response.data.statusBE === 'cancel received') {
+            setCancellReasonText(reasonCnlReceivedT);
+            setShowReason(true);
+    }
+  } catch {
+      console.error('Ошибка при выполнении запроса:');
+        setShowTryLater(true);
+        setIsLoading(false);
+    }
+  }
+
+
+  function accordionExpander(id: string){
+    setCancelBtnLoading(false)
+    setShowReason(false);
+    setExpandedAccordion(prev => (prev === id ? null : id));
+  };
+
   return (
     <Page back={true}>
       {showTryLater && <TryLater />}
@@ -1317,9 +1380,56 @@ export const Stock: FC = () => {
               <>
                 {openOrdersArray.map((order: any) => (
                   <>
-                    <Cell subtitle={order.info[language]}>
-                      {order.type[language]}
-                    </Cell>
+
+                    <Accordion 
+                      onChange={() => accordionExpander(order.id)}
+                      expanded={expandedAccordion === order.id}
+                    >
+                       <AccordionSummary>
+                        {order.type[language]}
+                      </AccordionSummary>   
+                   
+
+                    <AccordionContent>
+                        
+                            <Cell multiline>
+                                <Caption
+                                    level="1"
+                                    weight="3"
+                                  >
+                                    {order.info[language]}
+                                  </Caption>
+                            </Cell>
+                            {!showReason &&
+                            <div className={styles.wrapperActionBtn}>
+                                <Button
+                                  loading={cancelBtnLoading}
+                                  onClick={() => cnlHandler(order.id)}
+                                  // stretched 
+                                  className={styles.cnlBtn}
+                                >
+                                  {cnlOrderT}
+                                </Button>
+                          </div>
+                          }
+                          {showReason &&
+                            <Cell multiline>
+                            
+                            <Caption
+                                    level="1"
+                                    weight="3"
+                                  >
+                                    {cancellReasonText}
+                                  </Caption>
+                            </Cell>
+                          }
+
+                          
+
+                      </AccordionContent>
+
+                    </Accordion>
+
                     <Divider />
                   </>
                 ))}

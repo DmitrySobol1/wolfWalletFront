@@ -74,7 +74,7 @@ export const Payout4_success: FC = () => {
                       >
                         {openWalletBtn}
                       </Button>
-              </div>   
+              </div>    
 
         </Section>
       </List>
