@@ -24,12 +24,13 @@ import {
   Title,
   Accordion,
   Caption,
-  Subheadline
-
+  Subheadline,
+  IconButton
 } from '@telegram-apps/telegram-ui';
 import { Page } from '@/components/Page.tsx';
 import { Icon20ChevronDown } from '@telegram-apps/telegram-ui/dist/icons/20/chevron_down';
 import { Icon28CloseAmbient } from '@telegram-apps/telegram-ui/dist/icons/28/close_ambient';
+import { Icon28Stats } from '@telegram-apps/telegram-ui/dist/icons/28/stats';
 
 import { TryLater } from '../../components/TryLater/TryLater.tsx';
 import { TabbarMenu } from '../../components/TabbarMenu/TabbarMenu.tsx';
@@ -1146,49 +1147,69 @@ export const Stock: FC = () => {
               <div className={styles.statsWrapper}>
                 
                 <div className={styles.statsLeft}>
+                  
                   <div className={styles.subheadline}>
+                      
+                      <Caption
+                        level="1"
+                        weight="3"
+                      >
+                        {statsChangeT}
+                      </Caption>
+                   </div>
+                  <div style={{color: stats24color}}>
                       <Subheadline
                         level="1"
                         weight="3"
                       >
-                          {statsChangeT}
+                          <span className={styles.statsSpan}>{stats24price}</span>  <span>{stats24operator}{stats24percent}%</span>
                       </Subheadline>
-                   </div>
-                  <div style={{color: stats24color}}>
-                      <Text weight="2">
-                        <span className={styles.statsSpan}>{stats24price}</span>  <span>{stats24operator}{stats24percent}%</span>
-                      </Text>
                   </div>
                 </div>
                 
                 <div className={styles.statsRight}>
                   <div className={styles.subheadline}>
-                    <Subheadline
+                    
+                      <Caption
                         level="1"
                         weight="3"
                       >
-                           {statsVolumeT} ({coin2})
-                      </Subheadline>
+                        {statsVolumeT} ({coin2})
+                      </Caption>
                   </div>
                   <div> 
-                    <Text weight="2">
-                        {stats24value}
-                      </Text>
+                    
+                      <Subheadline
+                        level="1"
+                        weight="3"
+                      >
+                          {stats24value}
+                      </Subheadline>
                   </div>
                 </div>  
+
+                <div>
+                 {/* <Image
+                      size={48}
+                      src="https://avatars.githubusercontent.com/u/84640980?v=4"
+                    /> */}
+
+                  {/* <Chip>
+                    Info
+                  </Chip>   */}
+
+                  <IconButton
+                      mode="bezeled"
+                      size="l"
+                      onClick={orderBookHandler}
+                    >
+                      <Icon28Stats />
+                    </IconButton>
+                </div>
 
               </div>
              
              
-                    {/* биржевой стакан  */}
-                <Cell>
-                      <Button
-                            onClick={orderBookHandler}
-                          >
-                            биржевой стакан - тесты
-                      </Button>
-                </Cell>
-
 
             <Cell>
               <div className={styles.wrapperButtons}>
