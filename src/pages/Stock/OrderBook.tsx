@@ -1,12 +1,13 @@
 import type { FC } from 'react';
 // import { useNavigate } from 'react-router-dom';
 // import { useEffect, useState, useContext } from 'react';
-import { useEffect, useState} from 'react';
+import { useEffect, useState } from 'react';
 // import { LanguageContext } from '../../components/App.tsx';
 
-// import axios from '../../axios';
+import axios from '../../axios';
 
-import { Section, Cell} from '@telegram-apps/telegram-ui';
+import { Page } from '@/components/Page.tsx';
+import { Section, Cell } from '@telegram-apps/telegram-ui';
 
 // import { Page } from '@/components/Page.tsx';
 // import { Icon16Chevron } from '@telegram-apps/telegram-ui/dist/icons/16/chevron';
@@ -19,8 +20,10 @@ import { Section, Cell} from '@telegram-apps/telegram-ui';
 export const OrderBook: FC = () => {
   //   const navigate = useNavigate();
 
-  const [price, setPrice] = useState ('')
-  const [time, setTime] = useState('')
+  const [arrayBid, setArrayBid] = useState([]);
+
+  //   const [price, setPrice] = useState ('')
+  //   const [time, setTime] = useState('')
 
   //   const { language } = useContext(LanguageContext);
   // FIXME: вернуть isLoading на true при открытии страницы
@@ -33,32 +36,54 @@ export const OrderBook: FC = () => {
   //   const { title, tryLaterText} = TEXTS[language];
 
   useEffect(() => {
-    // const ws = new WebSocket('ws://localhost:4444/ws');
-    const ws = new WebSocket(import.meta.env.VITE_WEBSOCKET_URL);
+    console.log('useEffect mounted');
 
-    // ws.onmessage()
+    const getStockGlass = async () => {
+      try {
+        const response = await axios.get('/stock/get_stock_glass', {
+          params: {
+            pair: 'BTC-USDT',
+          },
+        });
 
-    // ws.onmessage = (event) => {
-    //   const message = JSON.parse(event.data);
-    //   console.log('MESSAGE=', message);
-    //   setPrice(message.data.price)
-    //   setTime(message.data.timestamp)
-    // };
+        setArrayBid(response.data);
 
-    ws.onmessage = (event) => {
-        const data = JSON.parse(event.data);
-        console.log('Получены данные из WebSocket:', data);
-        setPrice(data.priceData.price)
-        setTime(data.priceData.timestamp)
-    }
+        //   console.log(response.data)
 
+        console.log('info about PAIR', response.data);
+      } catch (error) {
+        console.error('Ошибка при получении стакана:', error);
+      }
+    };
+
+      const intervalId = setInterval(() => {
+        getStockGlass();
+      }, 5000);
+
+    // getStockGlass();
+
+      return () => {
+        console.log('useEffect cleanup');
+        clearInterval(intervalId);
+      };
   }, []);
 
-  return <Section header="биржевой стакан">
-
-    <Cell>
-        {price} | @{time}
-    </Cell>
-
-  </Section>;
+  return (
+    <Page back={true}>
+      <Section header="биржевой стакан">
+        <Cell>test</Cell>
+        <div>
+            <span>цена</span> <span>объем</span>
+        </div>
+        {arrayBid.map((item) => (
+          <div>
+            <span>{item[0]}</span>
+            <span> - - </span>
+            <span>{item[1]}</span>
+          </div>
+        ))}
+      </Section>
+      ;
+    </Page>
+  );
 };
