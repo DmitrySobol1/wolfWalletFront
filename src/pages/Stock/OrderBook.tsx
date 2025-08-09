@@ -1,0 +1,63 @@
+import type { FC } from 'react';
+// import { useNavigate } from 'react-router-dom';
+// import { useEffect, useState, useContext } from 'react';
+import { useEffect, useState} from 'react';
+// import { LanguageContext } from '../../components/App.tsx';
+
+// import axios from '../../axios';
+
+import { Section, Cell} from '@telegram-apps/telegram-ui';
+
+// import { Page } from '@/components/Page.tsx';
+// import { Icon16Chevron } from '@telegram-apps/telegram-ui/dist/icons/16/chevron';
+
+// import { TryLater } from '../../components/TryLater/TryLater.tsx';
+
+// import { TEXTS } from './texts.ts';
+// import styles from '../WalletPage/walletpage.module.css';
+
+export const OrderBook: FC = () => {
+  //   const navigate = useNavigate();
+
+  const [price, setPrice] = useState ('')
+  const [time, setTime] = useState('')
+
+  //   const { language } = useContext(LanguageContext);
+  // FIXME: вернуть isLoading на true при открытии страницы
+  //   const [isLoading, setIsLoading] = useState(false);
+  //   const [showTryLater, setShowTryLater] = useState(false);
+  //   const [coins, setCoins] = useState([]);
+
+  //FIXME:
+  // @ts-ignore
+  //   const { title, tryLaterText} = TEXTS[language];
+
+  useEffect(() => {
+    const ws = new WebSocket('ws://localhost:4444/ws');
+
+    // ws.onmessage()
+
+    // ws.onmessage = (event) => {
+    //   const message = JSON.parse(event.data);
+    //   console.log('MESSAGE=', message);
+    //   setPrice(message.data.price)
+    //   setTime(message.data.timestamp)
+    // };
+
+    ws.onmessage = (event) => {
+        const data = JSON.parse(event.data);
+        console.log('Получены данные из WebSocket:', data);
+        setPrice(data.priceData.price)
+        setTime(data.priceData.timestamp)
+    }
+
+  }, []);
+
+  return <Section header="биржевой стакан">
+
+    <Cell>
+        {price} | @{time}
+    </Cell>
+
+  </Section>;
+};

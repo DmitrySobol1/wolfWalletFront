@@ -19,6 +19,7 @@ import { EnterPage } from '@/pages/EnterPage/EnterPage.tsx';
 import { Stock } from '@/pages/Stock/Stock.tsx';
 import { Stock2_ShowPairs } from '@/pages/Stock/Stock2_ShowPairs';
 import { Stock3_success } from '@/pages/Stock/Stock3_Success';
+import { OrderBook } from '@/pages/Stock/OrderBook';
 
 import { InitDataPage } from '@/pages/InitDataPage.tsx';
 import { LaunchParamsPage } from '@/pages/LaunchParamsPage.tsx';
@@ -56,6 +57,8 @@ export const routes: Route[] = [
   { path: '/stock-page', Component: Stock},
   { path: '/stock_2showPairs-page', Component: Stock2_ShowPairs},
   { path: '/stock_3success-page', Component: Stock3_success},
+  { path: '/stock_4orderbook-page', Component: OrderBook},
+
 
 
   { path: '/init-data', Component: InitDataPage, title: 'Init Data' },

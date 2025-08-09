@@ -1103,6 +1103,11 @@ export const Stock: FC = () => {
     setExpandedAccordion(prev => (prev === id ? null : id));
   };
 
+
+  function orderBookHandler(){
+      navigate('/stock_4orderbook-page');
+  }
+
   return (
     <Page back={true}>
       {showTryLater && <TryLater />}
@@ -1127,6 +1132,8 @@ export const Stock: FC = () => {
                 {coin1fullName} / {coin2fullName}
               </Text>
             </Cell>
+
+             
 
             
         
@@ -1166,7 +1173,15 @@ export const Stock: FC = () => {
 
               </div>
              
-              
+             
+                    {/* биржевой стакан  */}
+                <Cell>
+                      <Button
+                            onClick={orderBookHandler}
+                          >
+                            биржевой стакан - тесты
+                      </Button>
+                </Cell>
 
 
             <Cell>

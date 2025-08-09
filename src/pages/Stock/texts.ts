@@ -139,8 +139,8 @@ export const TEXTS = {
      reasonAlreadyDoneT: 'die Bestellung wurde bereits ausgeführt, und wir werden Ihnen den Betrag in Kürze überweisen',
      reasonTryIn1minT: 'die Stornierung wird in etwa 1 Minute verfügbar sein',
      reasonCnlReceivedT: 'die Stornierung wird gerade durchgeführt',
-     statsChangeT: '24-Stunden-Wechsel',
-     statsVolumeT: '24-Stunden-Volumen'
+     statsChangeT: '24St Wechsel',
+     statsVolumeT: '24St Volumen'
     
 
        
