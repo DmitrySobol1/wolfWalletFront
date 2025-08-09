@@ -114,3 +114,28 @@
 .statsSpan{
     margin-right: 15px;
 }
+
+
+.stockGlassWrapper {
+   display: flex; 
+   margin-left: 23px;
+
+}
+
+.stockGlassLeftSpan {
+    display: flex; 
+    width: 150px;
+}
+
+.green {
+    color: green
+}
+
+.red {
+    color: red
+}
+
+.grey {
+    color: grey
+    
+}

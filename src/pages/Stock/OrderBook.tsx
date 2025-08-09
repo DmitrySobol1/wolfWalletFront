@@ -1,56 +1,71 @@
 import type { FC } from 'react';
-// import { useNavigate } from 'react-router-dom';
-// import { useEffect, useState, useContext } from 'react';
-import { useEffect, useState } from 'react';
-// import { LanguageContext } from '../../components/App.tsx';
+import { useEffect, useState, useContext} from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
 
 import axios from '../../axios';
 
 import { Page } from '@/components/Page.tsx';
-import { Section, Cell } from '@telegram-apps/telegram-ui';
+import { Section, Text, Subheadline, Divider, Spinner} from '@telegram-apps/telegram-ui';
 
-// import { Page } from '@/components/Page.tsx';
-// import { Icon16Chevron } from '@telegram-apps/telegram-ui/dist/icons/16/chevron';
+import styles from './stock.module.css';
+import { TEXTS } from './texts.ts';
+import { settingsButton } from '@telegram-apps/sdk';
+  
+import { LanguageContext } from '../../components/App.tsx';
 
-// import { TryLater } from '../../components/TryLater/TryLater.tsx';
-
-// import { TEXTS } from './texts.ts';
-// import styles from '../WalletPage/walletpage.module.css';
 
 export const OrderBook: FC = () => {
-  //   const navigate = useNavigate();
+ const navigate = useNavigate();
+  const location = useLocation();
+   const { language } = useContext(LanguageContext);
+
+  const { coin1, coin2 } = location.state || {};
 
   const [arrayBid, setArrayBid] = useState([]);
+  const [arrayAsk, setArrayAsk] = useState([]);
 
-  //   const [price, setPrice] = useState ('')
-  //   const [time, setTime] = useState('')
-
-  //   const { language } = useContext(LanguageContext);
-  // FIXME: вернуть isLoading на true при открытии страницы
-  //   const [isLoading, setIsLoading] = useState(false);
-  //   const [showTryLater, setShowTryLater] = useState(false);
-  //   const [coins, setCoins] = useState([]);
+  const [isLoading] = useState(true);
+  
 
   //FIXME:
   // @ts-ignore
-  //   const { title, tryLaterText} = TEXTS[language];
+    const { dataLoadinOnlineT, priceT, amountT} = TEXTS[language];
+
+
+    if (settingsButton.mount.isAvailable()) {
+    settingsButton.mount();
+    settingsButton.isMounted(); // true
+    settingsButton.show();
+  }
+
+  if (settingsButton.onClick.isAvailable()) {
+    function listener() {
+      console.log('Clicked!');
+      navigate('/setting-button-menu');
+    }
+    settingsButton.onClick(listener);
+  }
+    
+
 
   useEffect(() => {
     console.log('useEffect mounted');
 
     const getStockGlass = async () => {
       try {
+
+        const pair = `${coin1}-${coin2}`
+
         const response = await axios.get('/stock/get_stock_glass', {
           params: {
-            pair: 'BTC-USDT',
+            pair: pair,
           },
         });
 
-        setArrayBid(response.data);
+        setArrayBid(response.data.bid);
+        setArrayAsk(response.data.ask);
 
-        //   console.log(response.data)
-
-        console.log('info about PAIR', response.data);
+        // console.log('info about PAIR', response.data);
       } catch (error) {
         console.error('Ошибка при получении стакана:', error);
       }
@@ -60,7 +75,7 @@ export const OrderBook: FC = () => {
         getStockGlass();
       }, 5000);
 
-    // getStockGlass();
+    getStockGlass();
 
       return () => {
         console.log('useEffect cleanup');
@@ -70,16 +85,58 @@ export const OrderBook: FC = () => {
 
   return (
     <Page back={true}>
-      <Section header="биржевой стакан">
-        <Cell>test</Cell>
-        <div>
-            <span>цена</span> <span>объем</span>
+      <Section>
+        
+        {isLoading && (
+                <div
+                  style={{
+                    textAlign: 'left',
+                    justifyContent: 'center',
+                    padding: '20px',
+                    color: '#168acd'
+                  }}
+                >
+                  <Spinner size="s" /> 
+                  <Subheadline level="1" weight="3">{dataLoadinOnlineT}</Subheadline>
+                </div>
+              )}
+
+
+        {/* <Cell>Bid - покупка (зеленый)</Cell> */}
+
+        <div className={styles.stockGlassWrapper}>
+            <div className={`${styles.stockGlassLeftSpan} ${styles.grey}`}><Subheadline level="1" weight="3">{priceT} {coin1}</Subheadline></div> 
+            <div className={styles.grey}><Subheadline level="1" weight="3">{amountT} {coin2}</Subheadline></div>
         </div>
+       
         {arrayBid.map((item) => (
-          <div>
-            <span>{item[0]}</span>
-            <span> - - </span>
-            <span>{item[1]}</span>
+          <div className={`${styles.stockGlassWrapper} ${styles.green}`}>
+            <div className={styles.stockGlassLeftSpan}><Text weight="2">{item[0]}</Text></div>
+            <div><Text weight="2">{item[1]}</Text></div>
+          </div>
+        ))}
+
+        <Divider/>
+        <Divider/>
+        <Divider/>
+        <Divider/>
+        <Divider/>
+        <Divider/>
+        <Divider/>
+        
+        {/* <Cell>Ask -  продажа (красный)</Cell> */}
+        
+
+
+        
+        <div className={styles.stockGlassWrapper}>
+            <div className={`${styles.stockGlassLeftSpan} ${styles.grey}`}><Subheadline level="1" weight="3">{priceT} {coin1}</Subheadline></div> 
+            <div className={styles.grey}><Subheadline level="1" weight="3">{amountT} {coin2}</Subheadline></div>
+        </div>
+        {arrayAsk.map((item) => (
+          <div className={`${styles.stockGlassWrapper} ${styles.red}`}>
+            <div className={styles.stockGlassLeftSpan}><Text weight="2">{item[0]}</Text></div>
+            <div className={styles.stockGlassLeftSpan}><Text weight="2">{item[1]}</Text></div>
           </div>
         ))}
       </Section>

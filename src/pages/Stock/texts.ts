@@ -43,7 +43,10 @@ export const TEXTS = {
     reasonTryIn1minT: 'отмена будет доступна примерно через 1 минуту',
     reasonCnlReceivedT: 'отмена ордера принята в работу',
     statsChangeT: 'изменения за 24ч',
-    statsVolumeT: 'объем за 24ч'
+    statsVolumeT: 'объем за 24ч',
+    dataLoadinOnlineT: 'данные обновляются online...',
+    priceT: 'цена',
+    amountT: 'количество'
     
   },
   en: {
@@ -90,7 +93,10 @@ export const TEXTS = {
     reasonTryIn1minT: 'cancelaltion will be availablbe in 1 minute approximately',
     reasonCnlReceivedT: 'cancellation is in progress',
     statsChangeT: '24h change',
-    statsVolumeT: '24h volume'
+    statsVolumeT: '24h volume',
+    dataLoadinOnlineT: 'data is loading in online...',
+    priceT: 'price',
+    amountT: 'amount'
     
 
     
@@ -140,7 +146,10 @@ export const TEXTS = {
      reasonTryIn1minT: 'die Stornierung wird in etwa 1 Minute verfügbar sein',
      reasonCnlReceivedT: 'die Stornierung wird gerade durchgeführt',
      statsChangeT: '24St Wechsel',
-     statsVolumeT: '24St Volumen'
+     statsVolumeT: '24St Volumen',
+     dataLoadinOnlineT: 'daten werden online geladen...',
+     priceT: 'preis',
+     amountT: 'betrag'
     
 
        

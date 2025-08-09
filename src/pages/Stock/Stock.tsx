@@ -1105,7 +1105,13 @@ export const Stock: FC = () => {
 
 
   function orderBookHandler(){
-      navigate('/stock_4orderbook-page');
+      // navigate('/stock_4orderbook-page');
+      navigate('/stock_4orderbook-page', {
+          state: {
+            coin1,
+            coin2,
+          },
+        });
   }
 
   return (
