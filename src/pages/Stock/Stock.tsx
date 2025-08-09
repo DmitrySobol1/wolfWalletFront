@@ -23,7 +23,9 @@ import {
   Divider,
   Title,
   Accordion,
-  Caption
+  Caption,
+  Subheadline
+
 } from '@telegram-apps/telegram-ui';
 import { Page } from '@/components/Page.tsx';
 import { Icon20ChevronDown } from '@telegram-apps/telegram-ui/dist/icons/20/chevron_down';
@@ -77,6 +79,13 @@ export const Stock: FC = () => {
   const [cancelBtnLoading, setCancelBtnLoading] = useState(false)    
   const [showAccordion, setShowAccordion] = useState(false)
 
+  const [stats24price, setStats24price]= useState('')
+  const [stats24percent, setStats24percent]= useState('')
+  const [stats24value, setStats24value]= useState('')
+  const [stats24color, setStats24color]= useState('')
+  const [stats24operator, setStats24operator]= useState('')
+
+
   const {
     coin1New,
     coin1NewFull,
@@ -127,8 +136,10 @@ export const Stock: FC = () => {
     reasonCancellingNowT,
     reasonAlreadyDoneT,
     reasonTryIn1minT,
-    reasonCnlReceivedT
-    
+    reasonCnlReceivedT,
+    statsChangeT,
+    statsVolumeT
+
     //@ts-ignore
   } = TEXTS[language];
 
@@ -198,6 +209,23 @@ export const Stock: FC = () => {
 
         setPrice(priceResponse.data.data.price);
         setLimitPrice(priceResponse.data.data.price);
+
+
+        // получаем статистику 24 часовую
+        const statsResponse:any = await axios.get('/stock/get24_stats', {
+          params: { pair: `${selectedCoin1}-${selectedCoin2}` },
+        });
+
+        console.log(`STATS ${selectedCoin1}-${selectedCoin2}`)
+        console.log(statsResponse.data)
+
+        console.log('price 24=',statsResponse.data.price )
+
+        setStats24price(statsResponse.data.price)
+        setStats24percent(statsResponse.data.percent)
+        setStats24value(statsResponse.data.value)
+        setStats24color(statsResponse.data.color)
+        setStats24operator(statsResponse.data.operator)
 
         //получаем баланс в NP
         const amountResponse = await axios.get(
@@ -1099,6 +1127,48 @@ export const Stock: FC = () => {
                 {coin1fullName} / {coin2fullName}
               </Text>
             </Cell>
+
+            
+        
+              <div className={styles.statsWrapper}>
+                
+                <div className={styles.statsLeft}>
+                  <div className={styles.subheadline}>
+                      <Subheadline
+                        level="1"
+                        weight="3"
+                      >
+                          {statsChangeT}
+                      </Subheadline>
+                   </div>
+                  <div style={{color: stats24color}}>
+                      <Text weight="2">
+                        <span className={styles.statsSpan}>{stats24price}</span>  <span>{stats24operator}{stats24percent}%</span>
+                      </Text>
+                  </div>
+                </div>
+                
+                <div className={styles.statsRight}>
+                  <div className={styles.subheadline}>
+                    <Subheadline
+                        level="1"
+                        weight="3"
+                      >
+                           {statsVolumeT} ({coin2})
+                      </Subheadline>
+                  </div>
+                  <div> 
+                    <Text weight="2">
+                        {stats24value}
+                      </Text>
+                  </div>
+                </div>  
+
+              </div>
+             
+              
+
+
             <Cell>
               <div className={styles.wrapperButtons}>
                 <div>

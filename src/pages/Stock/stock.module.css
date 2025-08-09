@@ -97,3 +97,20 @@
     margin-bottom: 15px;
 
 }
+
+.statsWrapper {
+    display: flex;
+    justify-content: space-between;
+    margin-left: 23px;
+    margin-right: 20px;
+
+}
+
+
+.subheadline {
+    color: grey
+}
+
+.statsSpan{
+    margin-right: 15px;
+}

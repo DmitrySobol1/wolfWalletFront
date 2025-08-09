@@ -41,7 +41,9 @@ export const TEXTS = {
     reasonCancellingNowT: 'ордер уже отменяется, скоро деньги разморозятся',
     reasonAlreadyDoneT: 'ордер ордер уже исполнен, скоро переведем вам средства',
     reasonTryIn1minT: 'отмена будет доступна примерно через 1 минуту',
-    reasonCnlReceivedT: 'отмена ордера принята в работу'
+    reasonCnlReceivedT: 'отмена ордера принята в работу',
+    statsChangeT: 'изменения за 24ч',
+    statsVolumeT: 'объем за 24ч'
     
   },
   en: {
@@ -86,7 +88,9 @@ export const TEXTS = {
     reasonCancellingNowT: 'the order is cancelling now and the funds will soon be unfrozen',
     reasonAlreadyDoneT: 'the order has already been fulfilled, and we will transfer the funds to you shortly',
     reasonTryIn1minT: 'cancelaltion will be availablbe in 1 minute approximately',
-    reasonCnlReceivedT: 'cancellation is in progress'
+    reasonCnlReceivedT: 'cancellation is in progress',
+    statsChangeT: '24h change',
+    statsVolumeT: '24h volume'
     
 
     
@@ -134,7 +138,10 @@ export const TEXTS = {
      reasonCancellingNowT: 'die Bestellung wird jetzt storniert und die Gelder werden bald freigegeben',
      reasonAlreadyDoneT: 'die Bestellung wurde bereits ausgeführt, und wir werden Ihnen den Betrag in Kürze überweisen',
      reasonTryIn1minT: 'die Stornierung wird in etwa 1 Minute verfügbar sein',
-     reasonCnlReceivedT: 'die Stornierung wird gerade durchgeführt'
+     reasonCnlReceivedT: 'die Stornierung wird gerade durchgeführt',
+     statsChangeT: '24-Stunden-Wechsel',
+     statsVolumeT: '24-Stunden-Volumen'
+    
 
        
   },
