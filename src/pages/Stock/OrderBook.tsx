@@ -33,7 +33,8 @@ export const OrderBook: FC = () => {
   //   const { title, tryLaterText} = TEXTS[language];
 
   useEffect(() => {
-    const ws = new WebSocket('ws://localhost:4444/ws');
+    // const ws = new WebSocket('ws://localhost:4444/ws');
+    const ws = new WebSocket(import.meta.env.VITE_WEBSOCKET_URL);
 
     // ws.onmessage()
 
